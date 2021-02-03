@@ -27,7 +27,7 @@ class LoginWindow(Gtk.ApplicationWindow):
                 IMG_DIR_PATH,
                 "protonvpn-logo-white.svg"
             ),
-            width=400,
+            width=300,
             height=200,
             preserve_aspect_ratio=True
         )
