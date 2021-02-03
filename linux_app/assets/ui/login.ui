@@ -5,19 +5,24 @@
   <!-- interface-css-provider-path login.css -->
   <template class="LoginWindow" parent="GtkApplicationWindow">
     <property name="can-focus">False</property>
-    <property name="default-width">600</property>
-    <property name="default-height">300</property>
+    <property name="title" translatable="yes">Login</property>
+    <property name="window-position">center</property>
+    <property name="default-width">210</property>
+    <property name="default-height">740</property>
     <child>
       <object class="GtkOverlay">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="double-buffered">False</property>
+        <property name="hexpand">True</property>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="login_main_box">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="double-buffered">False</property>
+            <property name="hexpand">True</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">20</property>
-            <property name="homogeneous">True</property>
+            <property name="baseline-position">top</property>
             <child>
               <object class="GtkImage" id="img_protonvpn_logo">
                 <property name="visible">True</property>
@@ -30,11 +35,13 @@
               </packing>
             </child>
             <child>
-              <!-- n-columns=2 n-rows=3 -->
+              <!-- n-columns=2 n-rows=2 -->
               <object class="GtkGrid" id="top_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="row-spacing">15</property>
+                <property name="row-homogeneous">True</property>
+                <property name="column-homogeneous">True</property>
                 <child>
                   <object class="GtkEntry" id="proton_username_entry">
                     <property name="visible">True</property>
@@ -70,6 +77,8 @@
                     <property name="has-frame">False</property>
                     <property name="invisible-char">•</property>
                     <property name="shadow-type">none</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="primary-icon-sensitive">False</property>
                     <property name="placeholder-text" translatable="yes">Password</property>
                     <property name="input-purpose">password</property>
                     <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
@@ -80,56 +89,77 @@
                     <property name="width">2</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="label" translatable="yes">Start on boot</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSwitch">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="double-buffered">False</property>
-                    <property name="halign">end</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">2</property>
-                  </packing>
-                </child>
+                <style>
+                  <class name="top_grid"/>
+                </style>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
+              <!-- n-columns=2 n-rows=1 -->
+              <object class="GtkGrid" id="middle_grid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="label" translatable="yes">Start on Boot</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSwitch" id="login_switch_start_on_boot">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <style>
+                  <class name="middle_grid"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
               <!-- n-columns=3 n-rows=2 -->
-              <object class="GtkGrid" id="lower_grid">
+              <object class="GtkGrid" id="bottom_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">center</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="box_login_label_link">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="halign">center</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkLabel" id="create_account_label">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
+                      <object class="GtkLinkButton">
                         <property name="label" translatable="yes">Create Account</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="relief">none</property>
+                        <property name="uri">https://account.protonvpn.com/signup</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -138,10 +168,13 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
+                      <object class="GtkLinkButton">
                         <property name="label" translatable="yes">Need Help ?</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="relief">none</property>
+                        <property name="uri">http://glade.gnome.org</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -149,6 +182,10 @@
                         <property name="position">1</property>
                       </packing>
                     </child>
+                    <style>
+                      <class name="margin-top-20px"/>
+                      <class name="box_login_label_link"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
@@ -158,10 +195,13 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="login_button">
-                    <property name="label" translatable="yes">button</property>
+                    <property name="label" translatable="yes">Login</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
+                    <style>
+                      <class name="default_style"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
@@ -169,13 +209,21 @@
                     <property name="width">3</property>
                   </packing>
                 </child>
+                <style>
+                  <class name="bottom_grid"/>
+                </style>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="position">3</property>
               </packing>
             </child>
+            <style>
+              <class name="margin-x-50px"/>
+              <class name="margin-top-50px"/>
+              <class name="login_main_box"/>
+            </style>
           </object>
           <packing>
             <property name="index">-1</property>
@@ -184,6 +232,8 @@
         <child type="overlay">
           <object class="GtkBox" id="login_overlay_box">
             <property name="can-focus">False</property>
+            <property name="no-show-all">True</property>
+            <property name="double-buffered">False</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
@@ -196,14 +246,6 @@
             </child>
           </object>
         </child>
-      </object>
-    </child>
-    <child type="titlebar">
-      <object class="GtkHeaderBar" id="header_bar">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="title">ProtonVPN</property>
-        <property name="show-close-button">True</property>
       </object>
     </child>
   </template>

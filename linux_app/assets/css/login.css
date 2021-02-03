@@ -1,2 +1,28 @@
 @import "common.css";
 
+window{
+  background-color: @def_bg_color;
+}
+
+.login_main_box > .top_grid .login_main_box > .bottom_grid{
+  margin-top: 20px;
+}
+
+.login_main_box > .middle_grid {
+  margin-top: 10px;
+}
+
+label{
+  color: rgb(255,255,255);
+  font-size: 16px;
+}
+
+.box_login_label_link > button label{
+  margin-top: 20px;
+  color: @def_green_color;
+}
+
+.box_login_label_link > button label:hover{
+    color: rgb(255,255,255);
+}
+
