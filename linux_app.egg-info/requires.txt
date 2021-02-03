@@ -1,1 +1,0 @@
-protonvpn-nm-lib~=0.4.0

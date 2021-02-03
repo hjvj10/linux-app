@@ -1,3 +1,0 @@
-[console_scripts]
-protonvpn = linux_app.main:main
-
