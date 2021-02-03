@@ -1,0 +1,24 @@
+Metadata-Version: 1.1
+Name: linux-app
+Version: 0.0.1
+Summary: Official ProtonVPN App for Linux
+Home-page: UNKNOWN
+Author: Proton Technologies AG
+Author-email: contact@protonvpn.com
+License: GPLv3
+Description: 
+        Official ProtonVPN App for Linux based systems.
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Topic :: Security
+Classifier: Environment :: Console
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Operating System :: POSIX :: Linux
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
