@@ -153,7 +153,7 @@
                     <property name="halign">center</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkLinkButton">
+                      <object class="GtkLinkButton" id="create_account_link_label">
                         <property name="label" translatable="yes">Create Account</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
@@ -168,13 +168,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLinkButton">
+                      <object class="GtkLinkButton" id="need_help_link_label">
                         <property name="label" translatable="yes">Need Help ?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <property name="action-name">win.need_help</property>
                         <property name="relief">none</property>
-                        <property name="uri">http://glade.gnome.org</property>
+                        <property name="uri">#</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -197,10 +198,11 @@
                   <object class="GtkButton" id="login_button">
                     <property name="label" translatable="yes">Login</property>
                     <property name="visible">True</property>
+                    <property name="sensitive">False</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <style>
-                      <class name="default_style"/>
+                      <class name="disabled"/>
                     </style>
                   </object>
                   <packing>
@@ -235,18 +237,65 @@
             <property name="no-show-all">True</property>
             <property name="double-buffered">False</property>
             <property name="orientation">vertical</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
           </object>
         </child>
       </object>
     </child>
   </template>
+  <object class="GtkPopover" id="popover_login_menu">
+    <property name="can-focus">False</property>
+    <property name="double-buffered">False</property>
+    <property name="relative-to">need_help_link_label</property>
+    <property name="position">right</property>
+    <property name="transitions-enabled">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="homogeneous">True</property>
+        <child>
+          <object class="GtkLinkButton">
+            <property name="label" translatable="yes">Forgot password</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="relief">none</property>
+            <property name="uri">https://account.protonvpn.com/reset-password</property>
+            <style>
+              <class name="padding-y-5px"/>
+              <class name="margin-y-10px"/>
+            </style>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLinkButton">
+            <property name="label" translatable="yes">Forgot username</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="relief">none</property>
+            <property name="uri">https://account.protonvpn.com/forgot-username</property>
+            <style>
+              <class name="padding-y-5px"/>
+              <class name="margin-y-10px"/>
+            </style>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <style>
+          <class name="margin-all-20px"/>
+        </style>
+      </object>
+    </child>
+  </object>
 </interface>

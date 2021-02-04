@@ -4,6 +4,7 @@
 @define-color def_bg_color rgba(62, 68, 73, 1);
 @define-color overlay_color rgba(52, 58, 63, 1);
 @define-color def_green_color rgb(86, 179, 102);
+@define-color disabled_color rgb(157,157,157);
 
 entry{
     border-image:none;
@@ -25,7 +26,7 @@ entry:focus{
     border-bottom: 1px solid @def_green_color;
 }
 
-button.default_style{
+button.default, button.disabled{
     -gtk-icon-effect: none;
     -gtk-icon-source: none;
     outline: none;
@@ -40,11 +41,18 @@ button.default_style{
     transition: all .115s ease-in-out;
 }
 
-button.default_syle label{
+
+
+button.default label, button.disabled label{
     font-size: 16px;
 }
 
-button.default_style:hover{
+button.disabled, button.disabled label{
+  color: @disabled_color;
+  border-color: @disabled_color;
+}
+
+button.default:hover{
     -gtk-icon-effect: none;
     -gtk-icon-source: none;
     outline: none;

@@ -15,6 +15,8 @@ class LoginWindow(Gtk.ApplicationWindow):
     proton_password_entry = Gtk.Template.Child()
     login_button = Gtk.Template.Child()
     img_protonvpn_logo = Gtk.Template.Child()
+    popover_login_menu = Gtk.Template.Child()
+
     icon_width = 18
     icon_heigt = 18
     password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
@@ -42,6 +44,7 @@ class LoginWindow(Gtk.ApplicationWindow):
         super().__init__(**kwargs)
         self.setup_images()
         self.setup_css()
+        self.setup_actions()
 
     def setup_images(self):
         logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
@@ -63,7 +66,7 @@ class LoginWindow(Gtk.ApplicationWindow):
             Gtk.EntryIconPosition.SECONDARY,
             True
         )
-        self.proton_password_entry.connect("icon-press", self.set_password_visibility)
+        self.proton_password_entry.connect("icon-press", self.on_change_password_visibility)
 
     def setup_css(self):
         self.provider = Gtk.CssProvider()
@@ -75,7 +78,17 @@ class LoginWindow(Gtk.ApplicationWindow):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def set_password_visibility(self, entry_object, icon_object, event):
+    def setup_actions(self):
+        # create action
+        need_help_action = Gio.SimpleAction.new("need_help", None)
+
+        # connect action to callback
+        need_help_action.connect("activate", self.on_display_popover)
+
+        # add action
+        self.add_action(need_help_action)
+
+    def on_change_password_visibility(self, entry_object, icon_object, event):
         is_text_visible = entry_object.get_visibility()
         entry_object.set_visibility(not is_text_visible)
         pixbuf = (
@@ -87,5 +100,7 @@ class LoginWindow(Gtk.ApplicationWindow):
             pixbuf
         )
 
+    def on_display_popover(self, simple_action, _):
+        self.popover_login_menu.show()
 
 
