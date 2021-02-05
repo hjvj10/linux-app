@@ -1,11 +1,13 @@
 import os
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk, GdkPixbuf, Gdk, Gio
+from gi.repository import Gdk, GdkPixbuf, Gio, Gtk
 
-from ..constants import CSS_DIR_PATH, UI_DIR_PATH, IMG_DIR_PATH, ICON_DIR_PATH
+from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
+from ..presenter.login import LoginPresenter
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
 class LoginView(Gtk.ApplicationWindow):
@@ -16,6 +18,7 @@ class LoginView(Gtk.ApplicationWindow):
     login_button = Gtk.Template.Child()
     img_protonvpn_logo = Gtk.Template.Child()
     popover_login_menu = Gtk.Template.Child()
+    banner_error_label = Gtk.Template.Child()
 
     icon_width = 18
     icon_heigt = 18
@@ -41,12 +44,14 @@ class LoginView(Gtk.ApplicationWindow):
     )
 
     def __init__(self, **kwargs):
+        self.login_presenter = kwargs.pop("presenter")
         super().__init__(**kwargs)
         self.setup_images()
         self.setup_css()
         self.setup_actions()
         self.proton_username_entry.connect("changed", self.on_entry_changed)
         self.proton_password_entry.connect("changed", self.on_entry_changed)
+        self.login_presenter.login_view = self
 
     def on_entry_changed(self, gtk_entry_object):
         gtk_entry_objects = [
@@ -119,6 +124,7 @@ class LoginView(Gtk.ApplicationWindow):
 
         # add action
         self.add_action(need_help_action)
+        self.add_action(login_action)
 
     def on_change_password_visibility(self, gtk_entry_object, gtk_icon_object, gtk_event):
         is_text_visible = gtk_entry_object.get_visibility()
@@ -136,7 +142,13 @@ class LoginView(Gtk.ApplicationWindow):
         self.popover_login_menu.show()
 
     def on_clicked_login(self, gio_simple_action, _):
-        print("Hello")
+        self.banner_error_label.set_property("visible", False)
+        output = self.login_presenter.login()
+        if output != None:
+            self.banner_error_label.set_text(output)
+            self.banner_error_label.set_property("visible", True)
+        else:
+            print("user was logged in")
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()
