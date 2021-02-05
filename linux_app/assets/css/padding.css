@@ -122,3 +122,35 @@
 .padding-bottom-20px{
   padding-bottom: 20px;
 }
+
+
+/*___padding 50px___*/
+.padding-all-50px{
+  padding: 50px;
+}
+
+.padding-x-50px{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.padding-y-50px{
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.padding-left-50px{
+  padding-left: 50px;
+}
+
+.padding-right-50px{
+  padding-right: 50px;
+}
+
+.padding-top-50px{
+  padding-top: 50px;
+}
+
+.padding-bottom-50px{
+  padding-bottom: 50px;
+}

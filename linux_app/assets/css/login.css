@@ -36,3 +36,14 @@ label{
   background-image: none;
 }
 
+.overlay{
+  background-color: @def_bg_color;
+}
+
+.overlay_bottom_label{
+  font-size: 24px;
+  margin-bottom: 100px;
+  font-style: italic;
+  color: rgb(255,255,255);
+}
+

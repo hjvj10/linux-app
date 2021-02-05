@@ -266,9 +266,56 @@
         <child type="overlay">
           <object class="GtkBox" id="login_overlay_box">
             <property name="can-focus">False</property>
-            <property name="no-show-all">True</property>
             <property name="double-buffered">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkImage" id="login_overlay_logo_image">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="stock">gtk-missing-image</property>
+                <style>
+                  <class name="margin-top-50px"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkDrawingArea" id="overlay_drawning_area">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="overlay_bottom_label">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Secure Internet Anywhere</property>
+                <style>
+                  <class name="overlay_bottom_label"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack-type">end</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <style>
+              <class name="overlay"/>
+            </style>
           </object>
         </child>
       </object>

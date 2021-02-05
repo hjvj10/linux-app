@@ -20,6 +20,11 @@ class LoginView(Gtk.ApplicationWindow):
     img_protonvpn_logo = Gtk.Template.Child()
     popover_login_menu = Gtk.Template.Child()
     banner_error_label = Gtk.Template.Child()
+    login_overlay_box = Gtk.Template.Child()
+    login_overlay_logo_image = Gtk.Template.Child()
+    overlay_drawning_area = Gtk.Template.Child()
+    overlay_bottom_label = Gtk.Template.Child()
+    
 
     icon_width = 18
     icon_heigt = 18
@@ -94,6 +99,7 @@ class LoginView(Gtk.ApplicationWindow):
         )
 
         self.img_protonvpn_logo.set_from_pixbuf(logo_pixbuf)
+        self.login_overlay_logo_image.set_from_pixbuf(logo_pixbuf)
         self.proton_password_entry.set_icon_from_pixbuf(
             Gtk.EntryIconPosition.SECONDARY,
             self.password_show_entry_pixbuf
@@ -152,12 +158,15 @@ class LoginView(Gtk.ApplicationWindow):
 
     def on_clicked_login(self, gio_simple_action, _):
         self.banner_error_label.set_property("visible", False)
+        self.login_overlay_box.set_property("visible", True)
         output = self.login_presenter.login()
         if output != None:
             self.banner_error_label.set_text(output)
             self.banner_error_label.set_property("visible", True)
         else:
             print("user was logged in")
+
+        self.login_overlay_box.set_property("visible", False)
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()
