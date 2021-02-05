@@ -4,11 +4,11 @@ window, popover{
   background-color: @def_bg_color;
 }
 
-.login_main_box > .top_grid .login_main_box > .bottom_grid{
+.login_main_box .top_grid, .login_main_box .bottom_grid{
   margin-top: 20px;
 }
 
-.login_main_box > .middle_grid {
+.login_main_box .middle_grid {
   margin-top: 10px;
 }
 

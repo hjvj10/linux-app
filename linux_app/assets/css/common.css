@@ -5,6 +5,7 @@
 @define-color overlay_color rgba(52, 58, 63, 1);
 @define-color def_green_color rgb(86, 179, 102);
 @define-color disabled_color rgb(157,157,157);
+@define-color banner-error-bg-color rgb(250, 80, 60);
 
 entry{
     border-image:none;
@@ -41,8 +42,6 @@ button.default, button.disabled{
     transition: all .115s ease-in-out;
 }
 
-
-
 button.default label, button.disabled label{
     font-size: 16px;
 }
@@ -63,3 +62,18 @@ button.default:hover{
     border-color: @def_green_color;
     background-color: @def_green_color;
 }
+
+label.banner-default, label.banner-error{
+  padding: 15px 0px 15px 0px;
+  font-size: 14px;
+  color: rgb(255,255,255);
+}
+
+label.banner-default{
+  background-color: transparent;
+}
+
+label.banner-error{
+  background-color: @banner-error-bg-color;
+}
+
