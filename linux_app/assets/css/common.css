@@ -27,7 +27,7 @@ entry:focus{
     border-bottom: 1px solid @def_green_color;
 }
 
-button.default, button.disabled{
+button.enabled, button.disabled{
     -gtk-icon-effect: none;
     -gtk-icon-source: none;
     outline: none;
@@ -42,7 +42,7 @@ button.default, button.disabled{
     transition: all .115s ease-in-out;
 }
 
-button.default label, button.disabled label{
+button.enabled label, button.disabled label{
     font-size: 16px;
 }
 
@@ -51,7 +51,7 @@ button.disabled, button.disabled label{
   border-color: @disabled_color;
 }
 
-button.default:hover{
+button.enabled:hover{
     -gtk-icon-effect: none;
     -gtk-icon-source: none;
     outline: none;

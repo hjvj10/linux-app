@@ -5,7 +5,7 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, GdkPixbuf, Gdk, Gio
 
-from ...constants import CSS_DIR_PATH, UI_DIR_PATH, IMG_DIR_PATH, ICON_DIR_PATH
+from ..constants import CSS_DIR_PATH, UI_DIR_PATH, IMG_DIR_PATH, ICON_DIR_PATH
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
 class LoginWindow(Gtk.ApplicationWindow):
@@ -45,6 +45,36 @@ class LoginWindow(Gtk.ApplicationWindow):
         self.setup_images()
         self.setup_css()
         self.setup_actions()
+        self.proton_username_entry.connect("changed", self.on_entry_changed)
+        self.proton_password_entry.connect("changed", self.on_entry_changed)
+
+    def on_entry_changed(self, gtk_entry_object):
+        gtk_entry_objects = [
+            self.proton_username_entry,
+            self.proton_password_entry
+        ]
+        string_min_length = 5
+
+        try:
+            index = gtk_entry_objects.index(gtk_entry_object)
+        except KeyError:
+            return
+
+        _ = gtk_entry_objects.pop(index)
+        second_entry_object = gtk_entry_objects.pop()
+
+        self.login_button.set_property("sensitive", False)
+        self.set_css_class(self.login_button, "disabled", "enabled")
+
+        if not len(gtk_entry_object.get_text().strip()) > string_min_length:
+            return
+
+        if len(second_entry_object.get_text().strip()) > string_min_length:
+            self.login_button.set_property("sensitive", True)
+            self.set_css_class(self.login_button, "enabled", "disabled")
+        else:
+            self.set_css_class(self.login_button, "disabled", "enabled")
+            self.login_button.set_property("sensitive", False)
 
     def setup_images(self):
         logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
@@ -81,16 +111,18 @@ class LoginWindow(Gtk.ApplicationWindow):
     def setup_actions(self):
         # create action
         need_help_action = Gio.SimpleAction.new("need_help", None)
+        login_action = Gio.SimpleAction.new("login", None)
 
         # connect action to callback
         need_help_action.connect("activate", self.on_display_popover)
+        login_action.connect("activate", self.on_clicked_login)
 
         # add action
         self.add_action(need_help_action)
 
-    def on_change_password_visibility(self, entry_object, icon_object, event):
-        is_text_visible = entry_object.get_visibility()
-        entry_object.set_visibility(not is_text_visible)
+    def on_change_password_visibility(self, gtk_entry_object, gtk_icon_object, gtk_event):
+        is_text_visible = gtk_entry_object.get_visibility()
+        gtk_entry_object.set_visibility(not is_text_visible)
         pixbuf = (
             self.password_show_entry_pixbuf
             if is_text_visible
@@ -100,7 +132,28 @@ class LoginWindow(Gtk.ApplicationWindow):
             pixbuf
         )
 
-    def on_display_popover(self, simple_action, _):
+    def on_display_popover(self, gio_simple_action, _):
         self.popover_login_menu.show()
 
+    def on_clicked_login(self, gio_simple_action, _):
+        print("Hello")
+
+    def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
+        gtk_object_context = gtk_object.get_style_context()
+        if (
+            gtk_object_context.has_class(add_css_class)
+            or
+            (
+                gtk_object_context.has_class(add_css_class)
+                and remove_css_class
+                and not add_css_class == remove_css_class
+                and not gtk_object_context.has_class(remove_css_class)
+            )
+        ):
+            return
+
+        if remove_css_class and gtk_object_context.has_class(remove_css_class):
+            gtk_object_context.remove_class(remove_css_class)
+
+        gtk_object_context.add_class(add_css_class)
 

@@ -224,6 +224,8 @@
                         <property name="sensitive">False</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <property name="double-buffered">False</property>
+                        <property name="action-name">win.login</property>
                         <style>
                           <class name="disabled"/>
                         </style>
