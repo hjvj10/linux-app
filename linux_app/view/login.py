@@ -24,6 +24,8 @@ class LoginView(Gtk.ApplicationWindow):
     login_overlay_logo_image = Gtk.Template.Child()
     overlay_drawning_area = Gtk.Template.Child()
     overlay_bottom_label = Gtk.Template.Child()
+    top_banner_revealer = Gtk.Template.Child()
+    top_banner_revealer_grid = Gtk.Template.Child()
     
 
     icon_width = 18
@@ -157,12 +159,16 @@ class LoginView(Gtk.ApplicationWindow):
         thread.start()
 
     def on_clicked_login(self, gio_simple_action, _):
-        self.banner_error_label.set_property("visible", False)
+        context = self.top_banner_revealer_grid.get_style_context()
+        if context.has_class("banner-error"):
+            context.remove_class("banner-error")
+        self.top_banner_revealer.set_reveal_child(False)
         self.login_overlay_box.set_property("visible", True)
         output = self.login_presenter.login()
         if output != None:
             self.banner_error_label.set_text(output)
-            self.banner_error_label.set_property("visible", True)
+            context.add_class("banner-error")
+            self.top_banner_revealer.set_reveal_child(True)
         else:
             print("user was logged in")
 
