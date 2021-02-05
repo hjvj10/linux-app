@@ -8,8 +8,8 @@ from gi.repository import Gtk, GdkPixbuf, Gdk, Gio
 from ..constants import CSS_DIR_PATH, UI_DIR_PATH, IMG_DIR_PATH, ICON_DIR_PATH
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
-class LoginWindow(Gtk.ApplicationWindow):
-    __gtype_name__ = 'LoginWindow'
+class LoginView(Gtk.ApplicationWindow):
+    __gtype_name__ = 'LoginView'
 
     proton_username_entry = Gtk.Template.Child()
     proton_password_entry = Gtk.Template.Child()
