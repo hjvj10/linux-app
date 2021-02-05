@@ -8,6 +8,7 @@ from gi.repository import Gdk, GdkPixbuf, Gio, Gtk
 
 from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
 from ..presenter.login import LoginPresenter
+import threading
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
 class LoginView(Gtk.ApplicationWindow):
@@ -120,7 +121,7 @@ class LoginView(Gtk.ApplicationWindow):
 
         # connect action to callback
         need_help_action.connect("activate", self.on_display_popover)
-        login_action.connect("activate", self.on_clicked_login)
+        login_action.connect("activate", self.thread_on_clicked_login, self.on_clicked_login)
 
         # add action
         self.add_action(need_help_action)
@@ -140,6 +141,14 @@ class LoginView(Gtk.ApplicationWindow):
 
     def on_display_popover(self, gio_simple_action, _):
         self.popover_login_menu.show()
+
+    def thread_on_clicked_login(self, *args, **kwargs):
+        args_list = list(args)
+        callback_method = args_list.pop(2)
+        args = tuple(args_list)
+
+        thread = threading.Thread(target=callback_method, args=(args, kwargs))
+        thread.start()
 
     def on_clicked_login(self, gio_simple_action, _):
         self.banner_error_label.set_property("visible", False)
