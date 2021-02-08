@@ -315,12 +315,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkDrawingArea" id="overlay_drawning_area">
+              <object class="GtkSpinner" id="overlay_spinner">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="valign">center</property>
+                <property name="vexpand">True</property>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>

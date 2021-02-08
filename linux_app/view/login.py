@@ -22,10 +22,10 @@ class LoginView(Gtk.ApplicationWindow):
     banner_error_label = Gtk.Template.Child()
     login_overlay_box = Gtk.Template.Child()
     login_overlay_logo_image = Gtk.Template.Child()
-    overlay_drawning_area = Gtk.Template.Child()
     overlay_bottom_label = Gtk.Template.Child()
     top_banner_revealer = Gtk.Template.Child()
     top_banner_revealer_grid = Gtk.Template.Child()
+    overlay_spinner = Gtk.Template.Child()
     
 
     icon_width = 18
@@ -60,6 +60,8 @@ class LoginView(Gtk.ApplicationWindow):
         self.proton_username_entry.connect("changed", self.on_entry_changed)
         self.proton_password_entry.connect("changed", self.on_entry_changed)
         self.login_presenter.login_view = self
+        self.overlay_spinner.set_property("width-request", 200)
+        self.overlay_spinner.set_property("height-request", 200)
 
     def on_entry_changed(self, gtk_entry_object):
         gtk_entry_objects = [
@@ -159,13 +161,16 @@ class LoginView(Gtk.ApplicationWindow):
         thread.start()
 
     def on_clicked_login(self, gio_simple_action, _):
+        self.overlay_spinner.start()
         context = self.top_banner_revealer_grid.get_style_context()
         if context.has_class("banner-error"):
             context.remove_class("banner-error")
         self.top_banner_revealer.set_reveal_child(False)
         self.login_overlay_box.set_property("visible", True)
         output = self.login_presenter.login()
+
         if output != None:
+            self.overlay_spinner.stop()
             self.banner_error_label.set_text(output)
             context.add_class("banner-error")
             self.top_banner_revealer.set_reveal_child(True)
