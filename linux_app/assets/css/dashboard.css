@@ -1,1 +1,52 @@
 @import "common.css";
+
+label{
+    color: white;
+}
+
+/* overshoot, undershoot{
+    background-image: none;
+    border: none;
+}
+
+headerbar box button{
+	background-image: none;
+	background: none;
+	box-shadow: none;
+	text-shadow: none;
+	border-radius: 1px;
+	padding: 5px;
+}
+
+headerbar box button:hover{
+	outline-width: 100px;
+}
+
+
+headerbar{
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
+    -gtk-icon-shadow: none;
+    outline: none;
+    box-shadow: none;
+    background-image: none;
+    text-shadow: none;
+}
+
+headerbar box button {
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+} */
+
+label.ip{
+    font-weight: bold;
+}
+
+scrolledwindow, viewport{
+    border: none;
+}
+
+
+box.dashboard_box{
+
+}

@@ -14,9 +14,11 @@ import threading
 class DashboardView(Gtk.ApplicationWindow):
     __gtype_name__ = 'DashboardView'
 
-    # proton_username_entry = Gtk.Template.Child()
-    icon_width = 18
-    icon_heigt = 18
+    headerbar = Gtk.Template.Child()
+    headerbar_image = Gtk.Template.Child()
+
+    icon_width = 50
+    icon_heigt = 50
 
     def __init__(self, **kwargs):
         self.dashboard_presenter = kwargs.pop("presenter")
@@ -28,7 +30,17 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_presenter.dashboard_view = self
 
     def setup_images(self):
-        pass
+        protonvpn_headerbar_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=os.path.join(
+                ICON_DIR_PATH,
+                "protonvpn-sign-green.svg",
+
+            ),
+            width=self.icon_width,
+            height=self.icon_heigt,
+            preserve_aspect_ratio=True
+        )
+        self.headerbar_image.set_from_pixbuf(protonvpn_headerbar_pixbuf)
 
     def setup_css(self):
         self.provider = Gtk.CssProvider()

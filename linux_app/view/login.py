@@ -29,26 +29,6 @@ class LoginView(Gtk.ApplicationWindow):
 
     icon_width = 18
     icon_heigt = 18
-    password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-        filename=os.path.join(
-            ICON_DIR_PATH,
-            "eye-show.imageset/eye-show@3x.png",
-
-        ),
-        width=icon_width,
-        height=icon_heigt,
-        preserve_aspect_ratio=True
-    )
-    password_hide_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-        filename=os.path.join(
-            ICON_DIR_PATH,
-            "eye-hide.imageset/eye-hide@3x.png",
-
-        ),
-        width=icon_width,
-        height=icon_heigt,
-        preserve_aspect_ratio=True
-    )
 
     def __init__(self, **kwargs):
         self.login_presenter = kwargs.pop("presenter")
@@ -93,6 +73,27 @@ class LoginView(Gtk.ApplicationWindow):
             self.login_button.set_property("sensitive", False)
 
     def setup_images(self):
+        self.password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=os.path.join(
+                ICON_DIR_PATH,
+                "eye-show.imageset/eye-show@3x.png",
+
+            ),
+            width=self.icon_width,
+            height=self.icon_heigt,
+            preserve_aspect_ratio=True
+        )
+        self.password_hide_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=os.path.join(
+                ICON_DIR_PATH,
+                "eye-hide.imageset/eye-hide@3x.png",
+
+            ),
+            width=self.icon_width,
+            height=self.icon_heigt,
+            preserve_aspect_ratio=True
+        )
+
         logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=os.path.join(
                 IMG_DIR_PATH,

@@ -1,9 +1,5 @@
 @import "common.css";
 
-window, popover{
-  background-color: @def_bg_color;
-}
-
 grid.top_grid entry:nth-child(2){
 	margin-top: 10px
 }

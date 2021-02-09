@@ -64,8 +64,6 @@ class ProtonVPN(Gtk.Application):
                 self.user_manager.load_session()
             except:
                 win = self.get_login_window()
-            else:
-                print("Load dashboard")
 
         win.present()
             

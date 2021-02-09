@@ -7,6 +7,10 @@
 @define-color disabled_color rgb(157,157,157);
 @define-color banner-error-bg-color rgb(250, 80, 60);
 
+window, popover{
+  background-color: @def_bg_color;
+}
+
 entry{
   border-image:none;
   outline: none;
