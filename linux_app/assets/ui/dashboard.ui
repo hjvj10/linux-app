@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <template class="DashboardView" parent="GtkApplicationWindow">
+    <property name="can-focus">False</property>
+    <property name="double-buffered">False</property>
+    <property name="window-position">center</property>
+    <property name="default-width">210</property>
+    <property name="default-height">740</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">label</property>
+      </object>
+    </child>
+  </template>
+</interface>

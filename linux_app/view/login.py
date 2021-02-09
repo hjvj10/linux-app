@@ -26,7 +26,6 @@ class LoginView(Gtk.ApplicationWindow):
     top_banner_revealer = Gtk.Template.Child()
     top_banner_revealer_grid = Gtk.Template.Child()
     overlay_spinner = Gtk.Template.Child()
-    
 
     icon_width = 18
     icon_heigt = 18
@@ -53,10 +52,12 @@ class LoginView(Gtk.ApplicationWindow):
 
     def __init__(self, **kwargs):
         self.login_presenter = kwargs.pop("presenter")
+        self.dashboard_window = kwargs.pop("dashboard_window")
         super().__init__(**kwargs)
         self.setup_images()
         self.setup_css()
         self.setup_actions()
+        self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()
         self.proton_username_entry.connect("changed", self.on_entry_changed)
         self.proton_password_entry.connect("changed", self.on_entry_changed)
         self.login_presenter.login_view = self
@@ -162,22 +163,22 @@ class LoginView(Gtk.ApplicationWindow):
 
     def on_clicked_login(self, gio_simple_action, _):
         self.overlay_spinner.start()
-        context = self.top_banner_revealer_grid.get_style_context()
-        if context.has_class("banner-error"):
-            context.remove_class("banner-error")
+        if self.top_banner_revealer_grid_context.has_class("banner-error"):
+            self.top_banner_revealer_grid_context.remove_class("banner-error")
         self.top_banner_revealer.set_reveal_child(False)
         self.login_overlay_box.set_property("visible", True)
-        output = self.login_presenter.login()
+        self.login_presenter.login()
 
-        if output != None:
+    def update_login_status(self, result):
+        if result != None:
             self.overlay_spinner.stop()
-            self.banner_error_label.set_text(output)
-            context.add_class("banner-error")
+            self.banner_error_label.set_text(result)
+            self.top_banner_revealer_grid_context.add_class("banner-error")
             self.top_banner_revealer.set_reveal_child(True)
+            self.login_overlay_box.set_property("visible", False)
         else:
-            print("user was logged in")
-
-        self.login_overlay_box.set_property("visible", False)
+            self.dashboard_window.present()
+            self.close()
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()

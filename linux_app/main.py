@@ -17,8 +17,11 @@ from protonvpn_nm_lib.services.user_configuration_manager import \
     UserConfigurationManager
 from protonvpn_nm_lib.services.user_manager import UserManager
 
-from .presenter import login as p_login
-from .view import login as v_login
+from .presenter.login import LoginPresenter
+from .presenter.dashboard import DashboardPresenter
+
+from .view.login import LoginView
+from .view.dashboard import DashboardView
 
 
 class ProtonVPN(Gtk.Application):
@@ -56,6 +59,7 @@ class ProtonVPN(Gtk.Application):
         win = self.props.active_window
 
         if not win:
+            win = self.get_dashboard_window()
             try:
                 self.user_manager.load_session()
             except:
@@ -66,7 +70,7 @@ class ProtonVPN(Gtk.Application):
         win.present()
             
     def get_login_window(self):
-        login_presenter = p_login.LoginPresenter(
+        login_presenter = LoginPresenter(
             self.reconector_manager,
             self.user_conf_manager,
             self.ks_manager,
@@ -75,13 +79,26 @@ class ProtonVPN(Gtk.Application):
             self.server_manager,
             self.ipv6_lp_manager
         )
-        return v_login.LoginView(
+        return LoginView(
             application=self,
-            presenter=login_presenter
-            )
+            presenter=login_presenter,
+            dashboard_window=self.get_dashboard_window()
+        )
 
     def get_dashboard_window(self):
-        pass
+        dashboard_presenter = DashboardPresenter(
+            self.reconector_manager,
+            self.user_conf_manager,
+            self.ks_manager,
+            self.connection_manager,
+            self.user_manager,
+            self.server_manager,
+            self.ipv6_lp_manager
+        )
+        return DashboardView(
+            application=self,
+            presenter=dashboard_presenter
+        )
 
 def main():
     app = ProtonVPN()
