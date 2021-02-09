@@ -158,7 +158,12 @@ class LoginView(Gtk.ApplicationWindow):
         callback_method = args_list.pop(2)
         args = tuple(args_list)
 
+
+        if not self.login_overlay_box.get_property("sensitive"):
+            return
+
         thread = threading.Thread(target=callback_method, args=(args, kwargs))
+        thread.daemon = True
         thread.start()
 
     def on_clicked_login(self, gio_simple_action, _):
