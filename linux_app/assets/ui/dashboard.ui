@@ -5,6 +5,7 @@
   <template class="DashboardView" parent="GtkApplicationWindow">
     <property name="can-focus">False</property>
     <property name="double-buffered">False</property>
+    <property name="title" translatable="yes">ProtonVPN</property>
     <property name="window-position">center</property>
     <property name="default-width">210</property>
     <property name="default-height">740</property>
