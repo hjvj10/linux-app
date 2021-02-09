@@ -90,6 +90,7 @@
                   <object class="GtkGrid" id="top_grid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="valign">center</property>
                     <property name="row-spacing">15</property>
                     <property name="row-homogeneous">True</property>
                     <property name="column-homogeneous">True</property>
@@ -155,8 +156,10 @@
                   <object class="GtkGrid" id="middle_grid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="double-buffered">False</property>
+                    <property name="valign">start</property>
                     <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
@@ -196,13 +199,18 @@
                   <object class="GtkGrid" id="bottom_grid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="double-buffered">False</property>
                     <property name="halign">center</property>
+                    <property name="valign">center</property>
                     <child>
                       <object class="GtkBox" id="box_login_label_link">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="double-buffered">False</property>
                         <property name="halign">center</property>
+                        <property name="valign">start</property>
                         <property name="orientation">vertical</property>
+                        <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkLinkButton" id="create_account_link_label">
                             <property name="label" translatable="yes">Create Account</property>
@@ -235,8 +243,7 @@
                           </packing>
                         </child>
                         <style>
-                          <class name="margin-top-20px"/>
-                          <class name="box_login_label_link"/>
+                          <class name="box_login_label_links"/>
                         </style>
                       </object>
                       <packing>
@@ -249,11 +256,16 @@
                       <object class="GtkButton" id="login_button">
                         <property name="label" translatable="yes">Login</property>
                         <property name="visible">True</property>
-                        <property name="sensitive">False</property>
                         <property name="can-focus">True</property>
-                        <property name="receives-default">True</property>
+                        <property name="receives-default">False</property>
                         <property name="double-buffered">False</property>
                         <property name="action-name">win.login</property>
+                        <accessibility>
+                          <relation type="node-child-of" target="bottom_grid"/>
+                          <action action_name="click" description="Login user with provided username and password."/>
+                          <action action_name="press" description="None."/>
+                          <action action_name="release" description="None."/>
+                        </accessibility>
                         <style>
                           <class name="disabled"/>
                         </style>

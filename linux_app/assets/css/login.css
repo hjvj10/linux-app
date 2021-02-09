@@ -4,12 +4,11 @@ window, popover{
   background-color: @def_bg_color;
 }
 
-.login_main_box .top_grid, .login_main_box .bottom_grid{
-  margin-top: 20px;
+grid.top_grid entry:nth-child(2){
+	margin-top: 10px
 }
-
-.login_main_box .middle_grid {
-  margin-top: 10px;
+grid.bottom_grid{
+	margin-bottom: 10px
 }
 
 label{
@@ -17,30 +16,36 @@ label{
   font-size: 16px;
 }
 
-.box_login_label_link > button{
-  background-color: transparent;
-  background-image: none;
+box.box_login_label_links{
+	margin-top: 35px
 }
 
-.box_login_label_link > button label{
+box.box_login_label_links > button{
+  background-color: transparent;
+  background-image: none;
+  padding: 0px;
+}
+
+box.box_login_label_links > button label{
   padding-top: 10px;
   padding-bottom: 10px;
   color: @def_green_color;
   background-color: transparent;
   background-image: none;
+  text-decoration: none;
 }
 
-.box_login_label_link > button label:hover{
-  color: rgb(255,255,255);
+box.box_login_label_links > button:hover{
   background-color: transparent;
   background-image: none;
+  text-decoration: underline;
 }
 
-.overlay{
+box.overlay{
   background-color: @def_bg_color;
 }
 
-.overlay_bottom_label{
+label.overlay_bottom_label{
   font-size: 24px;
   margin-bottom: 80px;
   font-style: italic;

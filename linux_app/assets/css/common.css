@@ -8,46 +8,52 @@
 @define-color banner-error-bg-color rgb(250, 80, 60);
 
 entry{
-    border-image:none;
-    outline: none;
-    box-shadow: none;
-    background-color: transparent;
-    color: rgb(255,255,255);
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    border-bottom: 1px solid rgba(255,255,255, 0.3);
-    font-size: 17px;
-    padding-bottom: 5px;
+  border-image:none;
+  outline: none;
+  box-shadow: none;
+  background-color: transparent;
+  color: rgb(255,255,255);
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid rgba(255,255,255, 0.3);
+  font-size: 17px;
+  padding-bottom: 5px;
 }
 entry:focus{
-    border-image:none;
-    outline: none;
-    box-shadow: none;
-    border-bottom: 1px solid @def_green_color;
+  border-image:none;
+  outline: none;
+  box-shadow: none;
+  border-bottom: 1px solid @def_green_color;
 }
 
 button.enabled, button.disabled{
-    -gtk-icon-effect: none;
-    -gtk-icon-source: none;
-    outline: none;
-    box-shadow: none;
-    background-image: none;
-    text-shadow: none;
-    background-color: @def_bg_color;
-    color: rgb(255,255,255);
-    padding: 10px 50px;
-    border: 2px solid rgb(255,255,255);
-    border-radius: 100px;
-    transition: all .115s ease-in-out;
+  -gtk-icon-effect: none;
+  -gtk-icon-source: none;
+  outline: none;
+  box-shadow: none;
+  background-image: none;
+  text-shadow: none;
+  color: rgb(255,255,255);
+  padding: 10px 50px;
+  border-radius: 100px;
+  transition: all .115s ease-in-out;
+  border: 2px solid;
+}
+
+button.enabled{
+  background-color: @def_green_color;
+  border-color: @def_green_color;
 }
 
 button.enabled label, button.disabled label{
-    font-size: 16px;
+  font-weight: bold;
+  font-size: 16px;
 }
 
 button.disabled, button.disabled label{
   color: @disabled_color;
+  background-color: transparent;
   border-color: @disabled_color;
 }
 
