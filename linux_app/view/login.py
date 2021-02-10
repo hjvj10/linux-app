@@ -7,8 +7,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, GdkPixbuf, Gio, Gtk
 
 from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
-from ..presenter.login import LoginPresenter
 import threading
+
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
 class LoginView(Gtk.ApplicationWindow):
@@ -181,7 +181,7 @@ class LoginView(Gtk.ApplicationWindow):
         self.login_presenter.login()
 
     def update_login_status(self, result):
-        if result != None:
+        if result is not None:
             self.overlay_spinner.stop()
             self.banner_error_label.set_text(result)
             self.top_banner_revealer_grid_context.add_class("banner-error")
@@ -195,8 +195,7 @@ class LoginView(Gtk.ApplicationWindow):
         gtk_object_context = gtk_object.get_style_context()
         if (
             gtk_object_context.has_class(add_css_class)
-            or
-            (
+            or (
                 gtk_object_context.has_class(add_css_class)
                 and remove_css_class
                 and not add_css_class == remove_css_class
