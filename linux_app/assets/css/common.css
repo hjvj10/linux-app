@@ -31,7 +31,7 @@ entry:focus{
   border-bottom: 1px solid @def_green_color;
 }
 
-button.enabled, button.disabled{
+button.enabled, button.disabled, button.transparent{
   -gtk-icon-effect: none;
   -gtk-icon-source: none;
   outline: none;
@@ -50,7 +50,12 @@ button.enabled{
   border-color: @def_green_color;
 }
 
-button.enabled label, button.disabled label{
+button.transparent{
+  background-color: transparent;
+  border-color: rgb(255,255,255);
+}
+
+button.enabled label, button.disabled label, button.transparent label{
   font-weight: bold;
   font-size: 16px;
 }
@@ -61,7 +66,7 @@ button.disabled, button.disabled label{
   border-color: @disabled_color;
 }
 
-button.enabled:hover{
+button.enabled:hover, button.transparent:hover{
   -gtk-icon-effect: none;
   -gtk-icon-source: none;
   outline: none;
@@ -90,3 +95,13 @@ spinner {
   color: rgba(255,255,255, 0.8)
 }
 
+box.overlay{
+  background-color: @def_bg_color;
+}
+
+label.overlay_bottom_label{
+  font-size: 24px;
+  margin-bottom: 80px;
+  font-style: italic;
+  color: rgb(255,255,255);
+}

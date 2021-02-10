@@ -37,7 +37,7 @@ class LoginView(Gtk.ApplicationWindow):
         self.setup_images()
         self.setup_css()
         self.setup_actions()
-        self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()
+        self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()  # noqa
         self.proton_username_entry.connect("changed", self.on_entry_changed)
         self.proton_password_entry.connect("changed", self.on_entry_changed)
         self.login_presenter.login_view = self
@@ -73,7 +73,7 @@ class LoginView(Gtk.ApplicationWindow):
             self.login_button.set_property("sensitive", False)
 
     def setup_images(self):
-        self.password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+        self.password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
             filename=os.path.join(
                 ICON_DIR_PATH,
                 "eye-show.imageset/eye-show@3x.png",
@@ -83,7 +83,7 @@ class LoginView(Gtk.ApplicationWindow):
             height=self.icon_heigt,
             preserve_aspect_ratio=True
         )
-        self.password_hide_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+        self.password_hide_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
             filename=os.path.join(
                 ICON_DIR_PATH,
                 "eye-hide.imageset/eye-hide@3x.png",
@@ -114,7 +114,9 @@ class LoginView(Gtk.ApplicationWindow):
             Gtk.EntryIconPosition.SECONDARY,
             True
         )
-        self.proton_password_entry.connect("icon-press", self.on_change_password_visibility)
+        self.proton_password_entry.connect(
+            "icon-press", self.on_change_password_visibility
+        )
 
     def setup_css(self):
         self.provider = Gtk.CssProvider()
@@ -133,13 +135,17 @@ class LoginView(Gtk.ApplicationWindow):
 
         # connect action to callback
         need_help_action.connect("activate", self.on_display_popover)
-        login_action.connect("activate", self.thread_on_clicked_login, self.on_clicked_login)
+        login_action.connect(
+            "activate", self.thread_on_clicked_login, self.on_clicked_login
+        )
 
         # add action
         self.add_action(need_help_action)
         self.add_action(login_action)
 
-    def on_change_password_visibility(self, gtk_entry_object, gtk_icon_object, gtk_event):
+    def on_change_password_visibility(
+        self, gtk_entry_object, gtk_icon_object, gtk_event
+    ):
         is_text_visible = gtk_entry_object.get_visibility()
         gtk_entry_object.set_visibility(not is_text_visible)
         pixbuf = (
@@ -159,8 +165,7 @@ class LoginView(Gtk.ApplicationWindow):
         callback_method = args_list.pop(2)
         args = tuple(args_list)
 
-
-        if not self.login_overlay_box.get_property("sensitive"):
+        if not self.login_button.get_property("sensitive"):
             return
 
         thread = threading.Thread(target=callback_method, args=(args, kwargs))
@@ -204,4 +209,3 @@ class LoginView(Gtk.ApplicationWindow):
             gtk_object_context.remove_class(remove_css_class)
 
         gtk_object_context.add_class(add_css_class)
-

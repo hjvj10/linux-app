@@ -37,14 +37,3 @@ box.box_login_label_links > button:hover{
   text-decoration: underline;
 }
 
-box.overlay{
-  background-color: @def_bg_color;
-}
-
-label.overlay_bottom_label{
-  font-size: 24px;
-  margin-bottom: 80px;
-  font-style: italic;
-  color: rgb(255,255,255);
-}
-
