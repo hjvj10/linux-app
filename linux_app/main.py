@@ -51,8 +51,16 @@ class ProtonVPN(Gtk.Application):
             user_input = input("Are you sure that you want to proceed (y/N): ")
             user_input = user_input.lower()
             if not user_input == "y":
-                sys.exit(1)
+                self.on_quit()
+
         Gtk.Application.do_startup(self)
+
+        quit_app = Gio.SimpleAction.new("quit", None)
+        quit_app.connect("activate", self.on_quit)
+        self.add_action(quit_app)
+
+    def on_quit(self, *args):
+        self.quit()
 
     def do_activate(self):
         win = self.props.active_window
