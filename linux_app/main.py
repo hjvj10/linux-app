@@ -54,7 +54,6 @@ class ProtonVPN(Gtk.Application):
                 sys.exit(1)
         Gtk.Application.do_startup(self)
 
-
     def do_activate(self):
         win = self.props.active_window
 
@@ -62,11 +61,11 @@ class ProtonVPN(Gtk.Application):
             win = self.get_dashboard_window()
             try:
                 self.user_manager.load_session()
-            except:
+            except: # noqa
                 win = self.get_login_window()
 
         win.present()
-            
+
     def get_login_window(self):
         login_presenter = LoginPresenter(
             self.reconector_manager,
@@ -98,8 +97,8 @@ class ProtonVPN(Gtk.Application):
             presenter=dashboard_presenter
         )
 
+
 def main():
     app = ProtonVPN()
     exit_status = app.run(sys.argv)
     sys.exit(exit_status)
-
