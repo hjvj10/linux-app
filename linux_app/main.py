@@ -23,6 +23,8 @@ from .presenter.dashboard import DashboardPresenter
 from .view.login import LoginView
 from .view.dashboard import DashboardView
 
+from .service.dashboard import DashboardService
+
 
 class ProtonVPN(Gtk.Application):
 
@@ -74,13 +76,13 @@ class ProtonVPN(Gtk.Application):
         win = self.props.active_window
 
         if not win:
-            win = self.get_dashboard_window()
+            win = self.get_dashboard_window
             try:
                 self.user_manager.load_session()
             except: # noqa
-                win = self.get_login_window()
+                win = self.get_login_window
 
-        win.present()
+        win().present()
 
     def get_login_window(self):
         login_presenter = LoginPresenter(
@@ -95,11 +97,11 @@ class ProtonVPN(Gtk.Application):
         return LoginView(
             application=self,
             presenter=login_presenter,
-            dashboard_window=self.get_dashboard_window()
+            dashboard_window=self.get_dashboard_window
         )
 
     def get_dashboard_window(self):
-        dashboard_presenter = DashboardPresenter(
+        dasboard_service = DashboardService(
             self.reconector_manager,
             self.user_conf_manager,
             self.ks_manager,
@@ -108,6 +110,7 @@ class ProtonVPN(Gtk.Application):
             self.server_manager,
             self.ipv6_lp_manager
         )
+        dashboard_presenter = DashboardPresenter(dasboard_service)
         return DashboardView(
             application=self,
             presenter=dashboard_presenter

@@ -105,3 +105,8 @@ label.overlay_bottom_label{
   font-style: italic;
   color: rgb(255,255,255);
 }
+
+label.warning-color{
+  color: @banner-error-bg-color;
+  font-weight: bold;
+}

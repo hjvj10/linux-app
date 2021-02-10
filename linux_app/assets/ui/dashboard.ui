@@ -207,10 +207,26 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkImage" id="download_speed_image">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="stock">gtk-missing-image</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkImage" id="upload_speed_image">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="stock">gtk-missing-image</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">2</property>
+                        <property name="top-attach">0</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -261,7 +277,7 @@
           </packing>
         </child>
         <child type="overlay">
-          <object class="GtkBox" id="login_overlay_box">
+          <object class="GtkBox" id="overlay_box">
             <property name="can-focus">False</property>
             <property name="double-buffered">False</property>
             <property name="hexpand">True</property>
@@ -328,11 +344,10 @@
         <property name="has-subtitle">False</property>
         <property name="show-close-button">True</property>
         <child>
-          <object class="GtkImage" id="headerbar_image">
+          <object class="GtkImage" id="headerbar_sign_icon">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="double-buffered">False</property>
-            <property name="halign">center</property>
+            <property name="stock">gtk-missing-image</property>
           </object>
         </child>
         <child>
@@ -366,7 +381,6 @@
   <object class="GtkPopover" id="dashboard_popover_menu">
     <property name="can-focus">False</property>
     <property name="double-buffered">False</property>
-    <property name="relative-to">headerbar_menu_button</property>
     <property name="position">bottom</property>
     <property name="transitions-enabled">False</property>
     <child>
@@ -443,9 +457,6 @@
         </child>
       </object>
     </child>
-    <accessibility>
-      <relation type="popup-for" target="headerbar_menu_button"/>
-    </accessibility>
     <child internal-child="accessible">
       <object class="AtkObject" id="dashboard_popover_menu-atkobject">
         <property name="AtkObject::accessible-name" translatable="yes">Popup Menu</property>

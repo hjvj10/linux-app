@@ -1,5 +1,9 @@
 @import "common.css";
 
+box.dashboard_box label:not(.warning-color) {
+    color: rgb(255,255,255)
+}
+
 label.ip{
     font-weight: bold;
 }
