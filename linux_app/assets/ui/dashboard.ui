@@ -262,7 +262,6 @@
         </child>
         <child type="overlay">
           <object class="GtkBox" id="login_overlay_box">
-            <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="double-buffered">False</property>
             <property name="hexpand">True</property>

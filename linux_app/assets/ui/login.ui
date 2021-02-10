@@ -304,14 +304,14 @@
           </packing>
         </child>
         <child type="overlay">
-          <object class="GtkBox" id="login_overlay_box">
+          <object class="GtkBox" id="overlay_box">
             <property name="can-focus">False</property>
             <property name="double-buffered">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkImage" id="login_overlay_logo_image">
+              <object class="GtkImage" id="overlay_logo_image">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="double-buffered">False</property>

@@ -20,8 +20,8 @@ class LoginView(Gtk.ApplicationWindow):
     img_protonvpn_logo = Gtk.Template.Child()
     popover_login_menu = Gtk.Template.Child()
     banner_error_label = Gtk.Template.Child()
-    login_overlay_box = Gtk.Template.Child()
-    login_overlay_logo_image = Gtk.Template.Child()
+    overlay_box = Gtk.Template.Child()
+    overlay_logo_image = Gtk.Template.Child()
     overlay_bottom_label = Gtk.Template.Child()
     top_banner_revealer = Gtk.Template.Child()
     top_banner_revealer_grid = Gtk.Template.Child()
@@ -105,7 +105,7 @@ class LoginView(Gtk.ApplicationWindow):
         )
 
         self.img_protonvpn_logo.set_from_pixbuf(logo_pixbuf)
-        self.login_overlay_logo_image.set_from_pixbuf(logo_pixbuf)
+        self.overlay_logo_image.set_from_pixbuf(logo_pixbuf)
         self.proton_password_entry.set_icon_from_pixbuf(
             Gtk.EntryIconPosition.SECONDARY,
             self.password_show_entry_pixbuf
@@ -119,12 +119,12 @@ class LoginView(Gtk.ApplicationWindow):
         )
 
     def setup_css(self):
-        self.provider = Gtk.CssProvider()
-        self.provider.load_from_path(os.path.join(CSS_DIR_PATH, "login.css"))
+        provider = Gtk.CssProvider()
+        provider.load_from_path(os.path.join(CSS_DIR_PATH, "login.css"))
         screen = Gdk.Screen.get_default()
         Gtk.StyleContext.add_provider_for_screen(
             screen,
-            self.provider,
+            provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
@@ -177,7 +177,7 @@ class LoginView(Gtk.ApplicationWindow):
         if self.top_banner_revealer_grid_context.has_class("banner-error"):
             self.top_banner_revealer_grid_context.remove_class("banner-error")
         self.top_banner_revealer.set_reveal_child(False)
-        self.login_overlay_box.set_property("visible", True)
+        self.overlay_box.set_property("visible", True)
         self.login_presenter.login()
 
     def update_login_status(self, result):
@@ -186,9 +186,9 @@ class LoginView(Gtk.ApplicationWindow):
             self.banner_error_label.set_text(result)
             self.top_banner_revealer_grid_context.add_class("banner-error")
             self.top_banner_revealer.set_reveal_child(True)
-            self.login_overlay_box.set_property("visible", False)
+            self.overlay_box.set_property("visible", False)
         else:
-            self.dashboard_window.present()
+            self.dashboard_window().present()
             self.close()
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):

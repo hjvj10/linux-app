@@ -1,10 +1,11 @@
+from gi.repository import GLib
 from protonvpn_nm_lib import exceptions
 
-from gi.repository import GLib
 
 class LoginPresenter:
 
-    def __init__(self, 
+    def __init__(
+        self,
         reconector_manager,
         user_conf_manager,
         ks_manager,
@@ -14,7 +15,7 @@ class LoginPresenter:
         ipv6_lp_manager
     ):
         self.reconector_manager = reconector_manager
-        self.user_conf_manager =user_conf_manager
+        self.user_conf_manager = user_conf_manager
         self.ks_manager = ks_manager
         self.connection_manager = connection_manager
         self.user_manager = user_manager
@@ -47,4 +48,3 @@ class LoginPresenter:
             result = "Unknown error occured: {}.".format(e)
 
         GLib.idle_add(self.login_view.update_login_status, result)
-
