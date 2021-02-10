@@ -1,9 +1,5 @@
 @import "common.css";
 
-window label{
-    color: white;
-}
-
 label.ip{
     font-weight: bold;
 }
@@ -12,8 +8,17 @@ scrolledwindow, viewport{
     border: none;
 }
 
-headerbar label{
-    color: @def_bg_color
+.headerbar_menu_model{
+	padding: 5px 8px 5px 8px;
+}
+
+.dashboard_popover_menu box{
+    padding: 3px 5px;
+    margin: 3px 5px;
+}
+
+.dashboard_popover_menu modelbutton label{
+	margin-left: -10px
 }
 
 grid.connected_label_grid, grid.ip_server_load_labels_grid,

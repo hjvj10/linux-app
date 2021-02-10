@@ -56,11 +56,19 @@ class ProtonVPN(Gtk.Application):
         Gtk.Application.do_startup(self)
 
         quit_app = Gio.SimpleAction.new("quit", None)
+        display_preferences = Gio.SimpleAction.new("display_preferences", None)
+
         quit_app.connect("activate", self.on_quit)
+        display_preferences.connect("activate", self.on_display_preferences)
+
         self.add_action(quit_app)
+        self.add_action(display_preferences)
 
     def on_quit(self, *args):
         self.quit()
+
+    def on_display_preferences(self, *args):
+        print("To-do")
 
     def do_activate(self):
         win = self.props.active_window

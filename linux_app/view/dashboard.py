@@ -18,7 +18,7 @@ class DashboardView(Gtk.ApplicationWindow):
     headerbar = Gtk.Template.Child()
     headerbar_image = Gtk.Template.Child()
     overlay_logo_image = Gtk.Template.Child()
-    headerbar_menu_model = Gtk.Template.Child()
+    headerbar_menu_button = Gtk.Template.Child()
     dashboard_popover_menu = Gtk.Template.Child()
 
     # Grids
@@ -48,6 +48,9 @@ class DashboardView(Gtk.ApplicationWindow):
         # thread = threading.Thread(target=self.dashboard_presenter.init_check, args=(args, kwargs))
         # thread.daemon = True
         # thread.start()
+
+    def on_menuitem_activated(self, *args):
+        print(args)
 
     def setup_images(self):
         self.protonvpn_headerbar_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
@@ -95,4 +98,4 @@ class DashboardView(Gtk.ApplicationWindow):
         self.add_action(headerbar_menu)
 
     def on_display_popover(self, gio_simple_action, _):
-        self.dashboard_popover_menu.show()
+        self.dashboard_popover_menu.popup()
