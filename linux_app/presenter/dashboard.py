@@ -34,3 +34,6 @@ class DashboardPresenter:
             # start thrad to listen to NM vpn connection changes
 
         # fetch from connection
+
+    def quick_connect(self):
+        self.dasboard_service.connect_to_fastest_server()

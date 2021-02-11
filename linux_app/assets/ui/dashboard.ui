@@ -326,12 +326,27 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="quick_connect_button">
                 <property name="label" translatable="yes">Quick Connect</property>
+                <property name="use-action-appearance">True</property>
+                <property name="name">quick_connect_button</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="valign">center</property>
+                <property name="action-name">win.quick_connect</property>
+                <accessibility>
+                  <relation type="node-child-of" target="connection_speed_label_grid"/>
+                  <action action_name="click" description="Quick Connect to ProtonVPN"/>
+                  <action action_name="press" description="Quick Connect to ProtonVPN"/>
+                </accessibility>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="quick_connect_button-atkobject">
+                    <property name="AtkObject::accessible-name" translatable="yes">Quick Connect Button</property>
+                    <property name="AtkObject::accessible-description" translatable="yes">Quickly connect to the fastest server.</property>
+                    <property name="AtkObject::accessible-role" translatable="yes">push-button</property>
+                  </object>
+                </child>
                 <style>
                   <class name="transparent"/>
                 </style>

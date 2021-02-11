@@ -67,18 +67,15 @@ class DashboardView(Gtk.ApplicationWindow):
             ]
         }
 
+        self.init_thread = threading.Thread(target=self.dashboard_presenter.init_check)
         self.setup_images()
         self.setup_css()
         self.setup_actions()
         self.setup_loading_screen()
 
-    def setup_loading_screen(self):
-        self.overlay_spinner.set_property("width-request", 200)
-        self.overlay_spinner.set_property("height-request", 200)
-        self.overlay_spinner.start()
-
-        self.overlay_box.set_property("visible", True)
-        thread = threading.Thread(target=self.dashboard_presenter.init_check)
+    def on_click_quick_connect(self, gio_simple_action, _):
+        # show overlay
+        thread = threading.Thread(target=self.dashboard_presenter.quick_connect)
         thread.daemon = True
         thread.start()
 
@@ -96,6 +93,7 @@ class DashboardView(Gtk.ApplicationWindow):
             ]
         )
         self.gtk_property_setter(self.SET_UI_NOT_PROTECTED)
+        self.init_thread.join()
         return False
 
     def gtk_property_setter(self, *args):
@@ -108,6 +106,16 @@ class DashboardView(Gtk.ApplicationWindow):
 
     def on_display_popover(self, gio_simple_action, _):
         self.dashboard_popover_menu.popup()
+
+    def setup_loading_screen(self):
+        self.overlay_spinner.set_property("width-request", 200)
+        self.overlay_spinner.set_property("height-request", 200)
+        self.overlay_spinner.start()
+
+        self.overlay_box.set_property("visible", True)
+
+        self.init_thread.daemon = True
+        self.init_thread.start()
 
     def setup_images(self):
         protonvpn_headerbar_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
@@ -148,9 +156,12 @@ class DashboardView(Gtk.ApplicationWindow):
     def setup_actions(self):
         # create action
         headerbar_menu = Gio.SimpleAction.new("show_menu", None)
+        quick_connect = Gio.SimpleAction.new("quick_connect", None)
 
         # connect action to callback
         headerbar_menu.connect("activate", self.on_display_popover)
+        quick_connect.connect("activate", self.on_click_quick_connect)
 
         # add action
         self.add_action(headerbar_menu)
+        self.add_action(quick_connect)
