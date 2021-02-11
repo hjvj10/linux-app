@@ -17,16 +17,14 @@ from protonvpn_nm_lib.services.user_configuration_manager import \
     UserConfigurationManager
 from protonvpn_nm_lib.services.user_manager import UserManager
 
-from .presenter.login import LoginPresenter
-from .presenter.dashboard import DashboardPresenter
+from linux_app.presenter.login import LoginPresenter
+from linux_app.presenter.dashboard import DashboardPresenter
 
-from .view.login import LoginView
-from .view.dashboard import DashboardView
-
-from .service.dashboard import DashboardService
+from linux_app.view.login import LoginView
+from linux_app.view.dashboard import DashboardView
 
 
-class ProtonVPN(Gtk.Application):
+class ProtonVPNLogin(Gtk.Application):
 
     def __init__(self):
         super().__init__(
@@ -43,46 +41,13 @@ class ProtonVPN(Gtk.Application):
         )
         self.ipv6_lp_manager = IPv6LeakProtectionManager()
 
-    def do_startup(self):
-        if "SUDO_UID" in os.environ:
-            print(
-                "\nRunning ProtonVPN as root is not supported and "
-                "is highly discouraged, as it might introduce "
-                "undesirable side-effects."
-            )
-            user_input = input("Are you sure that you want to proceed (y/N): ")
-            user_input = user_input.lower()
-            if not user_input == "y":
-                self.on_quit()
-
-        Gtk.Application.do_startup(self)
-
-        quit_app = Gio.SimpleAction.new("quit", None)
-        display_preferences = Gio.SimpleAction.new("display_preferences", None)
-
-        quit_app.connect("activate", self.on_quit)
-        display_preferences.connect("activate", self.on_display_preferences)
-
-        self.add_action(quit_app)
-        self.add_action(display_preferences)
-
-    def on_quit(self, *args):
-        self.quit()
-
-    def on_display_preferences(self, *args):
-        print("To-do")
-
     def do_activate(self):
-        win = self.props.active_window
+        # win = self.props.active_window
 
-        if not win:
-            win = self.get_dashboard_window
-            try:
-                self.user_manager.load_session()
-            except: # noqa
-                win = self.get_login_window
+        # if not win:
+        return self.get_login_window
 
-        win().present()
+        # win.present()
 
     def get_login_window(self):
         login_presenter = LoginPresenter(
@@ -97,28 +62,30 @@ class ProtonVPN(Gtk.Application):
         return LoginView(
             application=self,
             presenter=login_presenter,
-            dashboard_window=self.get_dashboard_window
+            dashboard_window=self.get_dashboard_window()
         )
 
     def get_dashboard_window(self):
-        dasboard_service = DashboardService(
+        dashboard_presenter = DashboardPresenter(
             self.reconector_manager,
             self.user_conf_manager,
             self.ks_manager,
             self.connection_manager,
             self.user_manager,
             self.server_manager,
-            self.ipv6_lp_manager,
-            CertificateManager
+            self.ipv6_lp_manager
         )
-        dashboard_presenter = DashboardPresenter(dasboard_service)
         return DashboardView(
             application=self,
             presenter=dashboard_presenter
         )
 
 
-def main():
-    app = ProtonVPN()
+def test_gtk():
+    app = ProtonVPNLogin()
+    print(app.get_login_window())
     exit_status = app.run(sys.argv)
     sys.exit(exit_status)
+
+
+test_gtk()

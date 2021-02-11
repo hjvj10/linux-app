@@ -7,8 +7,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, GdkPixbuf, Gio, Gtk
 
 from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
-from ..presenter.login import LoginPresenter
 import threading
+
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
 class LoginView(Gtk.ApplicationWindow):
@@ -20,43 +20,24 @@ class LoginView(Gtk.ApplicationWindow):
     img_protonvpn_logo = Gtk.Template.Child()
     popover_login_menu = Gtk.Template.Child()
     banner_error_label = Gtk.Template.Child()
-    login_overlay_box = Gtk.Template.Child()
-    login_overlay_logo_image = Gtk.Template.Child()
+    overlay_box = Gtk.Template.Child()
+    overlay_logo_image = Gtk.Template.Child()
     overlay_bottom_label = Gtk.Template.Child()
     top_banner_revealer = Gtk.Template.Child()
     top_banner_revealer_grid = Gtk.Template.Child()
     overlay_spinner = Gtk.Template.Child()
-    
 
     icon_width = 18
     icon_heigt = 18
-    password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-        filename=os.path.join(
-            ICON_DIR_PATH,
-            "eye-show.imageset/eye-show@3x.png",
-
-        ),
-        width=icon_width,
-        height=icon_heigt,
-        preserve_aspect_ratio=True
-    )
-    password_hide_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-        filename=os.path.join(
-            ICON_DIR_PATH,
-            "eye-hide.imageset/eye-hide@3x.png",
-
-        ),
-        width=icon_width,
-        height=icon_heigt,
-        preserve_aspect_ratio=True
-    )
 
     def __init__(self, **kwargs):
         self.login_presenter = kwargs.pop("presenter")
+        self.dashboard_window = kwargs.pop("dashboard_window")
         super().__init__(**kwargs)
         self.setup_images()
         self.setup_css()
         self.setup_actions()
+        self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()  # noqa
         self.proton_username_entry.connect("changed", self.on_entry_changed)
         self.proton_password_entry.connect("changed", self.on_entry_changed)
         self.login_presenter.login_view = self
@@ -92,6 +73,27 @@ class LoginView(Gtk.ApplicationWindow):
             self.login_button.set_property("sensitive", False)
 
     def setup_images(self):
+        self.password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
+            filename=os.path.join(
+                ICON_DIR_PATH,
+                "eye-show.imageset/eye-show@3x.png",
+
+            ),
+            width=self.icon_width,
+            height=self.icon_heigt,
+            preserve_aspect_ratio=True
+        )
+        self.password_hide_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
+            filename=os.path.join(
+                ICON_DIR_PATH,
+                "eye-hide.imageset/eye-hide@3x.png",
+
+            ),
+            width=self.icon_width,
+            height=self.icon_heigt,
+            preserve_aspect_ratio=True
+        )
+
         logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=os.path.join(
                 IMG_DIR_PATH,
@@ -103,7 +105,7 @@ class LoginView(Gtk.ApplicationWindow):
         )
 
         self.img_protonvpn_logo.set_from_pixbuf(logo_pixbuf)
-        self.login_overlay_logo_image.set_from_pixbuf(logo_pixbuf)
+        self.overlay_logo_image.set_from_pixbuf(logo_pixbuf)
         self.proton_password_entry.set_icon_from_pixbuf(
             Gtk.EntryIconPosition.SECONDARY,
             self.password_show_entry_pixbuf
@@ -112,15 +114,17 @@ class LoginView(Gtk.ApplicationWindow):
             Gtk.EntryIconPosition.SECONDARY,
             True
         )
-        self.proton_password_entry.connect("icon-press", self.on_change_password_visibility)
+        self.proton_password_entry.connect(
+            "icon-press", self.on_change_password_visibility
+        )
 
     def setup_css(self):
-        self.provider = Gtk.CssProvider()
-        self.provider.load_from_path(os.path.join(CSS_DIR_PATH, "login.css"))
+        provider = Gtk.CssProvider()
+        provider.load_from_path(os.path.join(CSS_DIR_PATH, "login.css"))
         screen = Gdk.Screen.get_default()
         Gtk.StyleContext.add_provider_for_screen(
             screen,
-            self.provider,
+            provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
@@ -131,13 +135,17 @@ class LoginView(Gtk.ApplicationWindow):
 
         # connect action to callback
         need_help_action.connect("activate", self.on_display_popover)
-        login_action.connect("activate", self.thread_on_clicked_login, self.on_clicked_login)
+        login_action.connect(
+            "activate", self.thread_on_clicked_login, self.on_clicked_login
+        )
 
         # add action
         self.add_action(need_help_action)
         self.add_action(login_action)
 
-    def on_change_password_visibility(self, gtk_entry_object, gtk_icon_object, gtk_event):
+    def on_change_password_visibility(
+        self, gtk_entry_object, gtk_icon_object, gtk_event
+    ):
         is_text_visible = gtk_entry_object.get_visibility()
         gtk_entry_object.set_visibility(not is_text_visible)
         pixbuf = (
@@ -150,41 +158,44 @@ class LoginView(Gtk.ApplicationWindow):
         )
 
     def on_display_popover(self, gio_simple_action, _):
-        self.popover_login_menu.show()
+        self.popover_login_menu.popup()
 
     def thread_on_clicked_login(self, *args, **kwargs):
         args_list = list(args)
         callback_method = args_list.pop(2)
         args = tuple(args_list)
 
+        if not self.login_button.get_property("sensitive"):
+            return
+
         thread = threading.Thread(target=callback_method, args=(args, kwargs))
+        thread.daemon = True
         thread.start()
 
     def on_clicked_login(self, gio_simple_action, _):
         self.overlay_spinner.start()
-        context = self.top_banner_revealer_grid.get_style_context()
-        if context.has_class("banner-error"):
-            context.remove_class("banner-error")
+        if self.top_banner_revealer_grid_context.has_class("banner-error"):
+            self.top_banner_revealer_grid_context.remove_class("banner-error")
         self.top_banner_revealer.set_reveal_child(False)
-        self.login_overlay_box.set_property("visible", True)
-        output = self.login_presenter.login()
+        self.overlay_box.set_property("visible", True)
+        self.login_presenter.login()
 
-        if output != None:
+    def update_login_status(self, result):
+        if result is not None:
             self.overlay_spinner.stop()
-            self.banner_error_label.set_text(output)
-            context.add_class("banner-error")
+            self.banner_error_label.set_text(result)
+            self.top_banner_revealer_grid_context.add_class("banner-error")
             self.top_banner_revealer.set_reveal_child(True)
+            self.overlay_box.set_property("visible", False)
         else:
-            print("user was logged in")
-
-        self.login_overlay_box.set_property("visible", False)
+            self.dashboard_window().present()
+            self.close()
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()
         if (
             gtk_object_context.has_class(add_css_class)
-            or
-            (
+            or (
                 gtk_object_context.has_class(add_css_class)
                 and remove_css_class
                 and not add_css_class == remove_css_class
@@ -197,4 +208,3 @@ class LoginView(Gtk.ApplicationWindow):
             gtk_object_context.remove_class(remove_css_class)
 
         gtk_object_context.add_class(add_css_class)
-

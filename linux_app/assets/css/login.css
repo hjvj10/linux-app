@@ -1,49 +1,47 @@
 @import "common.css";
 
-window, popover{
-  background-color: @def_bg_color;
+popover#popover_login_menu{
+  background: linear-gradient(180deg, #262A33 0%, #303540 100%);
 }
 
-.login_main_box .top_grid, .login_main_box .bottom_grid{
-  margin-top: 20px;
+#popover_login_menu box button label {
+	color: @def_green_color;
 }
 
-.login_main_box .middle_grid {
-  margin-top: 10px;
+grid#top_grid entry:nth-child(2){
+	margin-top: 10px
+}
+grid#bottom_grid{
+	margin-bottom: 10px
 }
 
-label{
-  color: rgb(255,255,255);
-  font-size: 16px;
+grid#top_grid label, grid#middle_grid label{
+	color: rgb(255,255,255)
 }
 
-.box_login_label_link > button{
+
+box#box_login_label_links{
+	margin-top: 35px
+}
+
+box#box_login_label_links > button{
   background-color: transparent;
   background-image: none;
+  padding: 0px;
 }
 
-.box_login_label_link > button label{
+box#box_login_label_links > button label{
   padding-top: 10px;
   padding-bottom: 10px;
   color: @def_green_color;
   background-color: transparent;
   background-image: none;
+  text-decoration: none;
 }
 
-.box_login_label_link > button label:hover{
-  color: rgb(255,255,255);
+box#box_login_label_links > button:hover{
   background-color: transparent;
   background-image: none;
-}
-
-.overlay{
-  background-color: @def_bg_color;
-}
-
-.overlay_bottom_label{
-  font-size: 24px;
-  margin-bottom: 80px;
-  font-style: italic;
-  color: rgb(255,255,255);
+  text-decoration: underline;
 }
 
