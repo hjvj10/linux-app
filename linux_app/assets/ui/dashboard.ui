@@ -4,9 +4,7 @@
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkPopover" id="dashboard_popover_menu">
     <property name="can-focus">False</property>
-    <property name="double-buffered">False</property>
     <property name="position">bottom</property>
-    <property name="transitions-enabled">False</property>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -17,7 +15,6 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="double-buffered">False</property>
             <property name="hexpand">True</property>
             <property name="action-name">app.display_preferences</property>
             <property name="text" translatable="yes">Preferences</property>
@@ -56,7 +53,6 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="double-buffered">False</property>
             <property name="hexpand">True</property>
             <property name="action-name">app.quit</property>
             <property name="text" translatable="yes">Quit</property>
@@ -112,7 +108,6 @@
               <object class="GtkGrid" id="connected_label_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
                 <property name="valign">start</property>
                 <property name="hexpand">True</property>
                 <child>
@@ -151,7 +146,6 @@
                   <object class="GtkGrid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="double-buffered">False</property>
                     <property name="halign">end</property>
                     <property name="hexpand">True</property>
                     <child>
@@ -192,7 +186,6 @@
                   <object class="GtkGrid" id="ip_label_grid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="double-buffered">False</property>
                     <property name="halign">start</property>
                     <child>
                       <!-- n-columns=2 n-rows=1 -->
@@ -258,13 +251,11 @@
               <object class="GtkGrid" id="connection_speed_label_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
                 <child>
                   <!-- n-columns=4 n-rows=1 -->
                   <object class="GtkGrid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="double-buffered">False</property>
                     <property name="halign">end</property>
                     <property name="hexpand">True</property>
                     <child>
@@ -299,7 +290,6 @@
                       <object class="GtkImage" id="download_speed_image">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="stock">gtk-missing-image</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -310,7 +300,6 @@
                       <object class="GtkImage" id="upload_speed_image">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="stock">gtk-missing-image</property>
                       </object>
                       <packing>
                         <property name="left-attach">2</property>
@@ -342,7 +331,6 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <style>
                   <class name="transparent"/>
@@ -368,7 +356,6 @@
         <child type="overlay">
           <object class="GtkBox" id="overlay_box">
             <property name="can-focus">False</property>
-            <property name="double-buffered">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
             <property name="orientation">vertical</property>
@@ -376,8 +363,6 @@
               <object class="GtkImage" id="overlay_logo_image">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="stock">gtk-missing-image</property>
                 <style>
                   <class name="margin-top-50px"/>
                 </style>
@@ -428,7 +413,6 @@
       <object class="GtkHeaderBar" id="headerbar">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="double-buffered">False</property>
         <property name="title" translatable="yes">ProtonVPN</property>
         <property name="has-subtitle">False</property>
         <property name="show-close-button">True</property>
@@ -436,7 +420,6 @@
           <object class="GtkImage" id="headerbar_sign_icon">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="stock">gtk-missing-image</property>
           </object>
         </child>
         <child>
@@ -445,7 +428,6 @@
             <property name="can-focus">True</property>
             <property name="focus-on-click">False</property>
             <property name="receives-default">False</property>
-            <property name="double-buffered">False</property>
             <property name="popover">dashboard_popover_menu</property>
             <child>
               <placeholder/>

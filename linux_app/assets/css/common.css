@@ -17,6 +17,7 @@ entry{
   box-shadow: none;
   background-color: transparent;
   color: rgb(255,255,255);
+  caret-color: white;
   border-top: none;
   border-left: none;
   border-right: none;

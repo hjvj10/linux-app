@@ -158,7 +158,7 @@ class LoginView(Gtk.ApplicationWindow):
         )
 
     def on_display_popover(self, gio_simple_action, _):
-        self.popover_login_menu.show()
+        self.popover_login_menu.popup()
 
     def thread_on_clicked_login(self, *args, **kwargs):
         args_list = list(args)
