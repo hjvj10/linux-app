@@ -37,6 +37,7 @@
                       <object class="GtkLabel" id="banner_error_label">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="halign">start</property>
                         <property name="hexpand">True</property>
                         <property name="label" translatable="yes">Incorrect credentials. Please try again.</property>
                         <property name="justify">center</property>
@@ -50,7 +51,23 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkImage">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="icon-name">emblem-important</property>
+                        <property name="use-fallback">True</property>
+                        <property name="icon_size">0</property>
+                        <style>
+                          <class name="margin-right-5px"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
                     </child>
                     <style>
                       <class name="banner-default"/>
@@ -241,7 +258,9 @@
                     <child>
                       <object class="GtkButton" id="login_button">
                         <property name="label" translatable="yes">Login</property>
+                        <property name="use-action-appearance">True</property>
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">False</property>
                         <property name="action-name">win.login</property>

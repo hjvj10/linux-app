@@ -29,6 +29,7 @@ class LoginView(Gtk.ApplicationWindow):
 
     icon_width = 18
     icon_heigt = 18
+    string_min_length = 5
 
     def __init__(self, **kwargs):
         self.login_presenter = kwargs.pop("presenter")
@@ -49,7 +50,6 @@ class LoginView(Gtk.ApplicationWindow):
             self.proton_username_entry,
             self.proton_password_entry
         ]
-        string_min_length = 5
 
         try:
             index = gtk_entry_objects.index(gtk_entry_object)
@@ -62,10 +62,10 @@ class LoginView(Gtk.ApplicationWindow):
         self.login_button.set_property("sensitive", False)
         self.set_css_class(self.login_button, "disabled", "enabled")
 
-        if not len(gtk_entry_object.get_text().strip()) > string_min_length:
+        if not len(gtk_entry_object.get_text().strip()) > self.string_min_length:
             return
 
-        if len(second_entry_object.get_text().strip()) > string_min_length:
+        if len(second_entry_object.get_text().strip()) > self.string_min_length:
             self.login_button.set_property("sensitive", True)
             self.set_css_class(self.login_button, "enabled", "disabled")
         else:
@@ -165,7 +165,10 @@ class LoginView(Gtk.ApplicationWindow):
         callback_method = args_list.pop(2)
         args = tuple(args_list)
 
-        if not self.login_button.get_property("sensitive"):
+        if (
+            len(self.proton_password_entry.get_text()) < self.string_min_length
+            and len(self.proton_username_entry.get_text()) < self.string_min_length # noqa
+        ):
             return
 
         thread = threading.Thread(target=callback_method, args=(args, kwargs))
