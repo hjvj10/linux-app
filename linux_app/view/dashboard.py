@@ -4,8 +4,6 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
-import threading
-
 from gi.repository import Gdk, GdkPixbuf, Gtk, Gio
 
 from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, UI_DIR_PATH, IMG_DIR_PATH
@@ -53,7 +51,6 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_presenter = kwargs.pop("presenter")
         super().__init__(**kwargs)
 
-        self.dashboard_presenter.dashboard_view = self
         self.SET_UI_NOT_PROTECTED = {
             "property": "visible",
             "objects": [
@@ -67,17 +64,15 @@ class DashboardView(Gtk.ApplicationWindow):
             ]
         }
 
-        self.init_thread = threading.Thread(target=self.dashboard_presenter.init_check)
         self.setup_images()
         self.setup_css()
         self.setup_actions()
         self.setup_loading_screen()
+        self.dashboard_presenter.on_startup(self.connect_not_active)
 
     def on_click_quick_connect(self, gio_simple_action, _):
         # show overlay
-        thread = threading.Thread(target=self.dashboard_presenter.quick_connect)
-        thread.daemon = True
-        thread.start()
+        self.dashboard_presenter.quick_connect()
 
     def connect_not_active(self, dashboard_connection_info):
         self.country_servername_label.set_text(
@@ -93,7 +88,6 @@ class DashboardView(Gtk.ApplicationWindow):
             ]
         )
         self.gtk_property_setter(self.SET_UI_NOT_PROTECTED)
-        self.init_thread.join()
         return False
 
     def gtk_property_setter(self, *args):
@@ -113,9 +107,6 @@ class DashboardView(Gtk.ApplicationWindow):
         self.overlay_spinner.start()
 
         self.overlay_box.set_property("visible", True)
-
-        self.init_thread.daemon = True
-        self.init_thread.start()
 
     def setup_images(self):
         protonvpn_headerbar_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa

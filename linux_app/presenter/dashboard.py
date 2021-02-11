@@ -1,3 +1,5 @@
+import threading
+
 from gi.repository import GLib
 
 from ..constants import DASHBOARD_CONNECTION_INFO
@@ -10,7 +12,14 @@ class DashboardPresenter:
         self.dasboard_service = dasboard_service
         self.dashboard_view = None
 
-    def init_check(self):
+    def on_startup(self, callback):
+        thread = threading.Thread(
+            target=self.init_check, args=[callback]
+        )
+        thread.daemon = True
+        thread.start()
+
+    def init_check(self, callback):
         conn_err = self.dasboard_service.check_internet_connectivity()
 
         if conn_err is not None:
@@ -27,13 +36,17 @@ class DashboardPresenter:
                 DashboardConnectionInfo.IP_LABEL
             ] = ip
 
-            GLib.idle_add(
-                self.dashboard_view.connect_not_active,
-                DASHBOARD_CONNECTION_INFO
-            )
+            GLib.idle_add(callback, DASHBOARD_CONNECTION_INFO)
             # start thrad to listen to NM vpn connection changes
 
         # fetch from connection
 
     def quick_connect(self):
-        self.dasboard_service.connect_to_fastest_server()
+        thread = threading.Thread(target=self.test)
+        thread.daemon = True
+        thread.start()
+
+    def test(self):
+        response = self.dasboard_service.connect_to_fastest_server()
+        if response is None:
+            print("All ok")

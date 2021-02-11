@@ -81,35 +81,19 @@ class DashboardService:
         return ip
 
     def connect_to_fastest_server(self):
-        print("Session: ", type(self.session))
         conn_status = self.setup_connection("fastest")
 
-        print(
-            "Connecting to ProtonVPN on {} with {}...".format(
-                conn_status[ConnectionMetadataEnum.SERVER],
-                conn_status[ConnectionMetadataEnum.PROTOCOL].upper(),
-            )
-        )
+        if not isinstance(conn_status, dict) or isinstance(conn_status, str):
+            return conn_status
 
         self.connection_manager.start_connection()
-        # DBusGMainLoop(set_as_default=True)
-        # loop = GLib.MainLoop()
-        # ProtonVPNStateMonitor(
-        #     VIRTUAL_DEVICE_NAME, loop, self.ks_manager,
-        #     self.user_conf_manager, self.connection_manager,
-        #     self.reconector_manager, self.session
-        # )
-        # loop.run()
 
     def setup_connection(self, connection_type):
         openvpn_username, openvpn_password = self.get_ovpn_credentials()
         resp = self.get_connection_configurations(connection_type)
 
         if isinstance(resp, str):
-            print("Not working: ")
-            return
-
-        print("worked")
+            return resp
 
         (
             servername, domain,
@@ -136,12 +120,11 @@ class DashboardService:
         )
 
         if resp is not None:
-            print("Add connection: ", resp)
+            return resp
 
         conn_status = self.connection_manager.display_connection_status(
             "all_connections"
         )
-        print(conn_status)
 
         return conn_status
 
