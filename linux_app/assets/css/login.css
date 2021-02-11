@@ -1,7 +1,7 @@
 @import "common.css";
 
 popover#popover_login_menu{
-  background-color: @def_bg_color;
+  background: linear-gradient(180deg, #262A33 0%, #303540 100%);
 }
 
 #popover_login_menu box button label {
