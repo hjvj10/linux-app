@@ -16,6 +16,7 @@ window{
 entry{
   border-image:none; 
   outline: none;
+  text-shadow: none;
   box-shadow: none;
   background-color: transparent;
   color: rgb(255,255,255);

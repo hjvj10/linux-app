@@ -8,14 +8,19 @@ popover#popover_login_menu{
 	color: @green-color;
 }
 
-grid#top_grid entry:nth-child(2){
-	margin-top: 10px
+label.entry_label{
+  color: rgb(127,127,127);
+  /* transition: all .115s ease-in-out; */
+  transition: all 5s ease-in-out;
+  margin-bottom: -10px;
+  font-size: 13px;
 }
+
 grid#bottom_grid{
 	margin-bottom: 10px
 }
 
-grid#top_grid label, grid#middle_grid label{
+grid#middle_grid label{
 	color: rgb(255,255,255)
 }
 

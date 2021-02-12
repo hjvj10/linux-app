@@ -7,7 +7,6 @@
     <property name="name">login-view</property>
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">ProtonPVN</property>
-    <property name="resizable">False</property>
     <property name="window-position">center</property>
     <property name="default-width">210</property>
     <property name="default-height">740</property>
@@ -15,6 +14,7 @@
       <object class="GtkOverlay">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="halign">center</property>
         <property name="hexpand">True</property>
         <child>
           <object class="GtkBox">
@@ -100,7 +100,7 @@
                   </packing>
                 </child>
                 <child>
-                  <!-- n-columns=2 n-rows=2 -->
+                  <!-- n-columns=2 n-rows=4 -->
                   <object class="GtkGrid" id="top_grid">
                     <property name="name">top_grid</property>
                     <property name="visible">True</property>
@@ -109,29 +109,6 @@
                     <property name="row-spacing">15</property>
                     <property name="row-homogeneous">True</property>
                     <property name="column-homogeneous">True</property>
-                    <child>
-                      <object class="GtkEntry" id="proton_username_entry">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="valign">center</property>
-                        <property name="hexpand">True</property>
-                        <property name="has-frame">False</property>
-                        <property name="activates-default">True</property>
-                        <property name="shadow-type">none</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="secondary-icon-activatable">False</property>
-                        <property name="primary-icon-sensitive">False</property>
-                        <property name="secondary-icon-sensitive">False</property>
-                        <property name="placeholder-text" translatable="yes">Username</property>
-                        <property name="input-purpose">email</property>
-                        <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">0</property>
-                        <property name="width">2</property>
-                      </packing>
-                    </child>
                     <child>
                       <object class="GtkEntry" id="proton_password_entry">
                         <property name="visible">True</property>
@@ -142,10 +119,27 @@
                         <property name="has-frame">False</property>
                         <property name="invisible-char">•</property>
                         <property name="shadow-type">none</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="primary-icon-sensitive">False</property>
                         <property name="placeholder-text" translatable="yes">Password</property>
                         <property name="input-purpose">password</property>
+                        <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">3</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="proton_username_entry">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="has-frame">False</property>
+                        <property name="activates-default">True</property>
+                        <property name="shadow-type">none</property>
+                        <property name="placeholder-text" translatable="yes">Username</property>
+                        <property name="input-purpose">email</property>
                         <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
                       </object>
                       <packing>
@@ -153,6 +147,48 @@
                         <property name="top-attach">1</property>
                         <property name="width">2</property>
                       </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="username_label">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">end</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <style>
+                          <class name="entry_label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="password_label">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">end</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <style>
+                          <class name="entry_label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>
@@ -262,7 +298,7 @@
                         <property name="use-action-appearance">True</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
                         <property name="receives-default">False</property>
                         <property name="action-name">win.login</property>
                         <accessibility>
@@ -328,7 +364,7 @@
             <child>
               <object class="GtkSpinner" id="overlay_spinner">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
+                <property name="can-focus">True</property>
                 <property name="valign">center</property>
                 <property name="vexpand">True</property>
               </object>

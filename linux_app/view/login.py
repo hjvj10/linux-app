@@ -26,10 +26,12 @@ class LoginView(Gtk.ApplicationWindow):
     top_banner_revealer = Gtk.Template.Child()
     top_banner_revealer_grid = Gtk.Template.Child()
     overlay_spinner = Gtk.Template.Child()
+    username_label = Gtk.Template.Child()
+    password_label = Gtk.Template.Child()
 
     icon_width = 18
     icon_heigt = 18
-    string_min_length = 5
+    string_min_length = 0
 
     def __init__(self, **kwargs):
         self.login_presenter = kwargs.pop("presenter")
@@ -62,15 +64,96 @@ class LoginView(Gtk.ApplicationWindow):
         self.login_button.set_property("sensitive", False)
         self.set_css_class(self.login_button, "disabled", "enabled")
 
-        if not len(gtk_entry_object.get_text().strip()) > self.string_min_length:
+        (
+            main_label_object, main_markup_text,
+            second_label_object, second_markup_text
+        ) = self.get_matching_object(
+            gtk_entry_object
+        )
+
+        if len(gtk_entry_object.get_text().strip()) <= self.string_min_length:
+            main_label_object.set_markup("")
             return
 
-        if len(second_entry_object.get_text().strip()) > self.string_min_length:
-            self.login_button.set_property("sensitive", True)
-            self.set_css_class(self.login_button, "enabled", "disabled")
-        else:
+        main_label_object.set_markup(main_markup_text)
+
+        if len(second_entry_object.get_text().strip()) <= self.string_min_length: # noqa
+            second_label_object.set_markup("")
             self.set_css_class(self.login_button, "disabled", "enabled")
             self.login_button.set_property("sensitive", False)
+            return
+
+        second_label_object.set_markup(second_markup_text)
+        self.login_button.set_property("sensitive", True)
+        self.set_css_class(self.login_button, "enabled", "disabled")
+
+    def on_change_password_visibility(
+        self, gtk_entry_object, gtk_icon_object, gtk_event
+    ):
+        is_text_visible = gtk_entry_object.get_visibility()
+        gtk_entry_object.set_visibility(not is_text_visible)
+        pixbuf = (
+            self.password_show_entry_pixbuf
+            if is_text_visible
+            else self.password_hide_entry_pixbuf)
+        self.proton_password_entry.set_icon_from_pixbuf(
+            Gtk.EntryIconPosition.SECONDARY,
+            pixbuf
+        )
+
+    def on_display_popover(self, gio_simple_action, _):
+        self.popover_login_menu.popup()
+
+    def thread_on_clicked_login(self, *args, **kwargs):
+        args_list = list(args)
+        callback_method = args_list.pop(2)
+        args = tuple(args_list)
+
+        if (
+            len(self.proton_password_entry.get_text()) < self.string_min_length
+            and len(self.proton_username_entry.get_text()) < self.string_min_length # noqa
+        ):
+            return
+
+        thread = threading.Thread(target=callback_method, args=(args, kwargs))
+        thread.daemon = True
+        thread.start()
+
+    def on_clicked_login(self, gio_simple_action, _):
+        self.overlay_spinner.start()
+        if self.top_banner_revealer_grid_context.has_class("banner-error"):
+            self.top_banner_revealer_grid_context.remove_class("banner-error")
+        self.top_banner_revealer.set_reveal_child(False)
+        self.overlay_box.set_property("visible", True)
+        self.login_presenter.login()
+
+    def update_login_status(self, result):
+        if result is not None:
+            self.overlay_spinner.stop()
+            self.banner_error_label.set_text(result)
+            self.top_banner_revealer_grid_context.add_class("banner-error")
+            self.top_banner_revealer.set_reveal_child(True)
+            self.overlay_box.set_property("visible", False)
+        else:
+            self.dashboard_window().present()
+            self.close()
+
+    def get_matching_object(self, gtk_entry_object):
+        main_markup_text = "Username"
+        main_label_object = self.username_label
+        second_markup_text = "Password"
+        second_label_object = self.password_label
+
+        if gtk_entry_object == self.proton_password_entry:
+            main_markup_text = "Password"
+            main_label_object = self.password_label
+            second_markup_text = "Username"
+            second_label_object = self.username_label
+
+        return (
+            main_label_object, main_markup_text,
+            second_label_object, second_markup_text
+        )
 
     def setup_images(self):
         self.password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
@@ -142,57 +225,6 @@ class LoginView(Gtk.ApplicationWindow):
         # add action
         self.add_action(need_help_action)
         self.add_action(login_action)
-
-    def on_change_password_visibility(
-        self, gtk_entry_object, gtk_icon_object, gtk_event
-    ):
-        is_text_visible = gtk_entry_object.get_visibility()
-        gtk_entry_object.set_visibility(not is_text_visible)
-        pixbuf = (
-            self.password_show_entry_pixbuf
-            if is_text_visible
-            else self.password_hide_entry_pixbuf)
-        self.proton_password_entry.set_icon_from_pixbuf(
-            Gtk.EntryIconPosition.SECONDARY,
-            pixbuf
-        )
-
-    def on_display_popover(self, gio_simple_action, _):
-        self.popover_login_menu.popup()
-
-    def thread_on_clicked_login(self, *args, **kwargs):
-        args_list = list(args)
-        callback_method = args_list.pop(2)
-        args = tuple(args_list)
-
-        if (
-            len(self.proton_password_entry.get_text()) < self.string_min_length
-            and len(self.proton_username_entry.get_text()) < self.string_min_length # noqa
-        ):
-            return
-
-        thread = threading.Thread(target=callback_method, args=(args, kwargs))
-        thread.daemon = True
-        thread.start()
-
-    def on_clicked_login(self, gio_simple_action, _):
-        self.overlay_spinner.start()
-        if self.top_banner_revealer_grid_context.has_class("banner-error"):
-            self.top_banner_revealer_grid_context.remove_class("banner-error")
-        self.top_banner_revealer.set_reveal_child(False)
-        self.overlay_box.set_property("visible", True)
-        self.login_presenter.login()
-
-    def update_login_status(self, result):
-        if result is not None:
-            self.overlay_spinner.stop()
-            self.banner_error_label.set_text(result)
-            self.top_banner_revealer_grid_context.add_class("banner-error")
-            self.top_banner_revealer.set_reveal_child(True)
-            self.overlay_box.set_property("visible", False)
-        else:
-            self.dashboard_window().present()
-            self.close()
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()
