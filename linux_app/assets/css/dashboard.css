@@ -37,3 +37,23 @@ grid.connected_label_grid{
 grid.ip_label_grid {
     font-size: 16px;
 }
+
+grid#connecting_overlay_grid > *{
+    margin: 20px 0px
+}
+
+grid#connecting_overlay_grid > button{
+    margin-top: 20px;
+}
+
+grid#connecting_overlay_grid > grid label{
+    font-size: 18px;
+}
+
+grid#connecting_overlay_grid > grid label#connecting_to_country_servername_label{
+    font-weight: bold;
+}
+
+grid#connecting_overlay_grid label{
+    color: rgb(255,255,255);
+}

@@ -1,6 +1,5 @@
 from protonvpn_nm_lib import exceptions
 from protonvpn_nm_lib.enums import ConnectionMetadataEnum
-# from protonvpn_cli import ProtonVPNStateMonitor
 from gi.repository import GLib
 from dbus.mainloop.glib import DBusGMainLoop
 import dbus

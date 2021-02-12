@@ -118,7 +118,7 @@ spinner {
   color: rgba(255,255,255, 0.8)
 }
 
-box.overlay{
+box.overlay, box.connecting_overlay{
   background: linear-gradient(180deg, #262A33 0%, #303540 100%)
 }
 

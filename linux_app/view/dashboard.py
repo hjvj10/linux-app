@@ -19,6 +19,7 @@ class DashboardView(Gtk.ApplicationWindow):
     headerbar_menu_button = Gtk.Template.Child()
     dashboard_popover_menu = Gtk.Template.Child()
     overlay_spinner = Gtk.Template.Child()
+    connect_overlay_spinner = Gtk.Template.Child()
 
     # Labels
     country_servername_label = Gtk.Template.Child()
@@ -26,6 +27,7 @@ class DashboardView(Gtk.ApplicationWindow):
     serverload_label = Gtk.Template.Child()
     download_speed_label = Gtk.Template.Child()
     upload_speed_label = Gtk.Template.Child()
+    overlay_bottom_label = Gtk.Template.Child()
 
     # Images/Icons
     headerbar_sign_icon = Gtk.Template.Child()
@@ -42,15 +44,20 @@ class DashboardView(Gtk.ApplicationWindow):
 
     # Boxes
     overlay_box = Gtk.Template.Child()
+    connecting_overlay_box = Gtk.Template.Child()
 
     # Constants
-    icon_width = 40
-    icon_heigt = 40
+    icon_width = 50
+    icon_heigt = 50
 
     def __init__(self, **kwargs):
         self.dashboard_presenter = kwargs.pop("presenter")
         super().__init__(**kwargs)
 
+        self.overlay_spinner.set_property("width-request", 200)
+        self.overlay_spinner.set_property("height-request", 200)
+        self.connect_overlay_spinner.set_property("width-request", 200)
+        self.connect_overlay_spinner.set_property("height-request", 200)
         self.SET_UI_NOT_PROTECTED = {
             "property": "visible",
             "objects": [
@@ -60,19 +67,26 @@ class DashboardView(Gtk.ApplicationWindow):
                 (self.upload_speed_label, False),
                 (self.serverload_label, False),
                 (self.server_load_image, False),
+                (self.overlay_spinner, False),
                 (self.overlay_box, False)
             ]
         }
+        self.overlay_box_context = self.overlay_box.get_style_context()
 
         self.setup_images()
         self.setup_css()
         self.setup_actions()
-        self.setup_loading_screen()
+        self.show_loading_screen()
         self.dashboard_presenter.on_startup(self.connect_not_active)
 
     def on_click_quick_connect(self, gio_simple_action, _):
         # show overlay
-        self.dashboard_presenter.quick_connect()
+        self.connecting_overlay_box.set_property("visible", True)
+        # self.dashboard_presenter.quick_connect()
+
+    def on_click_cancel_connect(self, gio_simple_action, _):
+        self.connecting_overlay_box.set_property("visible", False)
+        print("Cancel connect")
 
     def connect_not_active(self, dashboard_connection_info):
         self.country_servername_label.set_text(
@@ -88,6 +102,7 @@ class DashboardView(Gtk.ApplicationWindow):
             ]
         )
         self.gtk_property_setter(self.SET_UI_NOT_PROTECTED)
+
         return False
 
     def gtk_property_setter(self, *args):
@@ -101,11 +116,8 @@ class DashboardView(Gtk.ApplicationWindow):
     def on_display_popover(self, gio_simple_action, _):
         self.dashboard_popover_menu.popup()
 
-    def setup_loading_screen(self):
-        self.overlay_spinner.set_property("width-request", 200)
-        self.overlay_spinner.set_property("height-request", 200)
+    def show_loading_screen(self):
         self.overlay_spinner.start()
-
         self.overlay_box.set_property("visible", True)
 
     def setup_images(self):
@@ -148,11 +160,14 @@ class DashboardView(Gtk.ApplicationWindow):
         # create action
         headerbar_menu = Gio.SimpleAction.new("show_menu", None)
         quick_connect = Gio.SimpleAction.new("quick_connect", None)
+        cancel_connection = Gio.SimpleAction.new("cancel_connection", None)
 
         # connect action to callback
         headerbar_menu.connect("activate", self.on_display_popover)
         quick_connect.connect("activate", self.on_click_quick_connect)
+        cancel_connection.connect("activate", self.on_click_cancel_connect)
 
         # add action
         self.add_action(headerbar_menu)
         self.add_action(quick_connect)
+        self.add_action(cancel_connection)
