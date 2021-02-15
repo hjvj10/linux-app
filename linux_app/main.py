@@ -25,6 +25,11 @@ from .view.dashboard import DashboardView
 
 from .service.dashboard import DashboardService
 
+from .logger import logger
+from .constants import APP_VERSION
+from proton.constants import VERSION as proton_version
+from protonvpn_nm_lib.constants import APP_VERSION as lib_version
+
 
 class ProtonVPN(Gtk.Application):
 
@@ -44,7 +49,26 @@ class ProtonVPN(Gtk.Application):
         self.ipv6_lp_manager = IPv6LeakProtectionManager()
 
     def do_startup(self):
+        logger.info(
+            "\n"
+            + "---------------------"
+            + "----------------"
+            + "------------\n\n"
+            + "-----------\t"
+            + "Initialized protonvpn"
+            + "\t-----------\n\n"
+            + "---------------------"
+            + "----------------"
+            + "------------"
+        )
+        logger.info(
+            "ProtonVPN v{} "
+            "(protonvpn-nm-lib v{}; proton-client v{})".format(
+                APP_VERSION, lib_version, proton_version
+            )
+        )
         if "SUDO_UID" in os.environ:
+            logger.info("Initialized app with sudo")
             print(
                 "\nRunning ProtonVPN as root is not supported and "
                 "is highly discouraged, as it might introduce "
@@ -53,6 +77,7 @@ class ProtonVPN(Gtk.Application):
             user_input = input("Are you sure that you want to proceed (y/N): ")
             user_input = user_input.lower()
             if not user_input == "y":
+                logger.info("Quit app as sudo")
                 self.on_quit()
 
         Gtk.Application.do_startup(self)
@@ -65,11 +90,14 @@ class ProtonVPN(Gtk.Application):
 
         self.add_action(quit_app)
         self.add_action(display_preferences)
+        logger.info("Startup successful")
 
     def on_quit(self, *args):
+        logger.info("Quit app")
         self.quit()
 
     def on_display_preferences(self, *args):
+        logger.info("Display preferences")
         print("To-do")
 
     def do_activate(self):
@@ -81,6 +109,8 @@ class ProtonVPN(Gtk.Application):
                 self.user_manager.load_session()
             except: # noqa
                 win = self.get_login_window
+
+        logger.info("Default window: {}".format(win))
 
         win().present()
 

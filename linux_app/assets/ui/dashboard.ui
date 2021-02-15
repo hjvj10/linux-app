@@ -155,6 +155,7 @@
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can-focus">False</property>
+                        <property name="valign">end</property>
                         <property name="label" translatable="yes">48% Load</property>
                         <property name="selectable">True</property>
                         <property name="track-visited-links">False</property>
@@ -169,6 +170,7 @@
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can-focus">False</property>
+                        <property name="valign">end</property>
                         <property name="icon-name">applications-accessories</property>
                         <style>
                           <class name="margin-left-10px"/>
@@ -201,6 +203,7 @@
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can-focus">False</property>
+                            <property name="valign">center</property>
                             <property name="label" translatable="yes">IP: </property>
                             <property name="selectable">True</property>
                             <property name="track-visited-links">False</property>
@@ -215,6 +218,7 @@
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can-focus">False</property>
+                            <property name="valign">center</property>
                             <property name="label" translatable="yes">194.59.249.19</property>
                             <property name="selectable">True</property>
                             <property name="track-visited-links">False</property>
@@ -336,23 +340,21 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="quick_connect_button">
+              <object class="GtkButton" id="main_dashboard_button">
                 <property name="label" translatable="yes">Quick Connect</property>
-                <property name="use-action-appearance">True</property>
-                <property name="name">quick_connect_button</property>
+                <property name="name">main_dashboard_button</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="valign">center</property>
-                <property name="action-name">win.quick_connect</property>
                 <accessibility>
                   <relation type="node-child-of" target="connection_speed_label_grid"/>
                   <action action_name="click" description="Quick Connect to ProtonVPN"/>
                   <action action_name="press" description="Quick Connect to ProtonVPN"/>
                 </accessibility>
                 <child internal-child="accessible">
-                  <object class="AtkObject" id="quick_connect_button-atkobject">
+                  <object class="AtkObject" id="main_dashboard_button-atkobject">
                     <property name="AtkObject::accessible-name" translatable="yes">Quick Connect Button</property>
                     <property name="AtkObject::accessible-description" translatable="yes">Quickly connect to the fastest server.</property>
                     <property name="AtkObject::accessible-role" translatable="yes">push-button</property>
@@ -440,7 +442,22 @@
             <property name="vexpand">True</property>
             <property name="orientation">vertical</property>
             <child>
-              <placeholder/>
+              <!-- n-columns=1 n-rows=1 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">start</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack-type">end</property>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <!-- n-columns=3 n-rows=5 -->
@@ -453,13 +470,11 @@
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <child>
-                  <object class="GtkProgressBar" id="connection_progress_bar">
+                  <object class="GtkProgressBar" id="connecting_progress_bar">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="hexpand">True</property>
                     <property name="inverted">True</property>
-                    <property name="text" translatable="yes">Establishing VPN tunnel</property>
-                    <property name="show-text">True</property>
                     <property name="ellipsize">middle</property>
                   </object>
                   <packing>
@@ -469,25 +484,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Cancel</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="action-name">win.cancel_connection</property>
-                    <style>
-                      <class name="transparent"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">4</property>
-                    <property name="width">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinner" id="connect_overlay_spinner">
+                  <object class="GtkSpinner" id="connecting_overlay_spinner">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="valign">end</property>
@@ -506,11 +503,14 @@
                     <property name="can-focus">False</property>
                     <property name="halign">center</property>
                     <child>
-                      <object class="GtkLabel" id="connecting_label">
+                      <object class="GtkLabel" id="connecting_to_label">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Connecting to </property>
+                        <property name="wrap">True</property>
+                        <property name="wrap-mode">word-char</property>
+                        <property name="max-width-chars">45</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -523,7 +523,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
-                        <property name="label" translatable="yes">Portugal &gt;&gt; PT#11</property>
+                        <property name="label" translatable="yes">Country &gt;&gt; Servename</property>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
@@ -536,6 +536,29 @@
                     <property name="top-attach">3</property>
                     <property name="width">3</property>
                   </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="connect_overlay_button">
+                    <property name="label" translatable="yes">Cancel</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="halign">center</property>
+                    <style>
+                      <class name="transparent"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">4</property>
+                    <property name="width">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
                 <child>
                   <placeholder/>

@@ -14,12 +14,12 @@ class DashboardPresenter:
 
     def on_startup(self, callback):
         thread = threading.Thread(
-            target=self.init_check, args=[callback]
+            target=self.threaded_init_check, args=[callback]
         )
         thread.daemon = True
         thread.start()
 
-    def init_check(self, callback):
+    def threaded_init_check(self, callback):
         conn_err = self.dasboard_service.check_internet_connectivity()
 
         if conn_err is not None:
@@ -37,16 +37,34 @@ class DashboardPresenter:
             ] = ip
 
             GLib.idle_add(callback, DASHBOARD_CONNECTION_INFO)
+            return
             # start thrad to listen to NM vpn connection changes
 
-        # fetch from connection
+        DASHBOARD_CONNECTION_INFO[
+            DashboardConnectionInfo.COUNTRY_SERVERNAME_LABEL
+        ] = "connected to server"
+        DASHBOARD_CONNECTION_INFO[
+            DashboardConnectionInfo.IP_LABEL
+        ] = "Test up"
+        DASHBOARD_CONNECTION_INFO[
+            DashboardConnectionInfo.SERVERLOAD_LABEL
+        ] = "Test %"
 
-    def quick_connect(self):
-        thread = threading.Thread(target=self.test)
+        GLib.idle_add(callback, DASHBOARD_CONNECTION_INFO)
+
+    def quick_connect(self, callback):
+        thread = threading.Thread(
+            target=self.threaded_quick_connect, args=[callback]
+        )
         thread.daemon = True
         thread.start()
 
-    def test(self):
-        response = self.dasboard_service.connect_to_fastest_server()
-        if response is None:
-            print("All ok")
+    def threaded_quick_connect(self, callback):
+        # prepare connection
+        response = self.dasboard_service.prepare_fastest_connection()
+        if isinstance(response, Exception):
+            GLib.idle_add(callback, response)
+            return
+        # # add connection
+        self.dasboard_service.start_vpn_connection()
+        GLib.idle_add(callback, response)
