@@ -1,5 +1,20 @@
-from gi.repository import GLib
+import threading
+from dataclasses import dataclass
+from enum import Enum, auto
+
 from protonvpn_nm_lib import exceptions
+from protonvpn_nm_lib.services.user_manager import UserManager
+from rx.subject.replaysubject import ReplaySubject
+
+
+class LoginState(Enum):
+    IN_PROGRESS = auto()
+    SUCCESS = auto()
+
+
+@dataclass
+class LoginError:
+    message: str
 
 
 class LoginPresenter:
@@ -10,7 +25,7 @@ class LoginPresenter:
         user_conf_manager,
         ks_manager,
         connection_manager,
-        user_manager,
+        user_manager: UserManager,  # use type hints for external deps
         server_manager,
         ipv6_lp_manager
     ):
@@ -22,29 +37,34 @@ class LoginPresenter:
         self.server_manager = server_manager
         self.ipv6_lp_manager = ipv6_lp_manager
 
-        self.login_view = None
+        self.state = ReplaySubject(buffer_size=1)
 
-    def login(self):
-        username = self.login_view.proton_username_entry.get_text()
-        password = self.login_view.proton_password_entry.get_text()
+    def login(self, username, password):
+        self.state.on_next(LoginState.IN_PROGRESS)
 
+        # consider some alternative to threading.Thread for concurrency,
+        #    like asyncio or from rx library.
+        threading.Thread(target=self.login_sync, args=(username, password)).start()
+
+    def login_sync(self, username, password):
         result = None
         try:
             self.user_manager.login(username, password)
+            result = LoginState.SUCCESS
         except (TypeError, ValueError) as e:
-            result = "Unable to authenticate: {}.".format(e)
+            result = LoginError("Unable to authenticate: {}.".format(e))  # use translated strings
         except (exceptions.API8002Error, exceptions.API85032Error) as e:
-            result = "{}".format(e)
+            result = LoginError("{}".format(e))
         except exceptions.APITimeoutError:
-            result = "Connection timeout, unable to reach API."
+            result = LoginError("Connection timeout, unable to reach API.")
         except (exceptions.UnhandledAPIError, exceptions.APIError) as e:
-            result = "Unhandled API error occured: {}".format(e)
+            result = LoginError("Unhandled API error occured: {}".format(e))
         except exceptions.ProtonSessionWrapperError as e:
-            result = "Unknown API error occured: {}.".format(e)
+            result = LoginError("Unknown API error occured: {}.".format(e))
         except (exceptions.ProtonVPNException, Exception) as e:
             # logger.exception(
             #     "[!] Unknown error: {}".format(e)
             # )
-            result = "Unknown error occured: {}.".format(e)
+            result = LoginError("Unknown error occured: {}.".format(e))
 
-        GLib.idle_add(self.login_view.update_login_status, result)
+        self.state.on_next(result)
