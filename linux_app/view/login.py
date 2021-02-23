@@ -232,33 +232,13 @@ class LoginView(Gtk.ApplicationWindow):
         self.add_action(need_help_action)
         self.add_action(login_action)
 
-    def on_change_password_visibility(
-        self, gtk_entry_object, gtk_icon_object, gtk_event
-    ):
-        is_text_visible = gtk_entry_object.get_visibility()
-        gtk_entry_object.set_visibility(not is_text_visible)
-        pixbuf = (
-            self.password_show_entry_pixbuf
-            if is_text_visible
-            else self.password_hide_entry_pixbuf)
-        self.proton_password_entry.set_icon_from_pixbuf(
-            Gtk.EntryIconPosition.SECONDARY,
-            pixbuf
-        )
-
-    def on_display_popover(self, gio_simple_action, _):
-        self.popover_login_menu.popup()
-
-    def on_clicked_login(self, gio_simple_action, _):
-        username = self.proton_username_entry.get_text()
-        password = self.proton_password_entry.get_text()
-        self.view_model.login(username, password)
-
     def render_view_state(self, state):
         if state == LoginState.IN_PROGRESS:
             self.overlay_spinner.start()
             if self.top_banner_revealer_grid_context.has_class("banner-error"):
-                self.top_banner_revealer_grid_context.remove_class("banner-error")
+                self.top_banner_revealer_grid_context.remove_class(
+                    "banner-error"
+                )
             self.top_banner_revealer.set_reveal_child(False)
             self.overlay_box.set_property("visible", True)
         elif isinstance(state, LoginError):
