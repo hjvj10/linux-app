@@ -6,29 +6,17 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio, Gtk
-from protonvpn_nm_lib.services.certificate_manager import CertificateManager
-from protonvpn_nm_lib.services.connection_manager import ConnectionManager
-from protonvpn_nm_lib.services.ipv6_leak_protection_manager import \
-    IPv6LeakProtectionManager
-from protonvpn_nm_lib.services.killswitch_manager import KillSwitchManager
-from protonvpn_nm_lib.services.reconnector_manager import ReconnectorManager
-from protonvpn_nm_lib.services.server_manager import ServerManager
-from protonvpn_nm_lib.services.user_configuration_manager import \
-    UserConfigurationManager
-from protonvpn_nm_lib.services.user_manager import UserManager
-
-from .presenter.login import LoginPresenter
-from .presenter.dashboard import DashboardPresenter
-
-from .view.login import LoginView
-from .view.dashboard import DashboardView
-
-from .service.dashboard import DashboardService
-
-from .logger import logger
-from .constants import APP_VERSION
 from proton.constants import VERSION as proton_version
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
+
+from .constants import APP_VERSION
+from .logger import logger
+# from .view_model.dashboard import DashboardPresenter
+from .view_model.login import LoginViewModel
+# from .service.dashboard import DashboardService
+# from .view.dashboard import DashboardView
+from .view.login import LoginView
+from protonvpn_nm_lib import protonvpn
 
 
 class ProtonVPN(Gtk.Application):
@@ -38,15 +26,7 @@ class ProtonVPN(Gtk.Application):
             application_id='com.protonvpn.www',
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
-        self.reconector_manager = ReconnectorManager()
-        self.user_conf_manager = UserConfigurationManager()
-        self.ks_manager = KillSwitchManager(self.user_conf_manager)
-        self.connection_manager = ConnectionManager()
-        self.user_manager = UserManager(self.user_conf_manager)
-        self.server_manager = ServerManager(
-            CertificateManager(), self.user_manager
-        )
-        self.ipv6_lp_manager = IPv6LeakProtectionManager()
+        self.protonvpn = protonvpn
 
     def do_startup(self):
         logger.info(
@@ -104,48 +84,39 @@ class ProtonVPN(Gtk.Application):
         win = self.props.active_window
 
         if not win:
-            win = self.get_dashboard_window
-            try:
-                self.user_manager.load_session()
-            except: # noqa
+            if not self.protonvpn._check_session_exists():
                 win = self.get_login_window
+            # else:
+                # win = self.get_dashboard_window
 
         logger.info("Default window: {}".format(win))
 
         win().present()
 
     def get_login_window(self):
-        login_presenter = LoginPresenter(
-            self.reconector_manager,
-            self.user_conf_manager,
-            self.ks_manager,
-            self.connection_manager,
-            self.user_manager,
-            self.server_manager,
-            self.ipv6_lp_manager
-        )
+        login_view_model = LoginViewModel(self.protonvpn)
         return LoginView(
             application=self,
-            presenter=login_presenter,
-            dashboard_window=self.get_dashboard_window
+            view_model=login_view_model,
+            # dashboard_window=self.get_dashboard_window
         )
 
-    def get_dashboard_window(self):
-        dasboard_service = DashboardService(
-            self.reconector_manager,
-            self.user_conf_manager,
-            self.ks_manager,
-            self.connection_manager,
-            self.user_manager,
-            self.server_manager,
-            self.ipv6_lp_manager,
-            CertificateManager
-        )
-        dashboard_presenter = DashboardPresenter(dasboard_service)
-        return DashboardView(
-            application=self,
-            presenter=dashboard_presenter
-        )
+    # def get_dashboard_window(self):
+    # #     dasboard_service = DashboardService(
+    # #         self.reconector_manager,
+    # #         self.user_conf_manager,
+    # #         self.ks_manager,
+    # #         self.connection_manager,
+    # #         self.user_manager,
+    # #         self.server_manager,
+    # #         self.ipv6_lp_manager,
+    # #         CertificateManager
+    # #     )
+    #     dashboard_presenter = DashboardPresenter(self.protonvpn)
+    #     return DashboardView(
+    #         application=self,
+    #         presenter=dashboard_presenter
+    #     )
 
 
 def main():
