@@ -2,9 +2,11 @@ import os
 
 import gi
 
+from ..presenter.login import LoginError, LoginState
+
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gdk, GdkPixbuf, Gio, Gtk
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
 
 from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
 import threading
@@ -34,7 +36,14 @@ class LoginView(Gtk.ApplicationWindow):
     string_min_length = 0
 
     def __init__(self, **kwargs):
-        self.login_presenter = kwargs.pop("presenter")
+        # This is no longer "presenter" but a "view model"
+        self.view_model = kwargs.pop("presenter")
+
+        # Observe login state in view model
+        self.view_model.state.subscribe(
+            lambda state: GLib.idle_add(self.render_view_state, state)
+        )
+
         self.dashboard_window = kwargs.pop("dashboard_window")
         super().__init__(**kwargs)
         self.setup_images()
@@ -43,7 +52,6 @@ class LoginView(Gtk.ApplicationWindow):
         self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()  # noqa
         self.proton_username_entry.connect("changed", self.on_entry_changed)
         self.proton_password_entry.connect("changed", self.on_entry_changed)
-        self.login_presenter.login_view = self
         self.overlay_spinner.set_property("width-request", 200)
         self.overlay_spinner.set_property("height-request", 200)
 
@@ -218,13 +226,30 @@ class LoginView(Gtk.ApplicationWindow):
 
         # connect action to callback
         need_help_action.connect("activate", self.on_display_popover)
-        login_action.connect(
-            "activate", self.thread_on_clicked_login, self.on_clicked_login
-        )
+        login_action.connect("activate", self.on_clicked_login)
 
         # add action
         self.add_action(need_help_action)
         self.add_action(login_action)
+
+    def render_view_state(self, state):
+        if state == LoginState.IN_PROGRESS:
+            self.overlay_spinner.start()
+            if self.top_banner_revealer_grid_context.has_class("banner-error"):
+                self.top_banner_revealer_grid_context.remove_class(
+                    "banner-error"
+                )
+            self.top_banner_revealer.set_reveal_child(False)
+            self.overlay_box.set_property("visible", True)
+        elif isinstance(state, LoginError):
+            self.overlay_spinner.stop()
+            self.banner_error_label.set_text(state.message)
+            self.top_banner_revealer_grid_context.add_class("banner-error")
+            self.top_banner_revealer.set_reveal_child(True)
+            self.overlay_box.set_property("visible", False)
+        elif state == LoginState.SUCCESS:
+            self.dashboard_window().present()
+            self.close()
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()
