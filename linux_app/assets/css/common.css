@@ -89,6 +89,12 @@ button.transparent:hover{
   background-color: @green-color;
 }
 
+button.transparent.white:hover{
+  border-color: rgb(255,255,255);
+  background-color: rgb(255,255,255);
+  color:rgb(125,125,125)
+}
+
 button.enabled:active, button.transparent:active {
   -gtk-icon-effect: none;
   -gtk-icon-source: none;

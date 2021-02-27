@@ -11,10 +11,10 @@ from protonvpn_nm_lib.constants import APP_VERSION as lib_version
 
 from .constants import APP_VERSION
 from .logger import logger
-# from .view_model.dashboard import DashboardPresenter
+from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
-# from .service.dashboard import DashboardService
-# from .view.dashboard import DashboardView
+from .model.dashboard import DashboardModel
+from .view.dashboard import DashboardView
 from .view.login import LoginView
 from protonvpn_nm_lib import protonvpn
 
@@ -86,8 +86,8 @@ class ProtonVPN(Gtk.Application):
         if not win:
             if not self.protonvpn._check_session_exists():
                 win = self.get_login_window
-            # else:
-                # win = self.get_dashboard_window
+            else:
+                win = self.get_dashboard_window
 
         logger.info("Default window: {}".format(win))
 
@@ -98,25 +98,18 @@ class ProtonVPN(Gtk.Application):
         return LoginView(
             application=self,
             view_model=login_view_model,
-            # dashboard_window=self.get_dashboard_window
+            dashboard_window=self.get_dashboard_window
         )
 
-    # def get_dashboard_window(self):
-    # #     dasboard_service = DashboardService(
-    # #         self.reconector_manager,
-    # #         self.user_conf_manager,
-    # #         self.ks_manager,
-    # #         self.connection_manager,
-    # #         self.user_manager,
-    # #         self.server_manager,
-    # #         self.ipv6_lp_manager,
-    # #         CertificateManager
-    # #     )
-    #     dashboard_presenter = DashboardPresenter(self.protonvpn)
-    #     return DashboardView(
-    #         application=self,
-    #         presenter=dashboard_presenter
-    #     )
+    def get_dashboard_window(self):
+        dashboard_model = DashboardModel(self.protonvpn)
+        dashboard_view_model = DashboardViewModel(
+            self.protonvpn, dashboard_model
+        )
+        return DashboardView(
+            application=self,
+            view_model=dashboard_view_model
+        )
 
 
 def main():

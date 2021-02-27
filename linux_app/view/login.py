@@ -1,5 +1,4 @@
 import os
-
 import gi
 
 from ..view_model.login import LoginError, LoginState
@@ -37,13 +36,13 @@ class LoginView(Gtk.ApplicationWindow):
     def __init__(self, **kwargs):
         # This is no longer "presenter" but a "view model"
         self.login_view_model = kwargs.pop("view_model")
+        self.dashboard_window = kwargs.pop("dashboard_window")
 
         # Observe login state in view model
         self.login_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
 
-        # self.dashboard_window = kwargs.pop("dashboard_window")
         super().__init__(**kwargs)
         self.setup_images()
         self.setup_css()
@@ -147,7 +146,7 @@ class LoginView(Gtk.ApplicationWindow):
             self.top_banner_revealer.set_reveal_child(True)
             self.overlay_box.set_property("visible", False)
         elif state == LoginState.SUCCESS:
-            # self.dashboard_window().present()
+            self.dashboard_window().present()
             self.close()
 
     def setup_images(self):
