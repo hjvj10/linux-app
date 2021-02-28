@@ -45,8 +45,6 @@ class ConnectedToVPNInfo:
     protocol: str
     ip: str
     load: str
-    # upload: str
-    # download: str
     country_code: str
 
 
@@ -253,16 +251,37 @@ class DashboardViewModel:
             result = self.set_not_connected_state()
 
             self.state.on_next(result)
+        return True
 
-    def on_display_speed(self):
+    def on_update_server_load(self):
         thread = threading.Thread(
-            target=self.thread_on_display_speed
+            target=self.thread_on_update_server_load
         )
         thread.daemon = True
         thread.start()
         return True
 
-    def thread_on_display_speed(self):
+    def thread_on_update_server_load(self):
+        try:
+            self.protonvpn._refresh_servers()
+        except Exception as e: # noqa
+            # logger.exception(e)
+            pass
+
+        result = self.set_connected_state()
+
+        self.state.on_next(result)
+        return True
+
+    def on_update_speed(self):
+        thread = threading.Thread(
+            target=self.thread_on_update_speed
+        )
+        thread.daemon = True
+        thread.start()
+        return True
+
+    def thread_on_update_speed(self):
         speed_result = self.on_calculate_speed()
         up, dl = "-", "-"
         if len(speed_result) == 2:
@@ -273,6 +292,7 @@ class DashboardViewModel:
         )
 
         self.state.on_next(result)
+        return True
 
     def on_calculate_speed(self):
         t0 = time.time()

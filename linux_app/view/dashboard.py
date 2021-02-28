@@ -68,13 +68,20 @@ class DashboardView(Gtk.ApplicationWindow):
     # Constants
     icon_width = 50
     icon_heigt = 50
+    on_network_speed_update_seconds = 1
+    on_vpn_monitor_update_seconds = 15
+    on_server_load_update_seconds = 900
 
     glib_source_tracker = {
         GLibEventSourceEnum.ON_MONITOR_VPN: None,
-        GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED: None
+        GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED: None,
+        GLibEventSourceEnum.ON_SERVER_LOAD: None,
     }
-    on_network_speed_update_seconds = 1
-    on_vpn_monitor_update_seconds = 20
+    glib_source_updated_time = {
+        GLibEventSourceEnum.ON_MONITOR_VPN: on_vpn_monitor_update_seconds,
+        GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED: on_network_speed_update_seconds, # noqa
+        GLibEventSourceEnum.ON_SERVER_LOAD: on_server_load_update_seconds,
+    }
 
     def __init__(self, **kwargs):
         self.dashboard_view_model = kwargs.pop("view_model")
@@ -82,7 +89,6 @@ class DashboardView(Gtk.ApplicationWindow):
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
         super().__init__(**kwargs)
-
         self.overlay_spinner.set_property("width-request", 200)
         self.overlay_spinner.set_property("height-request", 200)
         self.connecting_overlay_spinner.set_property("width-request", 200)
@@ -118,6 +124,11 @@ class DashboardView(Gtk.ApplicationWindow):
             ]
         }
         self.overlay_box_context = self.overlay_box.get_style_context()
+        self.glib_source_updated_method = {
+            GLibEventSourceEnum.ON_MONITOR_VPN: self.dashboard_view_model.on_monitor_vpn, # noqa
+            GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED: self.dashboard_view_model.on_update_speed, # noqa
+            GLibEventSourceEnum.ON_SERVER_LOAD: self.dashboard_view_model.on_update_server_load, # noqa
+        }
         self.setup_images()
         self.setup_css()
         self.setup_actions()
@@ -125,34 +136,15 @@ class DashboardView(Gtk.ApplicationWindow):
 
     def on_click_disconnect(self, gtk_button_object):
         logger.info("Clicked on disconnect")
-        if self.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_VPN]:
-            logger.debug("on_monitor_vpn exists, removing source")
-            GLib.source_remove(
-                self.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_VPN]
-            )
-            self.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_VPN] = None
-        if self.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED]: # noqa
-            logger.debug("network_speed exists, removing source")
-            GLib.source_remove(
-                self.glib_source_tracker[
-                    GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
-                ]
-            )
-            self.glib_source_tracker[
-                GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
-            ] = None
-
+        self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        self.remove_background_glib(
+            GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
+        )
         self.dashboard_view_model.on_disconnect()
 
     def on_click_quick_connect(self, gtk_button_object):
         logger.info("Clicked on quick connect")
-        if self.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_VPN]:
-            logger.debug("on_monitor_vpn exists, removing source")
-            GLib.source_remove(
-                self.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_VPN]
-            )
-            self.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_VPN] = None
-
+        self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.dashboard_view_model.on_quick_connect()
 
     def render_view_state(self, state):
@@ -294,6 +286,32 @@ class DashboardView(Gtk.ApplicationWindow):
         self.add_action(headerbar_menu)
         self.add_action(cancel_connect_overlay_button)
 
+    def add_background_glib(self, glib_source_type: GLibEventSourceEnum):
+        if self.glib_source_tracker[
+                glib_source_type
+        ] == None:
+            logger.debug(
+                "{} does not exist, adding it.".format(glib_source_type)
+            )
+            self.glib_source_tracker[
+                glib_source_type
+            ] = GLib.timeout_add_seconds(
+                self.glib_source_updated_time[glib_source_type],
+                self.glib_source_updated_method[glib_source_type]
+            )
+
+    def remove_background_glib(self, glib_source_type: GLibEventSourceEnum):
+        if self.glib_source_tracker[glib_source_type]:
+            logger.debug("{} exists, removing source".format(glib_source_type))
+            GLib.source_remove(
+                self.glib_source_tracker[
+                    glib_source_type
+                ]
+            )
+            self.glib_source_tracker[
+                glib_source_type
+            ] = None
+
 
 class InitLoad:
     def __init__(self, dashboard_view, state):
@@ -320,8 +338,10 @@ class NotConnectedVPN:
         grid_ctx = dv.connection_information_grid.get_style_context()
         if not label_ctx.has_class("warning-color"):
             label_ctx.add_class("warning-color")
-        if not button_ctx.has_class("white"):
-            label_ctx.add_class("white")
+        if button_ctx.has_class("transparent-white"):
+            button_ctx.remove_class("transparent-white")
+        if not button_ctx.has_class("transparent"):
+            button_ctx.add_class("transparent")
         if grid_ctx.has_class("connection_information_box_gradient"):
             grid_ctx.remove_class("connection_information_box_gradient")
 
@@ -336,33 +356,11 @@ class NotConnectedVPN:
             "clicked", dv.on_click_quick_connect
         )
         dv.main_dashboard_button.props.label = "Quick Connect" # noqa
+        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         dv.gtk_property_setter(
             dv.SET_UI_NOT_CONNECTED
         )
-        logger.debug(dv.glib_source_tracker)
-        if (
-            dv.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED] # noqa
-            == None
-        ):
-            logger.debug(
-                "network_speed tracker does not exist, adding it."
-            )
-            dv.glib_source_tracker[
-                GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
-            ] = GLib.timeout_add_seconds(
-                dv.on_network_speed_update_seconds,
-                dv.dashboard_view_model.on_display_speed
-            )
-        if dv.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_VPN] == None:
-            logger.debug(
-                "on_monitor_vpn tracker does not exist, adding it."
-            )
-            dv.glib_source_tracker[
-                GLibEventSourceEnum.ON_MONITOR_VPN
-            ] = GLib.timeout_add_seconds(
-                dv.on_vpn_monitor_update_seconds,
-                dv.dashboard_view_model.thread_on_monitor_vpn
-            )
 
 
 class ConnectedVPN:
@@ -389,10 +387,13 @@ class ConnectedVPN:
         label_ctx = dv.country_servername_label.get_style_context() # noqa
         button_ctx = dv.main_dashboard_button.get_style_context()
         grid_ctx = dv.connection_information_grid.get_style_context()
+
         if label_ctx.has_class("warning-color"):
             label_ctx.remove_class("warning-color")
-        if not button_ctx.has_class("white"):
-            label_ctx.add_class("white")
+        if button_ctx.has_class("transparent"):
+            button_ctx.remove_class("transparent")
+        if not button_ctx.has_class("transparent-white"):
+            button_ctx.add_class("transparent-white")
         if not grid_ctx.has_class("connection_information_box_gradient"):
             grid_ctx.add_class("connection_information_box_gradient")
 
@@ -406,31 +407,10 @@ class ConnectedVPN:
             "clicked", dv.on_click_disconnect
         )
         dv.main_dashboard_button.props.label = "Disconnect"
+        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED)
+        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         dv.gtk_property_setter(dv.SET_UI_CONNECTED) # noqa
-
-        if (
-            dv.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED] # noqa
-            == None
-        ):
-            logger.debug(
-                "network_speed tracker does not exist, adding it."
-            )
-            dv.glib_source_tracker[
-                GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
-            ] = GLib.timeout_add_seconds(
-                dv.on_network_speed_update_seconds,
-                dv.dashboard_view_model.on_display_speed
-            )
-        if dv.glib_source_tracker[GLibEventSourceEnum.ON_MONITOR_VPN] == None:
-            logger.debug(
-                "on_monitor_vpn tracker does not exist, adding it."
-            )
-            dv.glib_source_tracker[
-                GLibEventSourceEnum.ON_MONITOR_VPN
-            ] = GLib.timeout_add_seconds(
-                dv.on_vpn_monitor_update_seconds,
-                dv.dashboard_view_model.thread_on_monitor_vpn
-            )
 
 
 class ConnectVPNPreparing:

@@ -148,7 +148,7 @@
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes">France FR#9</property>
+                            <property name="label" translatable="yes">Servername</property>
                             <property name="selectable">True</property>
                             <property name="track-visited-links">False</property>
                           </object>
@@ -187,7 +187,7 @@
                                 <property name="sensitive">False</property>
                                 <property name="can-focus">False</property>
                                 <property name="valign">end</property>
-                                <property name="label" translatable="yes">48% Load</property>
+                                <property name="label" translatable="yes">Serverload</property>
                                 <property name="selectable">True</property>
                                 <property name="track-visited-links">False</property>
                               </object>
@@ -250,7 +250,7 @@
                                     <property name="sensitive">False</property>
                                     <property name="can-focus">False</property>
                                     <property name="valign">center</property>
-                                    <property name="label" translatable="yes">194.59.249.19</property>
+                                    <property name="label" translatable="yes">UserIP</property>
                                     <property name="selectable">True</property>
                                     <property name="track-visited-links">False</property>
                                     <style>
@@ -304,7 +304,7 @@
                                 <property name="sensitive">False</property>
                                 <property name="can-focus">False</property>
                                 <property name="halign">start</property>
-                                <property name="label" translatable="yes">1.0 KB/s</property>
+                                <property name="label" translatable="yes">- B/s</property>
                                 <property name="selectable">True</property>
                                 <property name="track-visited-links">False</property>
                               </object>
@@ -319,7 +319,7 @@
                                 <property name="sensitive">False</property>
                                 <property name="can-focus">False</property>
                                 <property name="halign">end</property>
-                                <property name="label" translatable="yes">9.0 KB/s</property>
+                                <property name="label" translatable="yes">- B/s</property>
                                 <property name="selectable">True</property>
                                 <property name="track-visited-links">False</property>
                               </object>

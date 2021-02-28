@@ -4,6 +4,10 @@ grid.dashboard_grid label:not(.warning-color) {
     color: rgb(255,255,255)
 }
 
+grid.dashboard_grid  button.transparent-white:hover label{
+    color: rgb(0,0,0);
+}
+
 label.ip{
     font-weight: bold;
 }
@@ -26,7 +30,8 @@ scrolledwindow, viewport{
 }
 
 grid.connected_label_grid, grid.ip_server_load_labels_grid,
-grid.connection_speed_label_grid, button.transparent{
+grid.connection_speed_label_grid, button.transparent,
+button.transparent-white{
     margin: 20px 30px 0px 30px
 }
 
@@ -68,4 +73,8 @@ grid.connection_information_box_gradient{
 
 grid.connecting_overlay_grid label{
     color: rgb(255,255,255);
+}
+
+.connection_speed_label_grid image{
+    margin: 0 5px;
 }

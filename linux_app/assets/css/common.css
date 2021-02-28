@@ -35,7 +35,7 @@ entry:focus{
   border-bottom: 1px solid @green-color;
 }
 
-button.enabled, button.disabled, button.transparent{
+button.enabled, button.disabled, button.transparent, button.transparent-white{
   -gtk-icon-effect: none;
   -gtk-icon-source: none;
   outline: none;
@@ -54,12 +54,13 @@ button.enabled{
   border-color: @green-color;
 }
 
-button.transparent{
+button.transparent, button.transparent-white{
   background-color: transparent;
   border-color: rgb(255,255,255);
 }
 
-button.enabled label, button.disabled label, button.transparent label{
+button.enabled label, button.disabled label,
+button.transparent label, button.transparent-white label{
   font-weight: bold;
   font-size: 16px;
 }
@@ -70,7 +71,8 @@ button.disabled, button.disabled label{
   border-color: @disabled-color;
 }
 
-button.enabled:hover, button.transparent:hover{
+button.enabled:hover, button.transparent:hover,
+button.transparent-white:hover{
   -gtk-icon-effect: none;
   -gtk-icon-source: none;
   outline: none;
@@ -89,10 +91,14 @@ button.transparent:hover{
   background-color: @green-color;
 }
 
-button.transparent.white:hover{
+
+button.transparent-white:hover{
   border-color: rgb(255,255,255);
   background-color: rgb(255,255,255);
-  color:rgb(125,125,125)
+}
+
+button.transparent-white:hover label{
+  color: rgb(0,0,0);
 }
 
 button.enabled:active, button.transparent:active {
