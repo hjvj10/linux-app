@@ -428,7 +428,7 @@ class DashboardViewModel:
         """
         t0 = time.time()
         interface = VIRTUAL_DEVICE_NAME
-        dt = 1
+        dt = 3
         try:
             counter = psutil.net_io_counters(pernic=True)[interface]
         except KeyError:
