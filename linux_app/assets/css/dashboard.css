@@ -65,10 +65,7 @@ grid#connecting_overlay_grid label{
 
 grid.connection_information_box{
     padding-bottom: 80px;
-}
-
-grid.connection_information_box_gradient{
-    background-image: linear-gradient(rgba(38, 42, 51, 0.6), rgba(10, 10, 10, 1));
+    background-image: linear-gradient(rgba(38, 42, 51, 0.6), rgb(10, 10, 10));
 }
 
 grid.connecting_overlay_grid label{
@@ -77,4 +74,100 @@ grid.connecting_overlay_grid label{
 
 .connection_speed_label_grid image{
     margin: 0 5px;
+}
+
+grid.dashboard_grid notebook{
+	outline:none;
+    border: none;
+    background-color: rgb(10, 10, 10);
+}
+
+grid.dashboard_grid notebook header{
+	-gtk-icon-source: none;
+    background-image: none;
+	outline:none;
+	padding: 0;
+    border: none;
+    background-color: transparent;
+}
+
+grid.dashboard_grid notebook tabs{
+    -gtk-icon-source: none;
+    background-image: none;
+	outline:none;
+	padding: 0;
+    margin: 0;
+    border-bottom: 1px solid rgba(255,255,255, 0.3);
+    border: none;
+}
+
+grid.dashboard_grid notebook tabs tab{
+	-gtk-icon-source: none;
+    background-image: none;
+    outline:none;
+    border-color: transparent;
+    box-shadow: none;
+	padding: 10px 15px;
+    color: rgb(255,255,255);
+    margin: 0;
+    /* transition: all .115s ease-in-out; */
+    border: none;
+    font-size: 16px;
+}
+
+grid.dashboard_grid notebook tabs tab:first-child{
+	background: linear-gradient(
+        180deg,
+        @background-gradient-first-color 0%,
+        @background-gradient-second-color 100%
+    );
+	border-top-right-radius: 20px;
+}
+
+grid.dashboard_grid notebook tabs tab:last-child{
+	background: rgba(38, 42, 51, 0.6);
+	border-top-left-radius: 20px;
+}
+
+grid.dashboard_grid notebook tabs tab:hover{
+    -gtk-icon-source: none;
+    background-color: transparent;
+    background-image: none;
+}
+
+grid.dashboard_grid notebook grid{
+    background-color: @background-gradient-second-color
+}
+
+grid.dashboard_grid notebook #top-grid-countries-tab{
+	margin: 10px 30px 10px 30px
+}
+
+grid.dashboard_grid notebook #top-grid-countries-tab > *{
+	margin-top: 10px;
+	margin-bottom: 5px;
+}
+
+grid.dashboard_grid notebook #top-grid-countries-tab > button{
+	border: 0.5px solid rgba(0, 0, 0, 0.2);
+	outline: none;
+	box-shadow: 2px 2px 2px  black;
+	border-radius: 2px;
+}
+
+grid.dashboard_grid notebook #top-grid-countries-tab > button:nth-child(3){
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+grid.dashboard_grid notebook #top-grid-countries-tab > entry{
+	background-color: rgba(18, 22, 31, 0.3);
+	border-radius: 0px;
+	border: 1px solid rgba(150, 150, 150, 0.3);
+    padding-top: 5px;
+}
+
+tab.inactive-tab{
+    background-color: rgb(25, 31, 36);
+    color: gray;
 }

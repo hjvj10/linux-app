@@ -5,17 +5,21 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
-
 from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
-from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 from protonvpn_nm_lib.country_codes import country_codes
-from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
+from protonvpn_nm_lib.enums import ProtocolImplementationEnum
+
+from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
+                         KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
+                         SECURE_CORE_ICON_SET, UI_DIR_PATH)
+from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
+                     DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
+                     GLibEventSourceEnum)
 from ..logger import logger
 from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
                                     ConnectPreparingInfo, Loading,
-                                    NotConnectedToVPNInfo, NetworkSpeed)
-from ..enums import GLibEventSourceEnum
+                                    NetworkSpeed, NotConnectedToVPNInfo)
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -53,6 +57,9 @@ class DashboardView(Gtk.ApplicationWindow):
     download_speed_image = Gtk.Template.Child()
     upload_speed_image = Gtk.Template.Child()
     sidebar_country_image = Gtk.Template.Child()
+    dashboard_secure_core_button_image = Gtk.Template.Child()
+    dashboard_netshield_button_image = Gtk.Template.Child()
+    dashboard_killswitch_button_image = Gtk.Template.Child()
 
     # Grids
     connected_label_grid = Gtk.Template.Child()
@@ -66,10 +73,10 @@ class DashboardView(Gtk.ApplicationWindow):
     connecting_overlay_box = Gtk.Template.Child()
 
     # Constants
-    icon_width = 50
-    icon_heigt = 50
+    feature_button_icon_width = 20
+    feature_button_icon_height = 20
     on_network_speed_update_seconds = 1
-    on_vpn_monitor_update_seconds = 15
+    on_vpn_monitor_update_seconds = 10
     on_server_load_update_seconds = 900
 
     glib_source_tracker = {
@@ -78,9 +85,18 @@ class DashboardView(Gtk.ApplicationWindow):
         GLibEventSourceEnum.ON_SERVER_LOAD: None,
     }
     glib_source_updated_time = {
-        GLibEventSourceEnum.ON_MONITOR_VPN: on_vpn_monitor_update_seconds,
-        GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED: on_network_speed_update_seconds, # noqa
-        GLibEventSourceEnum.ON_SERVER_LOAD: on_server_load_update_seconds,
+        GLibEventSourceEnum.ON_MONITOR_VPN:
+            on_vpn_monitor_update_seconds,
+        GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED:
+            on_network_speed_update_seconds,
+        GLibEventSourceEnum.ON_SERVER_LOAD:
+            on_server_load_update_seconds,
+    }
+
+    features_icon_set_dict = {
+        DashboardFeaturesEnum.KILLSWITCH: KILLSWITCH_ICON_SET,
+        DashboardFeaturesEnum.NETSHIELD: NETSHIELD_ICON_SET,
+        DashboardFeaturesEnum.SECURE_CORE: SECURE_CORE_ICON_SET
     }
 
     def __init__(self, **kwargs):
@@ -125,11 +141,14 @@ class DashboardView(Gtk.ApplicationWindow):
         }
         self.overlay_box_context = self.overlay_box.get_style_context()
         self.glib_source_updated_method = {
-            GLibEventSourceEnum.ON_MONITOR_VPN: self.dashboard_view_model.on_monitor_vpn, # noqa
-            GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED: self.dashboard_view_model.on_update_speed, # noqa
-            GLibEventSourceEnum.ON_SERVER_LOAD: self.dashboard_view_model.on_update_server_load, # noqa
+            GLibEventSourceEnum.ON_MONITOR_VPN:
+                self.dashboard_view_model.on_monitor_vpn,
+            GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED:
+                self.dashboard_view_model.on_update_speed,
+            GLibEventSourceEnum.ON_SERVER_LOAD:
+                self.dashboard_view_model.on_update_server_load,
         }
-        self.setup_images()
+        self.setup_icons_images()
         self.setup_css()
         self.setup_actions()
         self.dashboard_view_model.on_startup()
@@ -164,7 +183,9 @@ class DashboardView(Gtk.ApplicationWindow):
             self.upload_speed_label.props.label = state.upload + " B/s"
             self.download_speed_label.props.label = state.download + " B/s"
 
-    def on_click_hide_connect_overlay(self, gtk_button_object, gio_task_object): # noqa
+    def on_click_hide_connect_overlay(
+        self, gtk_button_object, gio_task_object
+    ):
         self.gtk_property_setter(self.SET_UI_NOT_CONNECTED)
 
     def gtk_property_setter(self, *args):
@@ -178,59 +199,110 @@ class DashboardView(Gtk.ApplicationWindow):
     def on_display_popover(self, gio_simple_action, _):
         self.dashboard_popover_menu.popup()
 
-    def setup_images(self):
-        logger.info("Setting up images")
-        protonvpn_headerbar_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
-            filename=os.path.join(
-                ICON_DIR_PATH,
-                "protonvpn-sign-green.svg",
+    def setup_icons_images(self):
+        logger.info("Setting up dashboard images and icons")
 
-            ),
-            width=self.icon_width,
-            height=self.icon_heigt,
-            preserve_aspect_ratio=True
+        # Get pixbuf objects
+        protonvpn_headerbar_pixbuf = self.get_icon_pixbuf(
+            "protonvpn-sign-green.svg",
+            width=50, height=50,
         )
-        logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(
-                IMG_DIR_PATH,
-                "protonvpn-logo-white.svg"
-            ),
-            width=325,
-            height=250,
-            preserve_aspect_ratio=True
+        logo_pixbuf = self.get_image_pixbuf(
+            "protonvpn-logo-white.svg",
+            width=325, height=250
         )
-        window_icon = GdkPixbuf.Pixbuf.new_from_file(
-            filename=os.path.join(
-                ICON_DIR_PATH,
-                "protonvpn_logo.png"
-            ),
+        window_icon = self.get_icon_pixbuf(
+            "protonvpn_logo.png",
         )
-        download_pixbuff = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(
-                ICON_DIR_PATH,
-                "down-icon.svg",
-
-            ),
-            width=15,
-            height=15,
-            preserve_aspect_ratio=True
+        upload_pixbuff = self.get_icon_pixbuf(
+            "down-icon.svg",
+            width=15, height=15
         )
-        upload_pixbuff = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(
-                ICON_DIR_PATH,
-                "up-icon.svg",
-
-            ),
-            width=15,
-            height=15,
-            preserve_aspect_ratio=True
+        download_pixbuff = self.get_icon_pixbuf(
+            "up-icon.svg",
+            width=15, height=15
+        )
+        feature_button_secure_core_pixbuf = self.get_icon_pixbuf(
+            self.features_icon_set_dict[
+                DashboardFeaturesEnum.SECURE_CORE
+            ][DashboardSecureCoreIconEnum.OFF],
+            width=self.feature_button_icon_width,
+            height=self.feature_button_icon_height
+        )
+        feature_button_netshield_pixbuf = self.get_icon_pixbuf(
+            self.features_icon_set_dict[
+                DashboardFeaturesEnum.NETSHIELD
+            ][DashboardNetshieldIconEnum.OFF],
+            width=self.feature_button_icon_width,
+            height=self.feature_button_icon_height
+        )
+        feature_button_killswitch_pixbuf = self.get_icon_pixbuf(
+            self.features_icon_set_dict[
+                DashboardFeaturesEnum.KILLSWITCH
+            ][DashboardKillSwitchIconEnum.OFF],
+            width=self.feature_button_icon_width,
+            height=self.feature_button_icon_height
         )
 
+        # Set images and icons
         self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)
         self.overlay_logo_image.set_from_pixbuf(logo_pixbuf)
         self.download_speed_image.set_from_pixbuf(download_pixbuff)
         self.upload_speed_image.set_from_pixbuf(upload_pixbuff)
+        self.dashboard_secure_core_button_image.set_from_pixbuf(
+            feature_button_secure_core_pixbuf
+        )
+        self.dashboard_netshield_button_image.set_from_pixbuf(
+            feature_button_netshield_pixbuf
+        )
+        self.dashboard_killswitch_button_image.set_from_pixbuf(
+            feature_button_killswitch_pixbuf
+        )
+
         self.set_icon(window_icon)
+
+    def get_icon_pixbuf(
+        self, icon_name, width=None, height=None
+    ):
+        if width and height:
+            return GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=os.path.join(
+                    ICON_DIR_PATH,
+                    icon_name,
+
+                ),
+                width=width,
+                height=height,
+                preserve_aspect_ratio=True
+            )
+
+        return GdkPixbuf.Pixbuf.new_from_file(
+            filename=os.path.join(
+                ICON_DIR_PATH,
+                icon_name
+            )
+        )
+
+    def get_image_pixbuf(
+        self, image_name, width=None, height=None
+    ):
+        if width and height:
+            return GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=os.path.join(
+                    IMG_DIR_PATH,
+                    image_name
+                ),
+                width=width,
+                height=height,
+                preserve_aspect_ratio=True
+            )
+
+        return GdkPixbuf.Pixbuf.new_from_file(
+            filename=os.path.join(
+                IMG_DIR_PATH,
+                image_name
+            )
+        )
 
     def on_connect_load_sidebar_flag(self, country):
         try:
@@ -243,14 +315,10 @@ class DashboardView(Gtk.ApplicationWindow):
         except IndexError:
             return
 
-        sidebar_flag_pixbuff = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(
-                IMG_DIR_PATH,
-                "sidebar-flags/" + matching_code + ".jpg"
-            ),
+        sidebar_flag_pixbuff = self.get_image_pixbuf(
+            "sidebar-flags/" + matching_code + ".jpg",
             width=400,
             height=400,
-            preserve_aspect_ratio=True
         )
         self.sidebar_country_image.set_from_pixbuf(sidebar_flag_pixbuff)
 
@@ -331,19 +399,17 @@ class NotConnectedVPN:
             label = "Network issues detected."
             ip = "None"
 
-        dv.country_servername_label.props.label = label # noqa
-        dv.ip_label.props.label = ip # noqa
-        label_ctx = dv.country_servername_label.get_style_context() # noqa
+        dv.country_servername_label.props.label = \
+            label
+        dv.ip_label.props.label = ip
+        label_ctx = dv.country_servername_label.get_style_context()
         button_ctx = dv.main_dashboard_button.get_style_context()
-        grid_ctx = dv.connection_information_grid.get_style_context()
         if not label_ctx.has_class("warning-color"):
             label_ctx.add_class("warning-color")
         if button_ctx.has_class("transparent-white"):
             button_ctx.remove_class("transparent-white")
         if not button_ctx.has_class("transparent"):
             button_ctx.add_class("transparent")
-        if grid_ctx.has_class("connection_information_box_gradient"):
-            grid_ctx.remove_class("connection_information_box_gradient")
 
         try:
             dv.main_dashboard_button.disconnect_by_func(
@@ -355,7 +421,7 @@ class NotConnectedVPN:
         dv.main_dashboard_button.connect(
             "clicked", dv.on_click_quick_connect
         )
-        dv.main_dashboard_button.props.label = "Quick Connect" # noqa
+        dv.main_dashboard_button.props.label = "Quick Connect"
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         dv.gtk_property_setter(
@@ -375,18 +441,19 @@ class ConnectedVPN:
             country_to_setup_flag = state.countries[1]
         dv.on_connect_load_sidebar_flag(country_to_setup_flag)
         country_servername = country + " {}".format(state.servername)
-        dv.country_servername_label.props.label = country_servername # noqa
+        dv.country_servername_label.props.label = country_servername
         dv.ip_label.props.label = state.ip
-        dv.serverload_label.props.label = state.load + "% " + "Load" # noqa
+        dv.serverload_label.props.label = state.load + "% " + "Load"
         protocol = state.protocol
-        if state.protocol in SUPPORTED_PROTOCOLS[ProtocolImplementationEnum.OPENVPN]: # noqa
+        if state.protocol in SUPPORTED_PROTOCOLS[
+            ProtocolImplementationEnum.OPENVPN
+        ]:
             protocol = "OpenVPN ({})".format(
                 state.protocol.value.upper()
             )
         dv.connected_protocol_label.props.label = protocol
-        label_ctx = dv.country_servername_label.get_style_context() # noqa
+        label_ctx = dv.country_servername_label.get_style_context()
         button_ctx = dv.main_dashboard_button.get_style_context()
-        grid_ctx = dv.connection_information_grid.get_style_context()
 
         if label_ctx.has_class("warning-color"):
             label_ctx.remove_class("warning-color")
@@ -394,8 +461,6 @@ class ConnectedVPN:
             button_ctx.remove_class("transparent")
         if not button_ctx.has_class("transparent-white"):
             button_ctx.add_class("transparent-white")
-        if not grid_ctx.has_class("connection_information_box_gradient"):
-            grid_ctx.add_class("connection_information_box_gradient")
 
         try:
             dv.main_dashboard_button.disconnect_by_func(
@@ -410,7 +475,7 @@ class ConnectedVPN:
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED)
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
-        dv.gtk_property_setter(dv.SET_UI_CONNECTED) # noqa
+        dv.gtk_property_setter(dv.SET_UI_CONNECTED)
 
 
 class ConnectVPNPreparing:
@@ -419,9 +484,9 @@ class ConnectVPNPreparing:
         dv.connecting_overlay_spinner.props.visible = True
         dv.connecting_progress_bar.props.visible = True
         dv.connecting_progress_bar.set_fraction(0.2)
-        dv.connecting_to_label.props.label = "Preparing ProtonVPN Connection" # noqa
-        dv.connecting_to_country_servername_label.props.label = "" # noqa
-        dv.cancel_connect_overlay_button.props.visible = False # noqa
+        dv.connecting_to_label.props.label = "Preparing ProtonVPN Connection"
+        dv.connecting_to_country_servername_label.props.label = ""
+        dv.cancel_connect_overlay_button.props.visible = False
         dv.connecting_overlay_box.props.visible = True
 
 
