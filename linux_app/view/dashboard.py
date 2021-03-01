@@ -24,6 +24,27 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
 class DashboardView(Gtk.ApplicationWindow):
+    """
+    Dashboard view. GTK Composite object.
+
+    Renders everything related to the user Dashboard. It's different
+    views are managed by the listener dashboard_view_model.state,
+    which is updated once certain operations are concluded in the ViewModel.
+
+    Different view types are rendered in the method render_view_state, which
+    attempts to match the instance state defined in dashboard_view_model.
+    The view types are divided into own classes which receive the current
+    instance of DashboardView and the proceed to manipulate the UI. Creating
+    new classes was preffered instead of methods to facilitate code reading
+    and clear separation of view states.
+
+
+    Once connections are started or ended, the UI will react accordingly.
+    Also, background processes started with Glib.timeout_add_seconds are
+    constantly monitored and tracked to make sure that there are no
+    multiple background simillar processes running at the same time.
+    Ie: Two existing processes which update the network speed each second.
+    """
     __gtype_name__ = 'DashboardView'
 
     # Objects
@@ -154,6 +175,14 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_view_model.on_startup()
 
     def on_click_disconnect(self, gtk_button_object):
+        """On click on Disconnect event handler.
+
+        Disconnects from VPN.
+
+        Args:
+            gtk_button_object (Gtk.Button)
+
+        """
         logger.info("Clicked on disconnect")
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.remove_background_glib(
@@ -162,11 +191,26 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_view_model.on_disconnect()
 
     def on_click_quick_connect(self, gtk_button_object):
+        """On click Quick Connect event handler.
+
+        Quickly connect to a VPN server.
+
+        Args:
+            gtk_button_object (Gtk.Button)
+        """
         logger.info("Clicked on quick connect")
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.dashboard_view_model.on_quick_connect()
 
     def render_view_state(self, state):
+        """Render view state.
+
+        State is continuosly being monitored. The state monitor is
+        initialized in the __init__ method.
+        Based on each instance, it will call a specific class, passing
+        the instance of this current object and the state, so that the
+        UI can be updated accordingly.
+        """
         if isinstance(state, Loading):
             InitLoad(self, state)
         elif isinstance(state, NotConnectedToVPNInfo):
@@ -180,15 +224,41 @@ class DashboardView(Gtk.ApplicationWindow):
         elif isinstance(state, ConnectError):
             ConnectVPNError(self, state)
         elif isinstance(state, NetworkSpeed):
-            self.upload_speed_label.props.label = state.upload
-            self.download_speed_label.props.label = state.download
+            UpdateNetworkSpeed(self, state)
 
     def on_click_hide_connect_overlay(
         self, gtk_button_object, gio_task_object
     ):
+        """On click hides connect overlay.
+
+        If a user attempts to connect to VPN but it fails for some reason,
+        the UI is updated accordingly with the message and a close button is
+        displayed to the user so that it can close the window and attempt to
+        connect again or do other things.
+        """
         self.gtk_property_setter(self.SET_UI_NOT_CONNECTED)
 
     def gtk_property_setter(self, *args):
+        """GTK property setter.
+
+        Args: Following structure:
+        {
+            "property": "visible",
+            "objects": [
+                (self.connected_protocol_label, True),
+            ]
+        }
+
+        Useful to update multiple UI properties in batches.
+        Each dict @property value contains the property that
+        is desired to change, which then will act on a list of
+        @objects. This list contains a tuple, where the first
+        argument is the object and the second argument is the value
+        that the object property is to be updated to.
+
+        Not useful for only for a couple of UI updates, It is used best
+        to update to a certain pre-defined style or state.
+        """
         for property_group in args:
             property = property_group.get("property")
             objects = property_group.get("objects")
@@ -196,47 +266,61 @@ class DashboardView(Gtk.ApplicationWindow):
                 gtk_object, value = object
                 gtk_object.set_property(property, value)
 
-    def on_display_popover(self, gio_simple_action, _):
+    def on_display_main_popover_menu(self, gio_simple_action, _):
+        """On display main popover event handler.
+
+        Displays top menu popover.
+
+        Args:
+            gio_simple_action(Gtk.Action)
+
+        """
         self.dashboard_popover_menu.popup()
 
     def setup_icons_images(self):
+        """Sets up all icons and images at application start.
+
+        All icons and images that need to be loaded and setup
+        on window start are managed here. With the only exception
+        of the sidebar flag.
+        """
         logger.info("Setting up dashboard images and icons")
 
         # Get pixbuf objects
-        protonvpn_headerbar_pixbuf = self.get_icon_pixbuf(
+        protonvpn_headerbar_pixbuf = self.get_icon_pixbuf_from_name(
             "protonvpn-sign-green.svg",
             width=50, height=50,
         )
-        logo_pixbuf = self.get_image_pixbuf(
+        logo_pixbuf = self.get_image_pixbuf_from_name(
             "protonvpn-logo-white.svg",
             width=325, height=250
         )
-        window_icon = self.get_icon_pixbuf(
+        window_icon = self.get_icon_pixbuf_from_name(
             "protonvpn_logo.png",
         )
-        upload_pixbuff = self.get_icon_pixbuf(
-            "down-icon.svg",
-            width=15, height=15
-        )
-        download_pixbuff = self.get_icon_pixbuf(
+        upload_pixbuff = self.get_icon_pixbuf_from_name(
             "up-icon.svg",
             width=15, height=15
         )
-        feature_button_secure_core_pixbuf = self.get_icon_pixbuf(
+        download_pixbuff = self.get_icon_pixbuf_from_name(
+            "down-icon.svg",
+            width=15, height=15
+        )
+        feature_button_secure_core_pixbuf = self.get_icon_pixbuf_from_name(
             self.features_icon_set_dict[
                 DashboardFeaturesEnum.SECURE_CORE
             ][DashboardSecureCoreIconEnum.OFF],
             width=self.feature_button_icon_width,
             height=self.feature_button_icon_height
         )
-        feature_button_netshield_pixbuf = self.get_icon_pixbuf(
+        feature_button_netshield_pixbuf = self.get_icon_pixbuf_from_name(
             self.features_icon_set_dict[
                 DashboardFeaturesEnum.NETSHIELD
             ][DashboardNetshieldIconEnum.OFF],
             width=self.feature_button_icon_width,
             height=self.feature_button_icon_height
         )
-        feature_button_killswitch_pixbuf = self.get_icon_pixbuf(
+        feature_button_killswitch_pixbuf = self.get_icon_pixbuf_from_name(
             self.features_icon_set_dict[
                 DashboardFeaturesEnum.KILLSWITCH
             ][DashboardKillSwitchIconEnum.OFF],
@@ -261,9 +345,22 @@ class DashboardView(Gtk.ApplicationWindow):
 
         self.set_icon(window_icon)
 
-    def get_icon_pixbuf(
+    def get_icon_pixbuf_from_name(
         self, icon_name, width=None, height=None
     ):
+        """Gets the icon pixbuff for the specified filename.
+
+        If width and/or height are not provided, then the icon
+        is set with original values. Else, the icon is resized.
+
+        Args:
+            icon_name (string):
+            width (int|float): optional
+            height (int|float): optional
+
+        Returns:
+            GdkPixbuf instance with loaded image
+        """
         if width and height:
             return GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=os.path.join(
@@ -283,9 +380,22 @@ class DashboardView(Gtk.ApplicationWindow):
             )
         )
 
-    def get_image_pixbuf(
+    def get_image_pixbuf_from_name(
         self, image_name, width=None, height=None
     ):
+        """Gets the icon pixbuff for the specified filename.
+
+        If width and/or height are not provided, then the image
+        is set with original values. Else, the image is resized.
+
+        Args:
+            icon_name (string):
+            width (int|float): optional
+            height (int|float): optional
+
+        Returns:
+            GdkPixbuf instance with loaded image
+        """
         if width and height:
             return GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=os.path.join(
@@ -305,6 +415,19 @@ class DashboardView(Gtk.ApplicationWindow):
         )
 
     def on_connect_load_sidebar_flag(self, country):
+        """Loads sidebar flag on connect.
+
+        Loads corresponding country flag to the country.
+        Since the ViewModel returns a server object,
+        we can easily access the country name and match it
+        against our own code of country_codes:country_names.
+
+        If it finds a matching country, it will setup the country
+        flag, else it will just return without any errors.
+
+        Args:
+            country (string): country name
+        """
         try:
             matching_code = list({
                 country_code: _country
@@ -315,7 +438,7 @@ class DashboardView(Gtk.ApplicationWindow):
         except IndexError:
             return
 
-        sidebar_flag_pixbuff = self.get_image_pixbuf(
+        sidebar_flag_pixbuff = self.get_image_pixbuf_from_name(
             "sidebar-flags/" + matching_code + ".jpg",
             width=400,
             height=400,
@@ -323,6 +446,7 @@ class DashboardView(Gtk.ApplicationWindow):
         self.sidebar_country_image.set_from_pixbuf(sidebar_flag_pixbuff)
 
     def setup_css(self):
+        """Setup CSS styles."""
         logger.info("Setting up css")
         self.provider = Gtk.CssProvider()
         self.provider.load_from_path(
@@ -336,6 +460,20 @@ class DashboardView(Gtk.ApplicationWindow):
         )
 
     def setup_actions(self):
+        """Setup actions.
+
+        From documentation:
+            Actions represent operations that the user
+            can perform, along with some information on
+            how it should be presented in the interface.
+            Each action provides methods to create icons,
+            menu items and toolbar items representing itself.
+        (https://developer.gnome.org/gtk3/unstable/GtkAction.html)
+
+        Actions can be mapped to a certain user action (event), instead
+        of directly mapping event handlers. Should be used when possible
+        to keep UI code portable.
+        """
         logger.info("Setting up actions")
 
         # create action
@@ -345,7 +483,7 @@ class DashboardView(Gtk.ApplicationWindow):
         )
 
         # connect action to callback
-        headerbar_menu.connect("activate", self.on_display_popover)
+        headerbar_menu.connect("activate", self.on_display_main_popover_menu)
         cancel_connect_overlay_button.connect(
             "activate", self.on_click_hide_connect_overlay
         )
@@ -355,6 +493,14 @@ class DashboardView(Gtk.ApplicationWindow):
         self.add_action(cancel_connect_overlay_button)
 
     def add_background_glib(self, glib_source_type: GLibEventSourceEnum):
+        """Add background GLib process.
+
+        It intially checks if there is an existent process, so that I does
+        not create duplicates (or even more).
+
+        Args:
+            glib_source_type (GLibEventSourceEnum)
+        """
         if self.glib_source_tracker[
                 glib_source_type
         ] == None:
@@ -369,6 +515,14 @@ class DashboardView(Gtk.ApplicationWindow):
             )
 
     def remove_background_glib(self, glib_source_type: GLibEventSourceEnum):
+        """Remove background GLib process.
+
+        It intially checks there is an existent process, thus avoiding
+        any unnenecessary errors/warnings or crashes.
+
+        Args:
+            glib_source_type (GLibEventSourceEnum)
+        """
         if self.glib_source_tracker[glib_source_type]:
             logger.debug("{} exists, removing source".format(glib_source_type))
             GLib.source_remove(
@@ -382,6 +536,10 @@ class DashboardView(Gtk.ApplicationWindow):
 
 
 class InitLoad:
+    """UI class.
+
+    Setup the UI to an initial loading state (app start).
+    """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
         dv.overlay_bottom_label.props.label = ""\
@@ -390,7 +548,22 @@ class InitLoad:
         dv.overlay_box.props.visible = True
 
 
+class UpdateNetworkSpeed:
+    """UI class.
+
+    Updates network speeds labels.
+    """
+    def __init__(self, dashboard_view, state):
+        dv = dashboard_view
+        dv.upload_speed_label.props.label = state.upload
+        dv.download_speed_label.props.label = state.download
+
+
 class NotConnectedVPN:
+    """UI class.
+
+    Setup the UI to not connected state.
+    """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
         label = "You are not connected"
@@ -430,6 +603,10 @@ class NotConnectedVPN:
 
 
 class ConnectedVPN:
+    """UI class.
+
+    Setup the UI to connected state.
+    """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
         country = "{}".format(state.countries[0])
@@ -479,6 +656,10 @@ class ConnectedVPN:
 
 
 class ConnectVPNPreparing:
+    """UI class.
+
+    Setup the UI during VPN prepare state.
+    """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
         dv.connecting_overlay_spinner.props.visible = True
@@ -491,6 +672,10 @@ class ConnectVPNPreparing:
 
 
 class ConnectVPNInProgress:
+    """UI class.
+
+    Setup the UI during VPN connection in progress state.
+    """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
         new_value = dv.connecting_progress_bar.get_fraction() + 0.5
@@ -503,6 +688,11 @@ class ConnectVPNInProgress:
 
 
 class ConnectVPNError:
+    """UI class.
+
+    Setup the UI state when an error occurs
+    during attempt to connect.
+    """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
         dv.connecting_to_label.set_text(

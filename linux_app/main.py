@@ -7,20 +7,24 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio, Gtk
 from proton.constants import VERSION as proton_version
+from protonvpn_nm_lib import protonvpn
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
 
 from .constants import APP_VERSION
 from .logger import logger
-from .view_model.dashboard import DashboardViewModel
-from .view_model.login import LoginViewModel
 from .model.dashboard import DashboardModel
 from .view.dashboard import DashboardView
 from .view.login import LoginView
-from protonvpn_nm_lib import protonvpn
+from .view_model.dashboard import DashboardViewModel
+from .view_model.login import LoginViewModel
 
 
 class ProtonVPN(Gtk.Application):
+    """ProtonVPN GTK Applcation.
 
+    Windows are composite objects. Follows
+    MVVM pattern.
+    """
     def __init__(self):
         super().__init__(
             application_id='com.protonvpn.www',
@@ -29,6 +33,11 @@ class ProtonVPN(Gtk.Application):
         self.protonvpn = protonvpn
 
     def do_startup(self):
+        """Default GTK method.
+
+        Runs at application startup, to load
+        any necessary UI elements.
+        """
         logger.info(
             "\n"
             + "---------------------"
@@ -73,14 +82,20 @@ class ProtonVPN(Gtk.Application):
         logger.info("Startup successful")
 
     def on_quit(self, *args):
+        """On app quit event hanlder."""
         logger.info("Quit app")
         self.quit()
 
     def on_display_preferences(self, *args):
+        """On app display preferences event hanlder."""
         logger.info("Display preferences")
         print("To-do")
 
     def do_activate(self):
+        """Default GTK method.
+
+        Runs at window startup.
+        """
         win = self.props.active_window
 
         if not win:
@@ -94,6 +109,11 @@ class ProtonVPN(Gtk.Application):
         win().present()
 
     def get_login_window(self):
+        """Get login window.
+
+        Returns:
+            LoginView
+        """
         login_view_model = LoginViewModel(self.protonvpn)
         return LoginView(
             application=self,
@@ -102,6 +122,11 @@ class ProtonVPN(Gtk.Application):
         )
 
     def get_dashboard_window(self):
+        """Get dashboard window.
+
+        Returns:
+            DashboardView
+        """
         dashboard_model = DashboardModel(self.protonvpn)
         dashboard_view_model = DashboardViewModel(
             self.protonvpn, dashboard_model

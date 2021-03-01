@@ -3,7 +3,7 @@ import os
 from .enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                     DashboardSecureCoreIconEnum)
 
-APP_VERSION = "0.0.2"
+APP_VERSION = "0.0.3"
 ABSOLUTE_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 ASSETS_DIR_PATH = os.path.join(ABSOLUTE_DIR_PATH, "assets")
 
