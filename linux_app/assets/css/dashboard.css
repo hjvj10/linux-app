@@ -12,6 +12,10 @@ label.ip{
     font-weight: bold;
 }
 
+#download-speed-label, #upload-speed-label{
+    font-size: 14px;
+}
+
 scrolledwindow, viewport{
     border: none;
 }
@@ -139,35 +143,29 @@ grid.dashboard_grid notebook grid{
     background-color: @background-gradient-second-color
 }
 
-grid.dashboard_grid notebook #top-grid-countries-tab{
+#dashboard-button-box-grid, #dashboard-search-entry-grid{
 	margin: 10px 30px 10px 30px
 }
 
-grid.dashboard_grid notebook #top-grid-countries-tab > *{
-	margin-top: 10px;
-	margin-bottom: 5px;
+#dashboard-button-box-grid{
+	margin-top: 15px
 }
 
-grid.dashboard_grid notebook #top-grid-countries-tab > button{
+#dashboard-button-box-grid button{
 	border: 0.5px solid rgba(0, 0, 0, 0.2);
 	outline: none;
 	box-shadow: 2px 2px 2px  black;
 	border-radius: 2px;
 }
 
-grid.dashboard_grid notebook #top-grid-countries-tab > button:nth-child(3){
+#dashboard-button-box-grid > button:nth-child(3){
 	margin-left: 20px;
 	margin-right: 20px;
 }
 
-grid.dashboard_grid notebook #top-grid-countries-tab > entry{
+#dashboard-search-entry-grid entry{
 	background-color: rgba(18, 22, 31, 0.3);
 	border-radius: 0px;
 	border: 1px solid rgba(150, 150, 150, 0.3);
     padding-top: 5px;
-}
-
-tab.inactive-tab{
-    background-color: rgb(25, 31, 36);
-    color: gray;
 }

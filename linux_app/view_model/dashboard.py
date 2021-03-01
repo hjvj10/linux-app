@@ -110,6 +110,11 @@ class DashboardViewModel:
         DbusVPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
+    one_byte_in_kBs = 0.000976
+    one_byte_in_mBs = 9.76e-7
+    one_kilobyte_in_bytes = 1000
+    one_megabyte_in_bytes = 1024590.163934
+
     def __init__(self, protonvpn, dashboard_model):
         self.protonvpn = protonvpn
         self.dashboard_model = dashboard_model
@@ -318,4 +323,22 @@ class DashboardViewModel:
             for now, last
             in zip(tot, last_tot)
         ]
-        return [round(ul), round(dl)]
+        ul = self.convert_network_speed(ul)
+        dl = self.convert_network_speed(dl)
+
+        return [ul, dl]
+
+    def convert_network_speed(self, byte_per_second):
+        if (
+            byte_per_second >= self.one_kilobyte_in_bytes
+            and byte_per_second < self.one_megabyte_in_bytes
+        ):
+            return str(
+                round((byte_per_second * self.one_byte_in_kBs), 1)
+            ) + " KB/s"
+        elif byte_per_second >= self.one_megabyte_in_bytes:
+            return str(
+                round((byte_per_second * self.one_byte_in_mBs), 1)
+            ) + " MB/s"
+        else:
+            return str(int(byte_per_second)) + " B/s"

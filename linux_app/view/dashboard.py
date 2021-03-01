@@ -180,8 +180,8 @@ class DashboardView(Gtk.ApplicationWindow):
         elif isinstance(state, ConnectError):
             ConnectVPNError(self, state)
         elif isinstance(state, NetworkSpeed):
-            self.upload_speed_label.props.label = state.upload + " B/s"
-            self.download_speed_label.props.label = state.download + " B/s"
+            self.upload_speed_label.props.label = state.upload
+            self.download_speed_label.props.label = state.download
 
     def on_click_hide_connect_overlay(
         self, gtk_button_object, gio_task_object
