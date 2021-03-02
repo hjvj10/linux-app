@@ -8,7 +8,7 @@ Official ProtonVPN App for Linux based systems.
 """
 
 setup(
-    name="linux-app",
+    name="protonvpn-gui",
     version=APP_VERSION,
     packages=find_packages(),
     entry_points={
