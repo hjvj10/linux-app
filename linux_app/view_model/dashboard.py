@@ -11,7 +11,7 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     DbusVPNConnectionReasonEnum,
                                     DbusVPNConnectionStateEnum, FeatureEnum,
                                     NetworkManagerConnectionTypeEnum)
-from rx.subject.replaysubject import ReplaySubject
+from ..rx.subject.replaysubject import ReplaySubject
 
 from ..logger import logger
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 from protonvpn_nm_lib import exceptions
-from rx.subject.replaysubject import ReplaySubject
+from ..rx.subject.replaysubject import ReplaySubject
 
 
 class LoginState(Enum):
@@ -38,6 +38,6 @@ class LoginViewModel:
             self.protonvpn._login(username, password)
             result = LoginState.SUCCESS
         except (exceptions.ProtonVPNException, Exception) as e:
-            result = LoginError("{}".format(e.message))
+            result = LoginError("{}".format(str(e)))
 
         self.state.on_next(result)
