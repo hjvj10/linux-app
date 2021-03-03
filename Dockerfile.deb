@@ -6,6 +6,8 @@ ENV git_repo_client=${git_repo_client:-GIT_REPO_CLIENT}
 ARG git_branch
 ENV git_branch=${git_branch:-GIT_BRANCH}
 
+ARG pkgname
+ENV pkgname=${pkgname:-linux-app}
 RUN apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get -y install \
     tzdata \
