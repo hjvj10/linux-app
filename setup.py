@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import find_packages, setup
-from linux_app.constants import APP_VERSION
+from protonvpn_gui.constants import APP_VERSION
 
 long_description = """
 Official ProtonVPN App for Linux based systems.
@@ -13,7 +13,7 @@ setup(
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "protonvpn = linux_app.main:main"
+            "protonvpn = protonvpn_gui.main:main"
         ]
     },
     description="Official ProtonVPN App for Linux",

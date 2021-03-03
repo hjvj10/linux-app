@@ -43,8 +43,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUI
 rm -rf $RPM_BUILD_ROOT
 
 %files -f INSTALLED_FILES
-%{python3_sitelib}/linux_app/
-%{python3_sitelib}/linux_app-%{version}*.egg-info/
+%{python3_sitelib}/protonvpn_gui/
+%{python3_sitelib}/protonvpn_gui-%{version}*.egg-info/
 %defattr(-,root,root)
 
 %changelog
