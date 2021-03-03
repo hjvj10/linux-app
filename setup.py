@@ -26,9 +26,8 @@ setup(
     include_package_data=True,
     license="GPLv3",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Topic :: Security",
-        "Environment :: Console",
         "Intended Audience :: End Users/Desktop",
         "Operating System :: POSIX :: Linux",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

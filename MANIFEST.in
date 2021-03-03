@@ -1,0 +1,11 @@
+include *.cfg
+recursive-include linux_app *.css
+recursive-include linux_app *.ui
+recursive-include linux_app *.svg
+recursive-include linux_app *.png
+include LICENSE
+exclude tests/
+exclude .gitignore
+exclude *.sh
+exclude *.yml
+exclude Dockerfile
