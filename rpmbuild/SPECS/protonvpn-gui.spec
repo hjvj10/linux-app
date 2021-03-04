@@ -14,7 +14,6 @@ License: GPLv3
 Url: https://github.com/ProtonVPN
 Vendor: Proton Technologies AG <opensource@proton.me>
 Source0: %{unmangled_name}-%{version}.tar.gz
-Group: Development/Libraries
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
