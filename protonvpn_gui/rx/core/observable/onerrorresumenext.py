@@ -1,6 +1,7 @@
 from typing import Union
 from asyncio import Future
 
+from ... import from_future
 from ...scheduler import CurrentThreadScheduler
 from ...core import Observable
 from ...disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
@@ -37,7 +38,7 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
 
             # Allow source to be a factory method taking an error
             source = source(state) if callable(source) else source
-            current = ...from_future(source) if is_future(source) else source
+            current = from_future(source) if is_future(source) else source
 
             d = SingleAssignmentDisposable()
             subscription.disposable = d

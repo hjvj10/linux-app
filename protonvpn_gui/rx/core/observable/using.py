@@ -1,5 +1,6 @@
 from typing import Callable
 
+from ... import throw
 from ...core import Observable
 from ...core import typing
 from ...disposable import CompositeDisposable, Disposable
@@ -35,7 +36,7 @@ def _using(resource_factory: Callable[[], typing.Disposable],
 
             source = observable_factory(resource)
         except Exception as exception:  # pylint: disable=broad-except
-            d = ...throw(exception).subscribe(observer, scheduler=scheduler)
+            d = throw(exception).subscribe(observer, scheduler=scheduler)
             return CompositeDisposable(d, disp)
 
         return CompositeDisposable(source.subscribe(observer, scheduler=scheduler), disp)
