@@ -33,7 +33,7 @@ class LoginViewModel:
     def login_sync(self, username, password):
         result = None
         try:
-            self.protonvpn._login(username, password)
+            self.protonvpn.login(username, password)
             result = LoginState.SUCCESS
         except (exceptions.ProtonVPNException, Exception) as e:
             result = LoginError("{}".format(str(e)))

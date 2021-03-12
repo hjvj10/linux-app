@@ -43,7 +43,8 @@ class ConnectedToVPNInfo:
     protocol: str
     ip: str
     load: str
-    country_code: str
+    entry_country_code: str
+    exit_country_code: str
 
 
 @dataclass
@@ -55,6 +56,8 @@ class NetworkSpeed:
 @dataclass
 class NotConnectedToVPNInfo:
     ip: str
+    isp: str
+    country: str
 
 
 class DashboardViewModel:
@@ -153,18 +156,18 @@ class DashboardViewModel:
         This class updates the UI state accordingly.
         """
         try:
-            self.protonvpn._ensure_connectivity()
+            self.protonvpn.ensure_connectivity()
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
             result = NotConnectedToVPNInfo(
-                ip=None
+                ip=None,
+                isp=None,
+                country=None
             )
             self.state.on_next(result)
             return
 
-        if len(self.protonvpn._get_protonvpn_connection(
-            NetworkManagerConnectionTypeEnum.ACTIVE
-        )) < 1:
+        if not self.protonvpn.get_active_protonvpn_connection():
             result = self.get_not_connected_state()
         else:
             result = self.get_connected_state()
@@ -201,7 +204,7 @@ class DashboardViewModel:
             connection_type_enum (ConnectionTypeEnum)
         """
         try:
-            response = self.protonvpn._setup_connection(
+            server = self.protonvpn.setup_connection(
                 connection_type_enum
             )
         except (exceptions.ProtonVPNException, Exception) as e:
@@ -212,35 +215,35 @@ class DashboardViewModel:
             return
 
         # step 1
-        servername = response[ConnectionMetadataEnum.SERVER.value]
-        protocol = response[ConnectionMetadataEnum.PROTOCOL.value]
-        server_info = self.protonvpn._get_server_information(servername)
+        connection_metadata = self.protonvpn.get_connection_metadata()
+        protocol = connection_metadata[ConnectionMetadataEnum.PROTOCOL.value]
         result = ConnectInProgressInfo(
-            country=server_info.COUNTRY,
-            city=server_info.CITY,
-            servername=servername,
+            country=self.protonvpn.country.get_country_name(
+                server.exit_country
+            ),
+            city=server.city,
+            servername=server.name,
             protocol=protocol.upper()
         )
 
         self.state.on_next(result)
 
         # step 2
-        respone = self.protonvpn._connect()
-        try:
-            state = respone[DbusMonitorResponseEnum.STATE]
-        except TypeError as e:
-            result = ConnectError(
-                str(e)
-            )
-            self.state.on_next(result)
-            return
+        connect_response = self.protonvpn.connect()
+
+        logger.info("Dbus response: {}".format(connect_response))
+
+        response = connect_response[
+            DbusMonitorResponseEnum.RESPONSE
+        ]
+        state = response[DbusMonitorResponseEnum.STATE]
 
         # step 3
         if state == DbusVPNConnectionStateEnum.IS_ACTIVE:
             result = self.get_connected_state()
         else:
             result = ConnectError(
-                self._conn_reason_msg[respone[DbusMonitorResponseEnum.REASON]]
+                self._conn_reason_msg[response[DbusMonitorResponseEnum.REASON]]
             )
 
         self.state.on_next(result)
@@ -254,7 +257,7 @@ class DashboardViewModel:
         """
         result = self.get_not_connected_state()
         try:
-            self.protonvpn._disconnect()
+            self.protonvpn.disconnect()
         except exceptions.ConnectionNotFound:
             pass
 
@@ -267,23 +270,24 @@ class DashboardViewModel:
         Returns:
             ConnectedToVPNInfo
         """
-        connection_status = self.protonvpn._get_active_connection_status(False)
-        server_info = connection_status[
+        connection_status = self.protonvpn.get_connection_status()
+        server = connection_status[
             ConnectionStatusEnum.SERVER_INFORMATION
         ]
 
-        countries = [server_info.COUNTRY]
-        if FeatureEnum.SECURE_CORE in server_info.FEATURE_LIST:
-            countries.append(server_info.ENTRY_COUNTRY)
+        countries = [server.exit_country]
+        if FeatureEnum.SECURE_CORE in [FeatureEnum(server.features)]:
+            countries.append(server.ENTRY_COUNTRY)
 
         result = ConnectedToVPNInfo(
             protocol=connection_status[ConnectionStatusEnum.PROTOCOL],
-            servername=server_info.SERVERNAME,
+            servername=server.name,
             countries=countries,
-            city=server_info.CITY,
+            city=server.city,
             ip=connection_status[ConnectionStatusEnum.SERVER_IP],
-            load=str(server_info.LOAD),
-            country_code="server_info.COUNTRY"
+            load=str(int(server.load)),
+            entry_country_code=server.entry_country,
+            exit_country_code=server.exit_country
         )
 
         return result
@@ -294,8 +298,11 @@ class DashboardViewModel:
         Returns:
             ConnectedToVPNInfo
         """
+        location = self.utils.get_ip()
         result = NotConnectedToVPNInfo(
-            ip=self.utils.get_ip()
+            ip=location.IP,
+            isp=location.ISP,
+            country=location.COUNTRY_CODE
         )
 
         return result
@@ -325,10 +332,9 @@ class DashboardViewModel:
         a thread. It is mainly used to track when a VPN connection
         is stopped and/or removed.
         """
-        protonvpn_connection = self.protonvpn._get_protonvpn_connection(
-            NetworkManagerConnectionTypeEnum.ACTIVE
-        )
-        if len(protonvpn_connection) < 1:
+        protonvpn_connection = self.protonvpn\
+            .get_active_protonvpn_connection()
+        if not protonvpn_connection:
             result = self.get_not_connected_state()
 
             self.state.on_next(result)
@@ -359,7 +365,7 @@ class DashboardViewModel:
         This method is and should be executed within a python thread.
         """
         try:
-            self.protonvpn._refresh_servers()
+            self.protonvpn.session.refresh_servers()
         except Exception as e:
             logger.exception(e)
 

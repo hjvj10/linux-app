@@ -4,13 +4,13 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, GObject
 from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.country_codes import country_codes
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 
-from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
-                         KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
+from ..constants import (CSS_DIR_PATH, FLAGS_DIR_PATH, ICON_DIR_PATH,
+                         IMG_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
                          SECURE_CORE_ICON_SET, UI_DIR_PATH)
 from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
                      DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
@@ -20,6 +20,7 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
                                     ConnectPreparingInfo, Loading,
                                     NetworkSpeed, NotConnectedToVPNInfo)
+from protonvpn_nm_lib import Country
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -47,18 +48,23 @@ class DashboardView(Gtk.ApplicationWindow):
     """
     __gtype_name__ = 'DashboardView'
 
-    # Objects
+    # Other objects
     headerbar = Gtk.Template.Child()
-    dashboard_popover_menu = Gtk.Template.Child()
 
     overlay_spinner = Gtk.Template.Child()
     connecting_overlay_spinner = Gtk.Template.Child()
+    connecting_progress_bar = Gtk.Template.Child()
 
+    server_list_scrolled_window = Gtk.Template.Child()
+    server_list_view_port = Gtk.Template.Child()
+
+    # Popover menus
+    dashboard_popover_menu = Gtk.Template.Child()
+
+    # Buttons
     headerbar_menu_button = Gtk.Template.Child()
     main_dashboard_button = Gtk.Template.Child()
     cancel_connect_overlay_button = Gtk.Template.Child()
-
-    connecting_progress_bar = Gtk.Template.Child()
 
     # Labels
     country_servername_label = Gtk.Template.Child()
@@ -88,6 +94,7 @@ class DashboardView(Gtk.ApplicationWindow):
     ip_server_load_labels_grid = Gtk.Template.Child()
     connection_information_grid = Gtk.Template.Child()
     connection_speed_label_grid = Gtk.Template.Child()
+    server_list_grid = Gtk.Template.Child()
 
     # Boxes
     overlay_box = Gtk.Template.Child()
@@ -119,6 +126,7 @@ class DashboardView(Gtk.ApplicationWindow):
         DashboardFeaturesEnum.NETSHIELD: NETSHIELD_ICON_SET,
         DashboardFeaturesEnum.SECURE_CORE: SECURE_CORE_ICON_SET
     }
+    country_flag_size = (15, 15)
 
     def __init__(self, **kwargs):
         self.dashboard_view_model = kwargs.pop("view_model")
@@ -173,6 +181,164 @@ class DashboardView(Gtk.ApplicationWindow):
         self.setup_css()
         self.setup_actions()
         self.dashboard_view_model.on_startup()
+        self.populate_list()
+
+    def test(self, gtk_button_object, child_location):
+        print(gtk_button_object)
+        print(child_location)
+
+    def test2(self, widget, x, y, keyboard_mode, tooltip, button):
+        button.props.visible = True
+
+    def on_country_leave(self, gtk_event_box, gtk_even_crossing, gtk_button):
+        # if gtk_button.props.visible:
+        gtk_button.props.visible = False
+
+    def on_click_chevron(
+        self, gtk_button_object,
+        gtk_chevron_img, chevron_btn_ctx,
+        revealer
+    ):
+        if chevron_btn_ctx.has_class("chevron-unfold"):
+            chevron_btn_ctx.remove_class("chevron-unfold")
+            chevron_btn_ctx.add_class("chevron-fold")
+            revealer.set_reveal_child(True)
+            chevron_pixbuf = self.get_icon_pixbuf_from_name(
+                "chevron-hover.svg",
+                width=25, height=25
+            ).rotate_simple(GdkPixbuf.PixbufRotation.UPSIDEDOWN)
+        else:
+            chevron_btn_ctx.remove_class("chevron-fold")
+            chevron_btn_ctx.add_class("chevron-unfold")
+            revealer.set_reveal_child(False)
+            chevron_pixbuf = self.get_icon_pixbuf_from_name(
+                "chevron-default.svg",
+                width=25, height=25
+            ).rotate_simple(GdkPixbuf.PixbufRotation.NONE)
+
+        gtk_chevron_img.set_from_pixbuf(chevron_pixbuf)
+
+    def populate_list(self):
+        # use grid for each country: 3 column and  2 rows
+        # 1 col: flag
+        # 2 col: country name
+        # 3 col: grid - horizontal end
+        # 2 row: revealer with grid inside
+        button_dict = {}
+        for label_in in range(0, 10):
+
+            # Main row grid
+            row_grid = Gtk.Grid()
+            row_grid.set_hexpand(True)
+            row_grid.set_valign(Gtk.Align.FILL)
+            row_grid.props.visible = True
+            row_grid_ctx = row_grid.get_style_context()
+            row_grid_ctx.add_class("country-row")
+
+            # Child Revealer
+            revealer = Gtk.Revealer()
+            revealer_child_grid = Gtk.Grid()
+            revealer.set_reveal_child(False)
+            revealer.set_transition_type(Gtk.RevealerTransitionType.SLIDE_DOWN)
+
+            revealer.props.visible = True
+            revealer_child_grid.props.visible = True
+
+            for label_in_2 in range(0, 5):
+                test_label = Gtk.Label("Sub-row: ", label_in_2)
+                test_label.props.visible = True
+
+                revealer_child_grid.attach(test_label, 0, label_in_2, 1, 1)
+            revealer.add(revealer_child_grid)
+
+            # Left child grid - flag and country name
+            left_child_grid = Gtk.Grid()
+            left_child_grid.set_hexpand(True)
+            left_child_grid.set_halign(Gtk.Align.START)
+            left_child_grid.set_valign(Gtk.Align.CENTER)
+            left_child_grid.props.visible = True
+
+            # Left grid setup
+            label = Gtk.Label("Row {}".format(label_in))
+            flag = Gtk.Image()
+            label.set_valign(Gtk.Align.CENTER)
+            flag.set_valign(Gtk.Align.CENTER)
+            flag_ctx = flag.get_style_context()
+            flag_ctx.add_class("country-flag")
+            w, h = self.country_flag_size
+            flag.set_from_pixbuf(
+                self.get_image_pixbuf_from_name(
+                    "flags/small/pt.png",
+                    width=w, height=h
+                )
+            )
+
+            left_child_grid.attach(flag, 0, 0, 1, 1)
+            left_child_grid.attach_next_to(label, flag, Gtk.PositionType.RIGHT, 1, 1)
+
+            # Right child grid - connect button, features and chevron
+            right_child_grid = Gtk.Grid()
+            right_child_grid.set_hexpand(False)
+            right_child_grid.set_halign(Gtk.Align.END)
+            right_child_grid.set_valign(Gtk.Align.CENTER)
+            right_child_grid.props.visible = True
+
+            # Right grid setup
+            # Button
+            connect_country_button = Gtk.Button("CONNECT")
+            chevron_button = Gtk.Button()
+
+            connect_country_button.set_hexpand(True)
+            connect_country_button.set_halign(Gtk.Align.END)
+            connect_country_button.set_valign(Gtk.Align.CENTER)
+            chevron_button.set_valign(Gtk.Align.CENTER)
+            btn_ctx = connect_country_button.get_style_context()
+            chevron_btn_ctx = chevron_button.get_style_context()
+            btn_ctx.add_class("transparent")
+            chevron_button.set_hexpand(True)
+            chevron_button.set_halign(Gtk.Align.END)
+            chevron_btn_ctx.add_class("chevron-unfold")
+
+            # Image
+            chevron_img = Gtk.Image()
+
+            chevron_img.set_from_pixbuf(
+                self.get_icon_pixbuf_from_name(
+                    "chevron-default.svg",
+                    width=25, height=25
+                )
+            )
+            chevron_button.set_image(chevron_img)
+            connect_country_button.connect(
+                "clicked", self.test, (0, 0)
+            )
+            chevron_button.connect(
+                "clicked", self.on_click_chevron,
+                chevron_img, chevron_btn_ctx, revealer
+            )
+
+            right_child_grid.attach(chevron_button, 0, 0, 1, 1)
+            right_child_grid.attach_next_to(connect_country_button, chevron_button, Gtk.PositionType.LEFT, 1, 1)
+            row_grid.attach(revealer, 0, 1, 1, 1)
+
+
+            # Display children
+            flag.props.visible = True
+            label.props.visible = True
+            chevron_img.props.visible = True
+            chevron_button.props.visible = True
+
+            row_grid.attach(left_child_grid, 0, 0, 1, 1)
+            row_grid.attach_next_to(right_child_grid, left_child_grid, Gtk.PositionType.RIGHT, 1, 1)
+            row_grid.set_property("has-tooltip", True)
+            row_grid.connect("query-tooltip", self.test2, connect_country_button) 
+
+            event1 = Gtk.EventBox()
+            event1.set_visible_window(True)
+            event1.add(row_grid)
+            event1.props.visible = True
+            event1.connect("leave-notify-event", self.on_country_leave, connect_country_button)
+            self.server_list_grid.attach(event1, 0, label_in, 1, 1)
 
     def on_click_disconnect(self, gtk_button_object):
         """On click on Disconnect event handler.
@@ -414,35 +580,28 @@ class DashboardView(Gtk.ApplicationWindow):
             )
         )
 
-    def on_connect_load_sidebar_flag(self, country):
+    def on_connect_load_sidebar_flag(self, country_code):
         """Loads sidebar flag on connect.
 
         Loads corresponding country flag to the country.
         Since the ViewModel returns a server object,
-        we can easily access the country name and match it
-        against our own code of country_codes:country_names.
+        we can easily access the country code.
 
         If it finds a matching country, it will setup the country
         flag, else it will just return without any errors.
 
         Args:
-            country (string): country name
+            country_code (string): country IS code
         """
         try:
-            matching_code = list({
-                country_code: _country
-                for country_code, _country
-                in country_codes.items()
-                if country == _country
-            }.keys()).pop().lower()
-        except IndexError:
+            sidebar_flag_pixbuff = self.get_image_pixbuf_from_name(
+                "flags/large/" + country_code.lower() + ".jpg",
+                width=400,
+                height=400,
+            )
+        except gi.repository.GLib.Error:
             return
 
-        sidebar_flag_pixbuff = self.get_image_pixbuf_from_name(
-            "sidebar-flags/" + matching_code + ".jpg",
-            width=400,
-            height=400,
-        )
         self.sidebar_country_image.set_from_pixbuf(sidebar_flag_pixbuff)
 
     def setup_css(self):
@@ -568,7 +727,12 @@ class NotConnectedVPN:
         dv = dashboard_view
         label = "You are not connected"
         ip = state.ip
-        if state.ip is None:
+
+        if all(
+            attr is None
+            for attr
+            in [state.ip, state.isp, state.country]
+        ):
             label = "Network issues detected."
             ip = "None"
 
@@ -609,14 +773,13 @@ class ConnectedVPN:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
-        country = "{}".format(state.countries[0])
-        country_to_setup_flag = state.countries[0]
+        country = Country()
+        country = "{}".format(country.get_country_name(state.countries[0]))
         if len(state.countries) > 1:
             country = country + " >> {}".format(
-                state.countries[1]
+                country.get_country_name(state.countries[1])
             )
-            country_to_setup_flag = state.countries[1]
-        dv.on_connect_load_sidebar_flag(country_to_setup_flag)
+        dv.on_connect_load_sidebar_flag(state.exit_country_code)
         country_servername = country + " {}".format(state.servername)
         dv.country_servername_label.props.label = country_servername
         dv.ip_label.props.label = state.ip

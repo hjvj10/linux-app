@@ -7,7 +7,7 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio, Gtk
 from proton.constants import VERSION as proton_version
-from protonvpn_nm_lib import protonvpn
+from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
 
 from .constants import APP_VERSION
@@ -20,7 +20,7 @@ from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
 
 
-class ProtonVPN(Gtk.Application):
+class ProtonVPNGUI(Gtk.Application):
     """ProtonVPN GTK Applcation.
 
     Windows are composite objects. Follows
@@ -31,7 +31,6 @@ class ProtonVPN(Gtk.Application):
             application_id='com.protonvpn.www',
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
-        self.protonvpn = protonvpn
 
     def do_startup(self):
         """Default GTK method.
@@ -80,6 +79,7 @@ class ProtonVPN(Gtk.Application):
 
         self.add_action(quit_app)
         self.add_action(display_preferences)
+        self.protonvpn = protonvpn
         logger.info("Startup successful")
 
     def on_quit(self, *args):
@@ -100,7 +100,7 @@ class ProtonVPN(Gtk.Application):
         win = self.props.active_window
 
         if not win:
-            if not self.protonvpn._check_session_exists():
+            if not self.protonvpn.check_session_exists():
                 win = self.get_login_window
             else:
                 win = self.get_dashboard_window
@@ -140,6 +140,6 @@ class ProtonVPN(Gtk.Application):
 
 
 def main():
-    app = ProtonVPN()
+    app = ProtonVPNGUI()
     exit_status = app.run(sys.argv)
     sys.exit(exit_status)
