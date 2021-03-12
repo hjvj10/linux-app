@@ -1,0 +1,108 @@
+@import "common.css";
+
+grid.dashboard_grid label:not(.warning-color) {
+    color: rgb(255,255,255)
+}
+
+grid.dashboard_grid  button.transparent-white:hover label{
+    color: rgb(0,0,0);
+}
+
+label.ip{
+    font-weight: bold;
+}
+
+#download-speed-label, #upload-speed-label{
+    font-size: 14px;
+}
+
+scrolledwindow, viewport{
+    border: none;
+}
+
+.headerbar_menu_model{
+	padding: 5px 8px 5px 8px;
+}
+
+.dashboard_popover_menu box{
+    padding: 3px 5px;
+    margin: 3px 5px;
+}
+
+.dashboard_popover_menu modelbutton label{
+	margin-left: -10px
+}
+
+grid.connected_label_grid, grid.ip_server_load_labels_grid,
+grid.connection_speed_label_grid, button.transparent,
+button.transparent-white{
+    margin: 20px 30px 0px 30px
+}
+
+grid.connected_label_grid{
+    font-size: 17px;
+}
+
+grid.ip_label_grid {
+    font-size: 16px;
+}
+
+grid#connecting_overlay_grid > *{
+    margin: 20px 0px
+}
+
+grid#connecting_overlay_grid > button{
+    margin-top: 20px;
+}
+
+grid#connecting_overlay_grid > grid label{
+    font-size: 18px;
+}
+
+grid#connecting_overlay_grid > grid label#connecting_to_country_servername_label{
+    font-weight: bold;
+}
+
+grid#connecting_overlay_grid label{
+    color: rgb(255,255,255);
+}
+
+grid.connection_information_box{
+    padding-bottom: 80px;
+    background-image: linear-gradient(rgba(38, 42, 51, 0.6), rgb(10, 10, 10));
+}
+
+grid.connecting_overlay_grid label{
+    color: rgb(255,255,255);
+}
+
+.connection_speed_label_grid image{
+    margin: 0 5px;
+}
+
+#dashboard-button-box-grid, #dashboard-search-entry-grid{
+	margin: 10px 30px 10px 30px
+}
+
+#dashboard-button-box-grid{
+	margin-top: 15px
+}
+
+#dashboard-button-box-grid button{
+	border: 0.5px solid rgba(0, 0, 0, 0.2);
+	outline: none;
+	box-shadow: 2px 2px 2px  black;
+	border-radius: 2px;
+}
+
+#dashboard-button-box-grid > button:nth-child(3){
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+#dashboard-search-entry-grid entry{
+	background-color: rgba(18, 22, 31, 0.3);
+	border-radius: 0px;
+	border: 1px solid rgba(150, 150, 150, 0.3);
+    padding-top: 5px;
+}

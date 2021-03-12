@@ -1,0 +1,52 @@
+@import "common.css";
+
+popover#popover_login_menu{
+  background: linear-gradient(180deg, #262A33 0%, #303540 100%);
+}
+
+#popover_login_menu box button label {
+	color: @green-color;
+}
+
+label.entry_label{
+  color: rgb(127,127,127);
+  /* transition: all .115s ease-in-out; */
+  transition: all 5s ease-in-out;
+  margin-bottom: -10px;
+  font-size: 13px;
+}
+
+grid#bottom_grid{
+	margin-bottom: 10px
+}
+
+grid#middle_grid label{
+	color: rgb(255,255,255)
+}
+
+
+box#box_login_label_links{
+	margin-top: 35px
+}
+
+box#box_login_label_links > button{
+  background-color: transparent;
+  background-image: none;
+  padding: 0px;
+}
+
+box#box_login_label_links > button label{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: @green-color;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+}
+
+box#box_login_label_links > button:hover{
+  background-color: transparent;
+  background-image: none;
+  text-decoration: underline;
+}
+
