@@ -1,10 +1,6 @@
-import threading
-import time
 from dataclasses import dataclass
 
-import psutil
 from protonvpn_nm_lib import exceptions
-from protonvpn_nm_lib.constants import VIRTUAL_DEVICE_NAME
 from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     ConnectionStatusEnum, ConnectionTypeEnum,
                                     DbusMonitorResponseEnum,
@@ -72,7 +68,7 @@ class DashboardViewModel:
     Due to the fact that the protonvpn library uses GLib (which
     the UI is also running on) to add, start, remove and stop
     connections it is currently no possible to execute these
-    in a thread to make the UI more fluid. Thus, the main thread
+    in a thread/background to make the UI more fluid. Thus, the main thread
     is passed back and forth (from library to UI and vice-versa)
     to execute these processes. Thus, whenever possible, python threads
     are used so that the UI changes are more fluid.
@@ -81,7 +77,6 @@ class DashboardViewModel:
     all threads are also closed.
     """
 
-    _thread_list = []
     _conn_state_msg = {
         DbusVPNConnectionStateEnum.UNKNOWN: "State of "
         "VPN connection is unkown.",
@@ -131,14 +126,10 @@ class DashboardViewModel:
         DbusVPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
-    one_byte_in_kBs = 0.000976
-    one_byte_in_mBs = 9.76e-7
-    one_kilobyte_in_bytes = 1000
-    one_megabyte_in_bytes = 1024590.163934
-
-    def __init__(self, protonvpn, dashboard_model):
+    def __init__(self, protonvpn, utils, bg_process):
         self.protonvpn = protonvpn
-        self.dashboard_model = dashboard_model
+        self.utils = utils
+        self.bg_process = bg_process
         self.state = ReplaySubject(buffer_size=1)
 
     def on_startup(self):
@@ -149,13 +140,10 @@ class DashboardViewModel:
         so that the animiation does not stopped during this loading state.
         """
         self.state.on_next(Loading())
-        thread = threading.Thread(
-            target=self.thread_on_startup
-        )
-        thread.daemon = True
-        thread.start()
+        process = self.bg_process.setup_no_params(self.on_startup_sync)
+        process.start()
 
-    def thread_on_startup(self):
+    def on_startup_sync(self):
         """Threaded method.
 
         This method should be started within a python thread,
@@ -307,7 +295,7 @@ class DashboardViewModel:
             ConnectedToVPNInfo
         """
         result = NotConnectedToVPNInfo(
-            ip=self.dashboard_model.get_ip()
+            ip=self.utils.get_ip()
         )
 
         return result
@@ -319,21 +307,18 @@ class DashboardViewModel:
         it should constantly monitor for an active
         protonvpn connection created by the library.
 
-        The main method is started within a python thread
-        so that the UI does not freeze up.
+        The main method is started within a background process
+        so that the UI will not freeze.
 
         Since it is being invoked via a GLib method, it returns True
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        thread = threading.Thread(
-            target=self.thread_on_startup
-        )
-        thread.daemon = True
-        thread.start()
+        process = self.bg_process.setup_no_params(self.on_startup_sync)
+        process.start()
         return True
 
-    def thread_on_monitor_vpn(self):
+    def on_monitor_vpn_sync(self):
         """Monitor VPN connection.
 
         This methods monitors a VPN connection state from withing
@@ -351,21 +336,20 @@ class DashboardViewModel:
     def on_update_server_load(self):
         """Update server Load.
 
-        The main method is started within a python thread
-        so that the UI does not freeze up.
+        The main method is started within a background process
+        so that the UI will not freeze.
 
         Since it is being invoked via a GLib method, it returns True
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        thread = threading.Thread(
-            target=self.thread_on_update_server_load
+        process = self.bg_process.setup_no_params(
+            self.on_update_server_load_sync
         )
-        thread.daemon = True
-        thread.start()
+        process.start()
         return True
 
-    def thread_on_update_server_load(self):
+    def on_update_server_load_sync(self):
         """Update server load.
 
         This metho actually refresh server cache. The library
@@ -393,21 +377,20 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        thread = threading.Thread(
-            target=self.thread_on_update_speed
+        process = self.bg_process.setup_no_params(
+            self.on_update_speed_sync
         )
-        thread.daemon = True
-        thread.start()
+        process.start()
         return True
 
-    def thread_on_update_speed(self):
+    def on_update_speed_sync(self):
         """Updates UI with current network speed.
 
         This method is and should be executed within a python thread,
         so that it does not freeze the UI due to the constant
         UI updates.
         """
-        speed_result = self.get_network_speed()
+        speed_result = self.utils.get_network_speed()
         up, dl = "-", "-"
         if len(speed_result) == 2:
             up, dl = str(speed_result[0]), str(speed_result[1])
@@ -417,68 +400,3 @@ class DashboardViewModel:
         )
 
         self.state.on_next(result)
-
-    def get_network_speed(self):
-        """Get current network speed.
-
-        It searches for a interface that is defined within the library.
-
-        Returns:
-            list
-        """
-        t0 = time.time()
-        interface = VIRTUAL_DEVICE_NAME
-        dt = 3
-        try:
-            counter = psutil.net_io_counters(pernic=True)[interface]
-        except KeyError:
-            return []
-        tot = (counter.bytes_sent, counter.bytes_recv)
-
-        last_tot = tot
-        time.sleep(dt)
-        try:
-            counter = psutil.net_io_counters(pernic=True)[interface]
-        except KeyError:
-            return []
-
-        t1 = time.time()
-        tot = (counter.bytes_sent, counter.bytes_recv)
-        ul, dl = [
-            (now - last) / (t1 - t0)
-            for now, last
-            in zip(tot, last_tot)
-        ]
-        ul = self.convert_network_speed(ul)
-        dl = self.convert_network_speed(dl)
-
-        return [ul, dl]
-
-    def convert_network_speed(self, byte_per_second):
-        """Convert network speed.
-
-        Converts and return
-        the speed  easy readeable units:
-            - Bytes per second
-            - Kilobytes per second
-            - Megabytes per second
-
-        Args:
-            byte_per_second(int|float)
-
-        Returns:
-            string
-        """
-        if (
-            byte_per_second >= self.one_kilobyte_in_bytes
-            and byte_per_second < self.one_megabyte_in_bytes
-        ):
-            return str(
-                round((byte_per_second * self.one_byte_in_kBs), 1)
-            ) + " KB/s"
-        elif byte_per_second >= self.one_megabyte_in_bytes:
-            return str(
-                round((byte_per_second * self.one_byte_in_mBs), 1)
-            ) + " MB/s"
-        else:
-            return str(int(byte_per_second)) + " B/s"

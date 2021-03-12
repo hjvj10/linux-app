@@ -12,7 +12,8 @@ from protonvpn_nm_lib.constants import APP_VERSION as lib_version
 
 from .constants import APP_VERSION
 from .logger import logger
-from .model.dashboard import DashboardModel
+from .model.utilities import Utilities
+from .model.background_process import BackgroundProcess
 from .view.dashboard import DashboardView
 from .view.login import LoginView
 from .view_model.dashboard import DashboardViewModel
@@ -114,7 +115,9 @@ class ProtonVPN(Gtk.Application):
         Returns:
             LoginView
         """
-        login_view_model = LoginViewModel(self.protonvpn)
+        login_view_model = LoginViewModel(
+            self.protonvpn, BackgroundProcess
+        )
         return LoginView(
             application=self,
             view_model=login_view_model,
@@ -127,9 +130,8 @@ class ProtonVPN(Gtk.Application):
         Returns:
             DashboardView
         """
-        dashboard_model = DashboardModel(self.protonvpn)
         dashboard_view_model = DashboardViewModel(
-            self.protonvpn, dashboard_model
+            self.protonvpn, Utilities, BackgroundProcess
         )
         return DashboardView(
             application=self,

@@ -34,11 +34,9 @@ class LoginView(Gtk.ApplicationWindow):
     string_min_length = 0
 
     def __init__(self, **kwargs):
-        # This is no longer "presenter" but a "view model"
         self.login_view_model = kwargs.pop("view_model")
         self.dashboard_window = kwargs.pop("dashboard_window")
 
-        # Observe login state in view model
         self.login_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
