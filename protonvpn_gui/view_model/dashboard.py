@@ -5,9 +5,9 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     ConnectionStatusEnum, ConnectionTypeEnum,
                                     DbusMonitorResponseEnum,
                                     DbusVPNConnectionReasonEnum,
-                                    DbusVPNConnectionStateEnum, FeatureEnum,
-                                    NetworkManagerConnectionTypeEnum)
+                                    DbusVPNConnectionStateEnum, FeatureEnum)
 from ..rx.subject.replaysubject import ReplaySubject
+from ..model.dashboard_connect_list import DashboardConnectList
 
 from ..logger import logger
 
@@ -129,10 +129,14 @@ class DashboardViewModel:
         DbusVPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
-    def __init__(self, protonvpn, utils, bg_process):
+    def __init__(
+        self, protonvpn, utils,
+        bg_process, dashboard_connect_list=DashboardConnectList()
+    ):
         self.protonvpn = protonvpn
         self.utils = utils
         self.bg_process = bg_process
+        self.dashboard_connect_list = dashboard_connect_list
         self.state = ReplaySubject(buffer_size=1)
 
     def on_startup(self):
