@@ -111,8 +111,13 @@ grid.connecting_overlay_grid label{
 	margin: 0px 30px;
 }
 
+#server-list-grid image.country-feature{
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
 #server-list-grid grid{
-	padding: 15px 0px;
+	padding: 5px 0px;
 }
 #server-list-grid widget:not(:last-child) grid.country-row{
 	border-bottom: 0.2px solid rgba(255,255,255, 0.4)

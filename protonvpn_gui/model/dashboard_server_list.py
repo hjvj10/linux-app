@@ -24,21 +24,21 @@ class DashboardServerList:
         sort_countries_by_name()
             sorts the provided country list by a countrys name
     """
-    _server_list: list = None
+    __server_list: list = None
 
     def __init__(self, country_item=CountryItem):
         self.country_item = country_item
 
     @property
     def server_list(self):
-        return self._server_list
+        return self.__server_list
 
     def generate_server_list(
         self,
         only_secure_core=False,
         server_list=ServerList.load_servers_from_file()
     ):
-        self._server_list = []
+        self.__server_list = []
         country_code_with_matching_servers = self\
             ._get_country_code_with_matching_servers(server_list)
 
@@ -55,7 +55,7 @@ class DashboardServerList:
                     servername_list, server_list
                 )
 
-            self._server_list.append(country_item)
+            self.__server_list.append(country_item)
 
     def _get_country_code_with_matching_servers(self, server_list):
         country = Country()

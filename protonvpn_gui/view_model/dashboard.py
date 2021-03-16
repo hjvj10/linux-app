@@ -7,7 +7,7 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     DbusVPNConnectionReasonEnum,
                                     DbusVPNConnectionStateEnum, FeatureEnum)
 from ..rx.subject.replaysubject import ReplaySubject
-from ..model.dashboard_connect_list import DashboardConnectList
+from ..model.dashboard_server_list import DashboardServerList
 
 from ..logger import logger
 
@@ -58,6 +58,11 @@ class NotConnectedToVPNInfo:
     ip: str
     isp: str
     country: str
+
+
+@dataclass
+class ServerList:
+    server_list: list
 
 
 class DashboardViewModel:
@@ -131,12 +136,12 @@ class DashboardViewModel:
 
     def __init__(
         self, protonvpn, utils,
-        bg_process, dashboard_connect_list=DashboardConnectList()
+        bg_process, dashboard_server_list=DashboardServerList()
     ):
         self.protonvpn = protonvpn
         self.utils = utils
         self.bg_process = bg_process
-        self.dashboard_connect_list = dashboard_connect_list
+        self.dashboard_server_list = dashboard_server_list
         self.state = ReplaySubject(buffer_size=1)
 
     def on_startup(self):
@@ -176,7 +181,20 @@ class DashboardViewModel:
         else:
             result = self.get_connected_state()
 
+        self.on_load_servers_sync()
         self.state.on_next(result)
+
+    def on_load_servers(self):
+        process = self.bg_process.setup_no_params(self.on_load_servers_sync)
+        process.start()
+        return True
+
+    def on_load_servers_sync(self):
+        self.protonvpn.session.refresh_servers()
+        self.dashboard_server_list.generate_server_list()
+        servers = self.dashboard_server_list.server_list
+        state = ServerList(servers)
+        self.state.on_next(state)
 
     def on_quick_connect(self):
         """On quick connect method. Proxymethod to connect.
@@ -193,7 +211,25 @@ class DashboardViewModel:
         self.state.on_next(result)
         self.connect(ConnectionTypeEnum.FASTEST)
 
-    def connect(self, connection_type_enum):
+    def on_country_connect(self, country_code):
+        """On country connect method. Proxymethod to connect.
+
+        This method sets the state of the UI
+        to preparing and calls the method
+        connect() with ConnectionTypeEnum type.
+
+        Ideally this method should be run
+        as a background process.
+        """
+        print()
+        result = ConnectPreparingInfo()
+        self.state.on_next(result)
+        self.connect(
+            ConnectionTypeEnum.COUNTRY,
+            country_code
+        )
+
+    def connect(self, connection_type_enum, extra_arg=None):
         """General connect method.
 
         This method should always be used when connecting to
@@ -206,12 +242,18 @@ class DashboardViewModel:
 
         Args:
             connection_type_enum (ConnectionTypeEnum)
+            extra_arg: (optional)
+                this argument is only set if the user is
+                connecting with ConnectionTypeEnum.COUNTRY
+                or ConnectionTypeEnum.SERVERNAME.
         """
         try:
             server = self.protonvpn.setup_connection(
-                connection_type_enum
+                connection_type=connection_type_enum,
+                connection_type_extra_arg=extra_arg
             )
         except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
             result = ConnectError(
                 str(e)
             )
@@ -325,11 +367,11 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = self.bg_process.setup_no_params(self.on_startup_sync)
+        process = self.bg_process.setup_no_params(self.on_monitor_vpn_async)
         process.start()
         return True
 
-    def on_monitor_vpn_sync(self):
+    def on_monitor_vpn_async(self):
         """Monitor VPN connection.
 
         This methods monitors a VPN connection state from withing
@@ -410,3 +452,14 @@ class DashboardViewModel:
         )
 
         self.state.on_next(result)
+
+    def on_sort_conutries_by_tier(self, server_list):
+        protonvpn_user = self.protonvpn.protonvpn_user
+        self.dashboard_server_list.sort_countries_by_tier(
+            protonvpn_user.tier, server_list
+        )
+
+    def on_sort_conutries_by_name(self, server_list):
+        self.dashboard_server_list.sort_countries_by_name(
+            server_list
+        )
