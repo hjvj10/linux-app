@@ -4,7 +4,7 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import GdkPixbuf, Gtk
 from protonvpn_nm_lib.country_codes import country_codes
-from protonvpn_nm_lib.enums import FeatureEnum
+from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum
 from ..enums import GLibEventSourceEnum
 
 
@@ -65,23 +65,27 @@ class CountryRow:
             self.right_child.grid, self.left_child.grid,
             Gtk.PositionType.RIGHT, 1, 1
         )
-        self.row_grid.set_property("has-tooltip", True)
-        self.row_grid.connect(
-            "query-tooltip", self.on_country_enter,
-            self.right_child.connect_country_button
-        )
+        if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
+            self.row_grid.set_property("has-tooltip", True)
+            self.row_grid.connect(
+                "query-tooltip", self.on_country_enter,
+                self.right_child.connect_country_button
+            )
 
-        self.row_grid.attach(self.server_list_revealer.revealer, 0, 1, 1, 1)
-        self.create_event_box()
+            self.row_grid.attach(
+                self.server_list_revealer.revealer, 0, 1, 1, 1
+            )
+        self.create_event_box(country_item)
 
-    def create_event_box(self):
+    def create_event_box(self, country_item):
         self.event_box = Gtk.EventBox()
         self.event_box.set_visible_window(True)
         self.event_box.add(self.row_grid)
-        self.event_box.connect(
-            "leave-notify-event", self.on_country_leave,
-            self.right_child.connect_country_button
-        )
+        if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
+            self.event_box.connect(
+                "leave-notify-event", self.on_country_leave,
+                self.right_child.connect_country_button
+            )
         self.event_box.props.visible = True
 
     def on_country_enter(
@@ -148,26 +152,21 @@ class CountryRightGrid:
         self.grid.set_valign(Gtk.Align.CENTER)
         self.grid.props.visible = True
 
-        self.create_connect_country_button()
-        self.create_chevron_button()
-        self.create_chevron_image()
-        self.grid.attach(
-            self.chevron_button, 0, 0, 1, 1
-        )
-        self.connect_callback(country_item)
-        self.set_country_features(country_item.features)
-        self.attach_connect_button()
-
-    def connect_callback(self, country_item):
-        self.connect_country_button.connect(
-            "clicked", self.connect_to_country,
-            country_item.entry_country_code
-        )
-        self.chevron_button.connect(
-            "clicked", self.on_click_chevron,
-            self.chevron_image, self.chevron_button_ctx,
-            self.revealer.revealer
-        )
+        if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
+            self.create_connect_country_button()
+            self.create_chevron_button()
+            self.create_chevron_icon()
+            self.grid.attach(
+                self.chevron_button, 0, 0, 1, 1
+            )
+            self.connect_callback(country_item)
+            self.set_country_features(country_item.features)
+            self.attach_connect_button()
+        else:
+            self.create_maintenance_icon()
+            self.grid.attach(
+                self.maintenance_icon, 0, 0, 1, 1
+            )
 
     def set_country_features(self, country_features):
         feature_to_img_dict = {
@@ -231,6 +230,17 @@ class CountryRightGrid:
             Gtk.PositionType.LEFT, 1, 1
         )
 
+    def connect_callback(self, country_item):
+        self.connect_country_button.connect(
+            "clicked", self.connect_to_country,
+            country_item.entry_country_code
+        )
+        self.chevron_button.connect(
+            "clicked", self.on_click_chevron,
+            self.chevron_icon, self.chevron_button_ctx,
+            self.revealer.revealer
+        )
+
     def connect_to_country(self, gtk_button_object, country_code):
         self.dv.remove_background_glib(
             GLibEventSourceEnum.ON_MONITOR_VPN
@@ -280,16 +290,26 @@ class CountryRightGrid:
         self.chevron_button_ctx = self.chevron_button.get_style_context()
         self.chevron_button_ctx.add_class("chevron-unfold")
 
-    def create_chevron_image(self):
-        self.chevron_image = Gtk.Image()
-        self.chevron_image.set_from_pixbuf(
+    def create_chevron_icon(self):
+        self.chevron_icon = Gtk.Image()
+        self.chevron_icon.set_from_pixbuf(
             self.dv.create_icon_pixbuf_from_name(
                 "chevron-default.svg",
                 width=25, height=25
             )
         )
-        self.chevron_image.props.visible = True
-        self.chevron_button.set_image(self.chevron_image)
+        self.chevron_icon.props.visible = True
+        self.chevron_button.set_image(self.chevron_icon)
+
+    def create_maintenance_icon(self):
+        self.maintenance_icon = Gtk.Image()
+        self.maintenance_icon.set_from_pixbuf(
+            self.dv.create_icon_pixbuf_from_name(
+                "maintenance-icon.svg",
+                width=20, height=20
+            )
+        )
+        self.maintenance_icon.props.visible = True
 
 
 class ServerListRevealer:

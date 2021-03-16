@@ -221,7 +221,6 @@ class DashboardViewModel:
         Ideally this method should be run
         as a background process.
         """
-        print()
         result = ConnectPreparingInfo()
         self.state.on_next(result)
         self.connect(
