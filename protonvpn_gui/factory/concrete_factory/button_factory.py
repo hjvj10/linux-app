@@ -1,160 +1,159 @@
 from abc import ABCMeta
-from ..utils import SubclassesMixin
 
 import gi
 
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk
+from ..abstract_widget_factory import WidgetFactory
 
 
-class GtkButton(SubclassesMixin, metaclass=ABCMeta):
+class ButtonFactory(WidgetFactory, metaclass=ABCMeta):
+    """Concrete Button Factory class."""
+
+    concrete_factory = "button"
 
     def __init__(self):
-        self.__button = Gtk.Button()
-        self.__button_context = self.__button.get_style_context()
+        self.__widget = Gtk.Button()
+        self.__widget_context = self.__widget.get_style_context()
 
     @classmethod
-    def factory(cls, button):
-        buttons_dict = cls._get_subclasses_dict("button")
-        return buttons_dict[button]()
+    def factory(cls, widget_name):
+        subclasses_dict = cls._get_subclasses_dict("button")
+        return subclasses_dict[widget_name]()
 
     @property
     def widget(self):
-        """Get buttons object."""
-        return self.__button
+        """Get widget object."""
+        return self.__widget
 
     @property
     def context(self):
-        return self.__button_context
+        return self.__widget_context
 
     @property
     def label(self):
-        """Get buttons labels."""
-        return self.__button.props.label
+        """Get widget label."""
+        return self.__widget.props.label
 
     @label.setter
     def label(self, newvalue):
-        """Set buttons labels.
+        """Set widget label.
 
         Args:
             newvalue (string)
         """
-        self.__button.props.label = newvalue
+        self.__widget.props.label = newvalue
 
     @property
     def image(self):
-        """Get buttons image.
+        """Get widget image.
 
         This property replaces the label property.
         """
-        return self.__button.props.image
+        return self.__widget.props.image
 
     @image.setter
     def image(self, newvalue):
-        """Set buttons labels.
+        """Set widget image.
 
         This property replaces the label property.
         """
-        self.__button.props.image = newvalue
+        self.__widget.props.image = newvalue
 
     @property
     def show(self):
-        """Get button visibility."""
-        return self.__button.props.visible
+        """Get widget visibility."""
+        return self.__widget.props.visible
 
     @show.setter
     def show(self, newvalue):
-        """Set button visibiltiy."""
-        self.__button.props.visible = newvalue
+        """Set widget visibiltiy."""
+        self.__widget.props.visible = newvalue
 
     @property
     def expand_h(self):
         """Get horizontal expand."""
-        return self.__button.get_hexpand()
+        return self.__widget.get_hexpand()
 
     @expand_h.setter
     def expand_h(self, newvalue):
         """Set horizontal expand."""
-        self.__button.set_hexpand(newvalue)
+        self.__widget.set_hexpand(newvalue)
 
     @property
     def expand_v(self):
         """Get vertical expand."""
-        return self.__button.get_vexpand()
+        return self.__widget.get_vexpand()
 
     @expand_v.setter
     def expand_v(self, newvalue):
         """Set vertical expand."""
-        self.__button.set_vexpand(newvalue)
+        self.__widget.set_vexpand(newvalue)
 
     @property
     def align_h(self):
         """Get horizontal align."""
-        return self.__button.get_halign()
+        return self.__widget.get_halign()
 
     @align_h.setter
     def align_h(self, newvalue):
         """Set horizontal align."""
-        return self.__button.set_halign(newvalue)
+        return self.__widget.set_halign(newvalue)
 
     @property
     def align_v(self):
         """Get vertical align."""
-        return self.__button.get_valign()
+        return self.__widget.get_valign()
 
     @align_v.setter
     def align_v(self, newvalue):
         """Set vertical align."""
-        return self.__button.set_valign(newvalue)
+        return self.__widget.set_valign(newvalue)
 
     def add_class(self, css_class):
         """Add CSS class."""
-        self.__button_context.add_class(css_class)
+        self.__widget_context.add_class(css_class)
 
     def remove_class(self, css_class):
         """Remove CSS class."""
         if self.has_class(css_class):
-            self.__button_context.remvove_class(css_class)
+            self.__widget_context.remvove_class(css_class)
 
     def has_class(self, css_class):
         """Check if has CSS class."""
-        return True if self.__button_context.has_class(css_class) else False
+        return True if self.__widget_context.has_class(css_class) else False
 
     def connect(self, *args, **kwargs):
-        self.__button.connect(*args, **kwargs)
+        self.__widget.connect(*args, **kwargs)
 
 
-class DefaultGtkButton(GtkButton):
+class Default(ButtonFactory):
     button = "gtk_default"
 
     def __init__(self):
         super().__init__()
-        self.name = "Default Gtk button"
 
 
-class MainConnectButton(GtkButton):
+class MainConnect(ButtonFactory):
     button = "main_connect"
 
     def __init__(self):
         super().__init__()
-        self.name = "Main Connect button"
 
 
-class MainDisconnectButton(GtkButton):
+class MainDisconnect(ButtonFactory):
     button = "main_disconnect"
 
     def __init__(self):
         super().__init__()
-        self.name = "Main Disconnect button"
 
 
-class ConnectToServerButton(GtkButton):
-    button = "connect"
+class ConnectToCountry(ButtonFactory):
+    button = "connect_country"
 
     def __init__(self):
         super().__init__()
-        self.name = "Connect button"
         self.expand_h = True
         self.align_h = Gtk.Align.END
         self.align_v = Gtk.Align.CENTER
@@ -162,12 +161,23 @@ class ConnectToServerButton(GtkButton):
         self.label = "CONNECT"
 
 
-class DisconnectFromServerButton(GtkButton):
+class ConnectToServer(ButtonFactory):
+    button = "connect_server"
+
+    def __init__(self):
+        super().__init__()
+        self.expand_h = True
+        self.align_h = Gtk.Align.END
+        self.align_v = Gtk.Align.CENTER
+        self.add_class("transparent")
+        self.label = "CONNECT"
+
+
+class DisconnectFromServer(ButtonFactory):
     button = "disconnect"
 
     def __init__(self):
         super().__init__()
-        self.name = "Disconnect from server button"
         self.expand_h = True
         self.align_h = Gtk.Align.END
         self.align_v = Gtk.Align.CENTER
@@ -175,20 +185,18 @@ class DisconnectFromServerButton(GtkButton):
         self.label = "DISCONNECT"
 
 
-class TransparentButton(GtkButton):
+class Transparent(ButtonFactory):
     button = "transparent"
 
     def __init__(self):
         super().__init__()
-        self.name = "Transparent button"
 
 
-class ChevronButton(GtkButton):
+class Chevron(ButtonFactory):
     button = "chevron"
 
     def __init__(self):
         super().__init__()
-        self.name = "chevron button"
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.align_h = Gtk.Align.END
