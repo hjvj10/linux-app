@@ -111,13 +111,55 @@ grid.connecting_overlay_grid label{
 	margin: 0px 30px;
 }
 
-#server-list-grid image.country-feature{
+#server-list-grid image.server-icon{
 	margin-left: 5px;
 	margin-right: 5px;
 }
 
-#server-list-grid grid{
-	padding: 5px 0px;
+grid.server-row{
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.test-class{
+	border: 1px solid pink;
+}
+.test-class2{
+	border: 1px solid red;
+}
+.test-class3{
+	border: 1px solid greenyellow;
+}
+.test-class4{
+	border: 1px solid blueviolet;
+}
+.test-class5{
+	border: 1px solid white;
+}
+
+#server-list-grid label.server-label{
+	margin-left: 5px;
+	margin-right: 5px;
+	font-weight: bold;
+	font-size: 105%;
+	padding: 4px 0px;
+}
+#server-list-grid label.country-label{
+	font-weight: bold;
+	padding: 4px 0px;
+}
+#server-list-grid label.city-label{
+	font-size: small;
+	color:rgba(255, 255, 255, 0.5);
+	/* This padding is specific so that button don't "jump" */
+}
+
+#server-list-grid label.disabled-label{
+	color:rgba(255, 255, 255, 0.5);
+}
+
+#server-list-grid grid.country-row{
+	padding: 8px 0px;
 }
 #server-list-grid widget:not(:last-child) grid.country-row{
 	border-bottom: 0.2px solid rgba(255,255,255, 0.4)

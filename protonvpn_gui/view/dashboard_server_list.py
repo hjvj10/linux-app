@@ -5,6 +5,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GdkPixbuf, Gtk
 from protonvpn_nm_lib.country_codes import country_codes
 from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum
+from ..factory import WidgetFactory
 from ..enums import GLibEventSourceEnum
 
 
@@ -26,10 +27,10 @@ class DashboardServerList:
                 country_item.entry_country_code
             )
 
-        self.dv.dashboard_view_model.on_sort_conutries_by_tier(
+        self.dv.dashboard_view_model.on_sort_countries_by_tier(
             state.server_list
         )
-        self.dv.dashboard_view_model.on_sort_conutries_by_name(
+        self.dv.dashboard_view_model.on_sort_countries_by_name(
             state.server_list
         )
         for country_item in state.server_list:
@@ -45,42 +46,39 @@ class DashboardServerList:
 class CountryRow:
     def __init__(self, country_item, dashboard_view):
         self.dv = dashboard_view
-        self.server_list_revealer = ServerListRevealer(country_item.servers)
-
-        self.row_grid = Gtk.Grid()
-        self.row_grid.set_hexpand(True)
-        self.row_grid.set_valign(Gtk.Align.FILL)
-        self.row_grid.props.visible = True
-
-        self.row_grid_context = self.row_grid.get_style_context()
-        self.row_grid_context.add_class("country-row")
-
-        self.left_child = CountryRowLeftGrid(country_item, self.dv)
-        self.right_child = CountryRightGrid(
-            country_item, self.server_list_revealer, self.dv
+        self.server_list_revealer = ServerListRevealer(
+            self.dv,
+            country_item.servers
+        )
+        self.row_grid = WidgetFactory.grid("country_row")
+        self.left_child = CountryRowLeftGrid(country_item)
+        self.right_child = CountryRowRightGrid(
+            country_item,
+            self.server_list_revealer.revealer,
+            self.dv
         )
 
-        self.row_grid.attach(self.left_child.grid, 0, 0, 1, 1)
+        self.row_grid.attach(self.left_child.grid.widget, 0, 0, 1, 1)
         self.row_grid.attach_next_to(
-            self.right_child.grid, self.left_child.grid,
+            self.right_child.grid.widget, self.left_child.grid.widget,
             Gtk.PositionType.RIGHT, 1, 1
         )
         if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
-            self.row_grid.set_property("has-tooltip", True)
+            self.row_grid.tooltip = True
             self.row_grid.connect(
                 "query-tooltip", self.on_country_enter,
                 self.right_child.connect_country_button
             )
 
             self.row_grid.attach(
-                self.server_list_revealer.revealer, 0, 1, 1, 1
+                self.server_list_revealer.revealer.widget, 0, 1, 2, 1
             )
         self.create_event_box(country_item)
 
     def create_event_box(self, country_item):
         self.event_box = Gtk.EventBox()
         self.event_box.set_visible_window(True)
-        self.event_box.add(self.row_grid)
+        self.event_box.add(self.row_grid.widget)
         if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.event_box.connect(
                 "leave-notify-event", self.on_country_leave,
@@ -92,86 +90,70 @@ class CountryRow:
         self, widget, x, y, keyboard_mode, tooltip, gtk_button
     ):
         """Show connect button on enter country row."""
-        gtk_button.props.visible = True
+        gtk_button.show = True
 
     def on_country_leave(self, gtk_event_box, gtk_even_crossing, gtk_button):
         """Hide connect button on leave country row."""
-        gtk_button.props.visible = False
+        gtk_button.show = False
 
 
 class CountryRowLeftGrid:
-    country_flag_size = (15, 15)
+    def __init__(self, country_item):
+        self.grid = WidgetFactory.grid("left_child_in_country_row")
 
-    def __init__(self, country_item, dashboard_view):
-        self.dv = dashboard_view
-        self.grid = Gtk.Grid()
-        self.grid.set_hexpand(True)
-        self.grid.set_halign(Gtk.Align.START)
-        self.grid.set_valign(Gtk.Align.CENTER)
-        self.grid.props.visible = True
+        try:
+            self.country_flag = WidgetFactory.image(
+                "small_flag", country_item.entry_country_code
+            ).widget
+        except gi.repository.GLib.Error:
+            self.country_flag = WidgetFactory.image("dummy_small_flag").widget
 
-        self.create_country_flag(country_item.entry_country_code)
-        self.create_country_name_label(country_item.country_name)
+        self.country_name = WidgetFactory.label(
+            "country", country_item.country_name
+        )
+        if not country_item.available_to_free_users:
+            self.country_name.add_class("disabled-label")
         self.grid.attach(self.country_flag, 0, 0, 1, 1)
         self.grid.attach_next_to(
-            self.country_name, self.country_flag,
+            self.country_name.widget, self.country_flag,
             Gtk.PositionType.RIGHT, 1, 1
         )
 
-    def create_country_flag(self, country_code):
-        self.country_flag = Gtk.Image()
-        self.country_flag.set_valign(Gtk.Align.CENTER)
-        self.country_flag_ctx = self.country_flag.get_style_context()
-        self.country_flag_ctx.add_class("country-flag")
-        w, h = self.country_flag_size
-        try:
-            self.country_flag.set_from_pixbuf(
-                self.dv.create_image_pixbuf_from_name(
-                    "flags/small/" + country_code.lower() + ".png",
-                    width=w, height=h
-                )
-            )
-        except gi.repository.GLib.Error:
-            pass
-        self.country_flag.props.visible = True
 
-    def create_country_name_label(self, country_name):
-        self.country_name = Gtk.Label(country_name)
-        self.country_name.set_valign(Gtk.Align.CENTER)
-        self.country_name.props.visible = True
-
-
-class CountryRightGrid:
+class CountryRowRightGrid:
     def __init__(self, country_item, revealer, dashboard_view):
         self.dv = dashboard_view
         self.feature_icon_list = []
         self.revealer = revealer
-        self.grid = Gtk.Grid()
-        self.grid.set_hexpand(False)
-        self.grid.set_halign(Gtk.Align.END)
-        self.grid.set_valign(Gtk.Align.CENTER)
-        self.grid.props.visible = True
+        self.grid = WidgetFactory.grid("right_child_in_country_row")
 
-        if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
-            self.create_connect_country_button()
-            self.create_chevron_button()
-            self.create_chevron_icon()
-            self.grid.attach(
-                self.chevron_button, 0, 0, 1, 1
-            )
+        self.maintenance_icon = WidgetFactory.image("maintenance_icon")
+        self.connect_country_button = WidgetFactory.button("connect_country")
+        self.chevron_button = WidgetFactory.button("chevron")
+        self.chevron_icon = WidgetFactory.image("chevron_icon")
+        self.chevron_button.image = self.chevron_icon.widget
+        self.grid.attach(
+            self.chevron_button.widget, 0, 0, 1, 1
+        )
+        self.grid.attach(
+            self.maintenance_icon.widget, 0, 0, 1, 1
+        )
+
+        if not country_item.available_to_free_users:
+            return
+        elif country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.connect_callback(country_item)
-            self.set_country_features(country_item.features)
             self.attach_connect_button()
+            self.set_country_features(country_item.features)
         else:
-            self.create_maintenance_icon()
-            self.grid.attach(
-                self.maintenance_icon, 0, 0, 1, 1
-            )
+            self.connect_country_button.show = False
+            self.chevron_button.show = False
+            self.maintenance_icon.show = True
 
     def set_country_features(self, country_features):
         feature_to_img_dict = {
-            FeatureEnum.TOR: "tor-onion.png",
-            FeatureEnum.P2P: "p2p-arrows.png",
+            FeatureEnum.TOR: "tor_icon",
+            FeatureEnum.P2P: "p2p_icon",
         }
         features = list(set(
             [FeatureEnum.TOR, FeatureEnum.P2P]
@@ -181,27 +163,15 @@ class CountryRightGrid:
             return
 
         for feature in features:
-            pixbuf_feature_icon = self.create_feature_icon(
-                feature, feature_to_img_dict
-            )
-            self.add_css_to_pixbuf_feature_icon(pixbuf_feature_icon)
+            pixbuf_feature_icon = WidgetFactory.image(
+                feature_to_img_dict[feature]
+            ).widget
             self.attach_feature_icon(pixbuf_feature_icon)
-
-    def create_feature_icon(self, feature, feature_to_img_dict):
-        feature_icon = Gtk.Image()
-        feature_icon.props.visible = True
-        feature_icon.set_from_pixbuf(
-            self.dv.create_icon_pixbuf_from_name(
-                feature_to_img_dict[feature],
-                width=20, height=20
-            )
-        )
-        return feature_icon
 
     def attach_feature_icon(self, pixbuf_feature_icon):
         if len(self.feature_icon_list) < 1:
             self.grid.attach_next_to(
-                pixbuf_feature_icon, self.chevron_button,
+                pixbuf_feature_icon, self.connect_country_button.widget,
                 Gtk.PositionType.LEFT, 1, 1
             )
         else:
@@ -213,20 +183,9 @@ class CountryRightGrid:
 
         self.feature_icon_list.append(pixbuf_feature_icon)
 
-    def add_css_to_pixbuf_feature_icon(self, pixbuf_feature_icon):
-        feature_icon_context = pixbuf_feature_icon.get_style_context()
-        feature_icon_context.add_class("country-feature")
-
     def attach_connect_button(self):
-        if len(self.feature_icon_list) >= 1:
-            self.grid.attach_next_to(
-                self.connect_country_button, self.feature_icon_list[-1],
-                Gtk.PositionType.LEFT, 1, 1
-            )
-            return
-
         self.grid.attach_next_to(
-            self.connect_country_button, self.chevron_button,
+            self.connect_country_button.widget, self.chevron_button.widget,
             Gtk.PositionType.LEFT, 1, 1
         )
 
@@ -237,8 +196,8 @@ class CountryRightGrid:
         )
         self.chevron_button.connect(
             "clicked", self.on_click_chevron,
-            self.chevron_icon, self.chevron_button_ctx,
-            self.revealer.revealer
+            self.chevron_icon.widget, self.chevron_button.context,
+            self.revealer.widget
         )
 
     def connect_to_country(self, gtk_button_object, country_code):
@@ -271,77 +230,197 @@ class CountryRightGrid:
 
         gtk_chevron_img.set_from_pixbuf(chevron_pixbuf)
 
-    def create_connect_country_button(self):
-        self.connect_country_button = Gtk.Button("CONNECT")
-        self.connect_country_button.set_hexpand(True)
-        self.connect_country_button.set_halign(Gtk.Align.END)
-        self.connect_country_button.set_valign(Gtk.Align.CENTER)
-        self.connect_country_button_ctx = self\
-            .connect_country_button.get_style_context()
-        self.connect_country_button_ctx.add_class("transparent")
-
-    def create_chevron_button(self):
-        self.chevron_button = Gtk.Button()
-        self.chevron_button.set_valign(Gtk.Align.CENTER)
-        self.chevron_button.set_hexpand(True)
-        self.chevron_button.set_halign(Gtk.Align.END)
-        self.chevron_button.props.visible = True
-
-        self.chevron_button_ctx = self.chevron_button.get_style_context()
-        self.chevron_button_ctx.add_class("chevron-unfold")
-
-    def create_chevron_icon(self):
-        self.chevron_icon = Gtk.Image()
-        self.chevron_icon.set_from_pixbuf(
-            self.dv.create_icon_pixbuf_from_name(
-                "chevron-default.svg",
-                width=25, height=25
-            )
-        )
-        self.chevron_icon.props.visible = True
-        self.chevron_button.set_image(self.chevron_icon)
-
-    def create_maintenance_icon(self):
-        self.maintenance_icon = Gtk.Image()
-        self.maintenance_icon.set_from_pixbuf(
-            self.dv.create_icon_pixbuf_from_name(
-                "maintenance-icon.svg",
-                width=20, height=20
-            )
-        )
-        self.maintenance_icon.props.visible = True
-
 
 class ServerListRevealer:
     _row_counter = 0
 
-    def __init__(self, servers):
-        self.revealer = Gtk.Revealer()
-        self.revealer.set_reveal_child(False)
-        self.revealer.set_transition_type(
-            Gtk.RevealerTransitionType.SLIDE_DOWN
-        )
-        self.revealer.props.visible = True
-
-        self.revealer_child_grid = Gtk.Grid()
-        self.revealer_child_grid.props.visible = True
+    def __init__(self, dasbhoard_view, servers):
+        self.dv = dasbhoard_view
+        self.revealer = WidgetFactory.revealer("server_list")
+        self.revealer_child_grid = WidgetFactory.grid("revealer_child")
 
         for server in servers:
-            _server = ServerRow(server)
-            self.revealer_child_grid.attach(
-                _server.server_row_grid, 0, self._row_counter, 1, 1
+            self.revealer_child_grid.widget.attach(
+                ServerRow(self.dv, server).event_box, 0,
+                self._row_counter, 1, 1
             )
             self._row_counter += 1
 
-        self.revealer.add(self.revealer_child_grid)
+        self.revealer.add(self.revealer_child_grid.widget)
 
 
 class ServerRow:
-    def __init__(self, server):
-        self.server_row_grid = Gtk.Grid()
-        self.servername_label = Gtk.Label(server.name)
-        self.servername_label = Gtk.Label(server.name)
-        self.servername_label.props.visible = True
+    def __init__(self, dasbhoard_view, server):
+        self.dv = dasbhoard_view
+        self.grid = WidgetFactory.grid("server_row")
+        self.left_child = ServerRowLeftGrid(server)
+        self.right_child = ServerRowRightGrid(self.dv, server)
+        self.grid.attach(
+            self.left_child.grid.widget, 0, 0, 1, 1
+        )
+        self.grid.attach_next_to(
+            self.right_child.grid.widget, self.left_child.grid.widget,
+            Gtk.PositionType.RIGHT, 1, 1
+        )
+        if server.status != ServerStatusEnum.UNDER_MAINTENANCE:
+            self.grid.tooltip = True
+            self.grid.connect(
+                "query-tooltip", self.on_server_enter,
+                self.right_child.connect_server_button,
+                self.right_child.city_label
+            )
+        self.create_event_box(server)
 
-        self.server_row_grid.attach(self.servername_label, 0, 0, 1, 1)
-        self.server_row_grid.props.visible = True
+    def create_event_box(self, server):
+        self.event_box = Gtk.EventBox()
+        self.event_box.set_visible_window(True)
+        self.event_box.add(self.grid.widget)
+        if server.status != ServerStatusEnum.UNDER_MAINTENANCE:
+            self.event_box.connect(
+                "leave-notify-event", self.on_server_leave,
+                self.right_child.connect_server_button,
+                self.right_child.city_label,
+            )
+        self.event_box.props.visible = True
+
+    def on_server_enter(
+        self, widget, x, y, keyboard_mode, tooltip, connect_button, city_label
+    ):
+        """Show connect button on enter country row."""
+        city_label.show = False
+        connect_button.show = True
+
+    def on_server_leave(
+        self, gtk_event_box, gtk_event_crossing, connect_button, city_label
+    ):
+        """Hide connect button on leave country row."""
+        connect_button.show = False
+        city_label.show = True
+
+
+class ServerRowLeftGrid:
+    def __init__(self, server):
+        self.feature_icon_list = []
+        self.grid = WidgetFactory.grid("left_child_in_server_row")
+
+        self.load_icon = WidgetFactory.image(
+            "load_icon_flag",
+            "{}% Load".format(
+                server.load
+            )
+        )
+
+        self.grid.attach(
+            self.load_icon.widget, 0, 0, 1, 1
+        )
+        self.create_servername_label(server.name)
+        self.set_server_features(server.features)
+        self.create_is_plus_server_icon(server.is_plus)
+        if not server.status.value:
+            self.servername_label.add_class("disabled-label")
+
+    def create_servername_label(self, servername):
+        self.servername_label = WidgetFactory.label("server", servername)
+        self.grid.attach_next_to(
+            self.servername_label.widget, self.load_icon.widget,
+            Gtk.PositionType.RIGHT, 1, 1
+        )
+
+    def create_is_plus_server_icon(self, is_plus_server):
+        if not is_plus_server:
+            return
+
+        plus_server_icon = WidgetFactory.image("plus_icon")
+        plus_server_icon.tooltip = True
+        plus_server_icon.tooltip_text = "Plus Server"
+        if len(self.feature_icon_list) < 1:
+            self.grid.attach_next_to(
+                plus_server_icon.widget, self.servername_label.widget,
+                Gtk.PositionType.RIGHT, 1, 1
+            )
+            return
+
+        self.grid.attach_next_to(
+            plus_server_icon.widget, self.feature_icon_list[-1],
+            Gtk.PositionType.RIGHT, 1, 1
+        )
+
+    def set_server_features(self, server_features):
+        feature_to_img_dict = {
+            FeatureEnum.TOR: ["tor_icon", "TOR Server"],
+            FeatureEnum.P2P: ["p2p_icon", "P2P Server"],
+        }
+        features = list(set(
+            [FeatureEnum.TOR, FeatureEnum.P2P]
+        ) & set(server_features))
+
+        if len(features) < 1:
+            return
+
+        for feature in features:
+            pixbuf_feature_icon = WidgetFactory.image(
+                feature_to_img_dict[feature][0]
+            )
+            pixbuf_feature_icon.tooltip = True
+            pixbuf_feature_icon.tooltip_text = feature_to_img_dict[feature][1]
+            self.attach_feature_icon(pixbuf_feature_icon.widget)
+
+    def attach_feature_icon(self, pixbuf_feature_icon):
+        if len(self.feature_icon_list) < 1:
+            self.grid.attach_next_to(
+                pixbuf_feature_icon, self.servername_label.widget,
+                Gtk.PositionType.RIGHT, 1, 1
+            )
+        else:
+            gtk_image = self.feature_icon_list[-1]
+            self.grid.attach_next_to(
+                pixbuf_feature_icon, gtk_image,
+                Gtk.PositionType.RIGHT, 1, 1
+            )
+
+        self.feature_icon_list.append(pixbuf_feature_icon)
+
+
+class ServerRowRightGrid:
+    def __init__(self, dasbhoard_view, server):
+        self.dv = dasbhoard_view
+        self.grid = WidgetFactory.grid("right_child_in_server_row")
+        self.maintenance_icon = WidgetFactory.image("maintenance_icon")
+        self.connect_server_button = WidgetFactory.button("connect_server")
+        self.city_label = WidgetFactory.label("city", server.city)
+        self.maintenance_icon.tooltip = True
+        self.maintenance_icon.tooltip_text = "Under maintenance"
+
+        if server.status == ServerStatusEnum.UNDER_MAINTENANCE:
+            self.maintenance_icon.show = True
+            self.connect_server_button.show = False
+            self.city_label.show = False
+            object_to_attach = self.maintenance_icon
+        else:
+            object_to_attach = self.connect_server_button
+
+            if server.has_to_upgrade:
+                self.connect_server_button.label = "UPGRADE"
+                self.city_label = WidgetFactory.label(
+                    "city", "Upgrade"
+                )
+            else:
+                self.connect_server_button.connect(
+                    "clicked", self.connect_to_server,
+                    server.name
+                )
+
+        self.grid.attach(
+            self.city_label.widget, 0,
+            0, 1, 1
+        )
+        self.grid.attach(
+            object_to_attach.widget, 0,
+            0, 1, 1
+        )
+
+    def connect_to_server(self, gtk_button_object, servername):
+        self.dv.remove_background_glib(
+            GLibEventSourceEnum.ON_MONITOR_VPN
+        )
+        self.dv.dashboard_view_model.on_servername_connect(servername)

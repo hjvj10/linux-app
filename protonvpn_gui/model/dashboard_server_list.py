@@ -1,7 +1,6 @@
-from protonvpn_nm_lib import Country
-from protonvpn_nm_lib import ServerList
+from protonvpn_nm_lib.api import protonvpn
 from .country_item import CountryItem
-from protonvpn_nm_lib.enums import UserTierEnum, ServerTierEnum
+from protonvpn_nm_lib.enums import ServerTierEnum
 
 
 class DashboardServerList:
@@ -33,12 +32,15 @@ class DashboardServerList:
     def server_list(self):
         return self.__server_list
 
-    def generate_server_list(
-        self,
-        only_secure_core=False,
-        server_list=ServerList.load_servers_from_file()
-    ):
+    def generate_server_list(self, user_tier, only_secure_core=False):
+        """Generate server list.
+
+        Args:
+            user_tier (ServerTierEnum)
+            only_secure_core (bool)
+        """
         self.__server_list = []
+        server_list = protonvpn.get_session().servers
         country_code_with_matching_servers = self\
             ._get_country_code_with_matching_servers(server_list)
 
@@ -52,20 +54,20 @@ class DashboardServerList:
                 )
             else:
                 country_item.create_non_secure_core_country(
-                    servername_list, server_list
+                    user_tier, servername_list, server_list
                 )
 
             self.__server_list.append(country_item)
 
     def _get_country_code_with_matching_servers(self, server_list):
-        country = Country()
+        country = protonvpn.get_country()
         return country\
             .get_dict_with_country_code_servername(
-                server_list.servers
+                server_list
             )
 
     def sort_countries_by_tier(self, user_tier, connect_list):
-        if user_tier == UserTierEnum.FREE:
+        if user_tier == ServerTierEnum.FREE:
             connect_list.sort(
                 key=lambda country: any(
                     tier == ServerTierEnum.FREE
@@ -75,5 +77,6 @@ class DashboardServerList:
                 reverse=True
             )
 
-    def sort_countries_by_name(self, connect_list):
-        connect_list.sort(key=lambda country: country.country_name)
+    def sort_countries_by_name(self, user_tier, connect_list):
+        if user_tier != ServerTierEnum.FREE:
+            connect_list.sort(key=lambda country: country.country_name)

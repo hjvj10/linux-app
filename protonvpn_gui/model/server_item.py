@@ -1,3 +1,4 @@
+from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.enums import (FeatureEnum, ServerStatusEnum,
                                     ServerTierEnum)
 
@@ -25,6 +26,8 @@ class ServerItem:
             server status
         exit_country_code: str
             ISO country code of this servers country
+        has_to_upgrade: bool
+            if a user has to upgrade to access server
     """
     name: str = None
     load: int = None
@@ -34,6 +37,7 @@ class ServerItem:
     is_plus: bool = None
     status: int = None
     exit_country_code: str = None
+    has_to_upgrade: bool = None
 
     @staticmethod
     def create(logical_server):
@@ -46,8 +50,13 @@ class ServerItem:
         server_item.is_plus = server_item.check_server_item_is_plus(
             server_item
         )
-        server_item.status = ServerStatusEnum(logical_server.status)
+        server_item.status = ServerStatusEnum(logical_server.enabled)
         server_item.exit_country_code = logical_server.exit_country
+        server_item.has_to_upgrade = (
+            True if server_item.tier.value > ServerTierEnum(
+                protonvpn.get_session().vpn_tier
+            ).value else False
+        )
 
         return server_item
 

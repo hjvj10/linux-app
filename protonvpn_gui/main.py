@@ -79,7 +79,6 @@ class ProtonVPNGUI(Gtk.Application):
 
         self.add_action(quit_app)
         self.add_action(display_preferences)
-        self.protonvpn = protonvpn
         logger.info("Startup successful")
 
     def on_quit(self, *args):
@@ -100,7 +99,7 @@ class ProtonVPNGUI(Gtk.Application):
         win = self.props.active_window
 
         if not win:
-            if not self.protonvpn.check_session_exists():
+            if not protonvpn.check_session_exists():
                 win = self.get_login_window
             else:
                 win = self.get_dashboard_window
@@ -116,7 +115,7 @@ class ProtonVPNGUI(Gtk.Application):
             LoginView
         """
         login_view_model = LoginViewModel(
-            self.protonvpn, BackgroundProcess
+            BackgroundProcess
         )
         return LoginView(
             application=self,
@@ -131,7 +130,7 @@ class ProtonVPNGUI(Gtk.Application):
             DashboardView
         """
         dashboard_view_model = DashboardViewModel(
-            self.protonvpn, Utilities, BackgroundProcess
+            Utilities, BackgroundProcess
         )
         return DashboardView(
             application=self,

@@ -4,8 +4,8 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
+from protonvpn_nm_lib.api import protonvpn
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
-from protonvpn_nm_lib import Country
 from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 
@@ -617,14 +617,19 @@ class ConnectedVPN:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
-        country = Country()
-        country = "{}".format(country.get_country_name(state.countries[0]))
+        country = protonvpn.get_country()
+        country_string = "{}".format(
+            country.get_country_name(state.countries[0])
+        )
         if len(state.countries) > 1:
-            country = country + " >> {}".format(
+            country_string = "{}".format(country.get_country_name(
+                state.countries[0]
+            ))
+            country_string = country + " >> {}".format(
                 country.get_country_name(state.countries[1])
             )
         dv.on_connect_load_sidebar_flag(state.exit_country_code)
-        country_servername = country + " {}".format(state.servername)
+        country_servername = country_string + " {}".format(state.servername)
         dv.country_servername_label.props.label = country_servername
         dv.ip_label.props.label = state.ip
         dv.serverload_label.props.label = state.load + "% " + "Load"

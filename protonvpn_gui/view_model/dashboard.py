@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 
+from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib import exceptions
 from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     ConnectionStatusEnum, ConnectionTypeEnum,
-                                    DbusMonitorResponseEnum,
-                                    DbusVPNConnectionReasonEnum,
-                                    DbusVPNConnectionStateEnum, FeatureEnum)
+                                    ConnectionStartStatusEnum,
+                                    VPNConnectionReasonEnum,
+                                    VPNConnectionStateEnum, FeatureEnum, ServerTierEnum)
 from ..rx.subject.replaysubject import ReplaySubject
 from ..model.dashboard_server_list import DashboardServerList
 
@@ -86,59 +87,58 @@ class DashboardViewModel:
     """
 
     _conn_state_msg = {
-        DbusVPNConnectionStateEnum.UNKNOWN: "State of "
+        VPNConnectionStateEnum.UNKNOWN: "State of "
         "VPN connection is unkown.",
-        DbusVPNConnectionStateEnum.NEEDS_CREDENTIALS: "The VPN "
+        VPNConnectionStateEnum.NEEDS_CREDENTIALS: "The VPN "
         "connection is missing credentials.",
-        DbusVPNConnectionStateEnum.FAILED: "Failed to "
+        VPNConnectionStateEnum.FAILED: "Failed to "
         "connect to VPN.",
-        DbusVPNConnectionStateEnum.DISCONNECTED: "VPN connection "
+        VPNConnectionStateEnum.DISCONNECTED: "VPN connection "
         "has been disconnected.",
-        DbusVPNConnectionStateEnum.UNKNOWN_ERROR: "Unknown error."
+        VPNConnectionStateEnum.UNKNOWN_ERROR: "Unknown error."
     }
 
     _conn_reason_msg = {
-        DbusVPNConnectionReasonEnum.UNKNOWN: "The reason for the active "
+        VPNConnectionReasonEnum.UNKNOWN: "The reason for the active "
         "connection state change is unknown.",
-        DbusVPNConnectionReasonEnum.NOT_PROVIDED: "No reason was given "
+        VPNConnectionReasonEnum.NOT_PROVIDED: "No reason was given "
         "for the active connection state change.",
-        DbusVPNConnectionReasonEnum.USER_HAS_DISCONNECTED: "The active "
+        VPNConnectionReasonEnum.USER_HAS_DISCONNECTED: "The active "
         "connection changed state because the user "
         "disconnected it.",
-        DbusVPNConnectionReasonEnum.DEVICE_WAS_DISCONNECTED: "The active "
+        VPNConnectionReasonEnum.DEVICE_WAS_DISCONNECTED: "The active "
         "connection changed state because the device it was using "
         "was disconnected.",
-        DbusVPNConnectionReasonEnum.SERVICE_PROVIDER_WAS_STOPPED: "The "
+        VPNConnectionReasonEnum.SERVICE_PROVIDER_WAS_STOPPED: "The "
         "service providing the VPN connection was stopped.",
-        DbusVPNConnectionReasonEnum.IP_CONFIG_WAS_INVALID: "The IP "
+        VPNConnectionReasonEnum.IP_CONFIG_WAS_INVALID: "The IP "
         "configuration of the active connection is invalid.",
-        DbusVPNConnectionReasonEnum.CONN_ATTEMPT_TO_SERVICE_TIMED_OUT: "The "
+        VPNConnectionReasonEnum.CONN_ATTEMPT_TO_SERVICE_TIMED_OUT: "The "
         "connection attempt to the VPN service timed out.",
-        DbusVPNConnectionReasonEnum.TIMEOUT_WHILE_STARTING_VPN_SERVICE_PROVIDER: # noqa
+        VPNConnectionReasonEnum.TIMEOUT_WHILE_STARTING_VPN_SERVICE_PROVIDER: # noqa
         "A timeout occurred while starting the service providing "
         "the VPN connection.",
-        DbusVPNConnectionReasonEnum.START_SERVICE_VPN_CONN_SERVICE_FAILED:
+        VPNConnectionReasonEnum.START_SERVICE_VPN_CONN_SERVICE_FAILED:
         "Starting the service providing the VPN connection failed.",
-        DbusVPNConnectionReasonEnum.SECRETS_WERE_NOT_PROVIDED: "Necessary "
+        VPNConnectionReasonEnum.SECRETS_WERE_NOT_PROVIDED: "Necessary "
         "secrets for the connection were not provided.",
-        DbusVPNConnectionReasonEnum.SERVER_AUTH_FAILED: "Authentication "
+        VPNConnectionReasonEnum.SERVER_AUTH_FAILED: "Authentication "
         "to the server failed.",
-        DbusVPNConnectionReasonEnum.DELETED_FROM_SETTINGS: "The connection "
+        VPNConnectionReasonEnum.DELETED_FROM_SETTINGS: "The connection "
         "was deleted from settings.",
-        DbusVPNConnectionReasonEnum.MASTER_CONN_FAILED_TO_ACTIVATE: "Master "
+        VPNConnectionReasonEnum.MASTER_CONN_FAILED_TO_ACTIVATE: "Master "
         "connection failed to activate.",
-        DbusVPNConnectionReasonEnum.CREATE_SOFTWARE_DEVICE_LINK_FAILED:
+        VPNConnectionReasonEnum.CREATE_SOFTWARE_DEVICE_LINK_FAILED:
         "Could not create the software device link.",
-        DbusVPNConnectionReasonEnum.VPN_DEVICE_DISAPPEARED: "The device this "
+        VPNConnectionReasonEnum.VPN_DEVICE_DISAPPEARED: "The device this "
         "connection depended on disappeared.",
-        DbusVPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
+        VPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
     def __init__(
-        self, protonvpn, utils,
+        self, utils,
         bg_process, dashboard_server_list=DashboardServerList()
     ):
-        self.protonvpn = protonvpn
         self.utils = utils
         self.bg_process = bg_process
         self.dashboard_server_list = dashboard_server_list
@@ -165,7 +165,7 @@ class DashboardViewModel:
         This class updates the UI state accordingly.
         """
         try:
-            self.protonvpn.ensure_connectivity()
+            protonvpn.ensure_connectivity()
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
             result = NotConnectedToVPNInfo(
@@ -176,7 +176,7 @@ class DashboardViewModel:
             self.state.on_next(result)
             return
 
-        if not self.protonvpn.get_active_protonvpn_connection():
+        if not protonvpn.get_active_protonvpn_connection():
             result = self.get_not_connected_state()
         else:
             result = self.get_connected_state()
@@ -190,14 +190,15 @@ class DashboardViewModel:
         return True
 
     def on_load_servers_sync(self):
-        self.protonvpn.session.refresh_servers()
-        self.dashboard_server_list.generate_server_list()
+        self.dashboard_server_list.generate_server_list(
+            ServerTierEnum(protonvpn.get_session().vpn_tier)
+        )
         servers = self.dashboard_server_list.server_list
         state = ServerList(servers)
         self.state.on_next(state)
 
     def on_quick_connect(self):
-        """On quick connect method. Proxymethod to connect.
+        """Quick connect to ProtonVPN.
 
         This method sets the state of the UI
         to preparing and calls the method
@@ -212,7 +213,7 @@ class DashboardViewModel:
         self.connect(ConnectionTypeEnum.FASTEST)
 
     def on_country_connect(self, country_code):
-        """On country connect method. Proxymethod to connect.
+        """Connect to a specific country.
 
         This method sets the state of the UI
         to preparing and calls the method
@@ -226,6 +227,23 @@ class DashboardViewModel:
         self.connect(
             ConnectionTypeEnum.COUNTRY,
             country_code
+        )
+
+    def on_servername_connect(self, servername):
+        """Connect to a specific server.
+
+        This method sets the state of the UI
+        to preparing and calls the method
+        connect() with ConnectionTypeEnum type.
+
+        Ideally this method should be run
+        as a background process.
+        """
+        result = ConnectPreparingInfo()
+        self.state.on_next(result)
+        self.connect(
+            ConnectionTypeEnum.SERVERNAME,
+            servername
         )
 
     def connect(self, connection_type_enum, extra_arg=None):
@@ -247,7 +265,7 @@ class DashboardViewModel:
                 or ConnectionTypeEnum.SERVERNAME.
         """
         try:
-            server = self.protonvpn.setup_connection(
+            server = protonvpn.setup_connection(
                 connection_type=connection_type_enum,
                 connection_type_extra_arg=extra_arg
             )
@@ -260,10 +278,10 @@ class DashboardViewModel:
             return
 
         # step 1
-        connection_metadata = self.protonvpn.get_connection_metadata()
+        connection_metadata = protonvpn.get_connection_metadata()
         protocol = connection_metadata[ConnectionMetadataEnum.PROTOCOL.value]
         result = ConnectInProgressInfo(
-            country=self.protonvpn.country.get_country_name(
+            country=protonvpn.country.get_country_name(
                 server.exit_country
             ),
             city=server.city,
@@ -274,21 +292,20 @@ class DashboardViewModel:
         self.state.on_next(result)
 
         # step 2
-        connect_response = self.protonvpn.connect()
+        connect_response = protonvpn.connect()
 
         logger.info("Dbus response: {}".format(connect_response))
 
-        response = connect_response[
-            DbusMonitorResponseEnum.RESPONSE
-        ]
-        state = response[DbusMonitorResponseEnum.STATE]
+        state = connect_response[ConnectionStartStatusEnum.STATE]
 
         # step 3
-        if state == DbusVPNConnectionStateEnum.IS_ACTIVE:
+        if state == VPNConnectionStateEnum.IS_ACTIVE:
             result = self.get_connected_state()
         else:
             result = ConnectError(
-                self._conn_reason_msg[response[DbusMonitorResponseEnum.REASON]]
+                self._conn_reason_msg[
+                    connect_response[ConnectionStartStatusEnum.REASON]
+                ]
             )
 
         self.state.on_next(result)
@@ -302,7 +319,7 @@ class DashboardViewModel:
         """
         result = self.get_not_connected_state()
         try:
-            self.protonvpn.disconnect()
+            protonvpn.disconnect()
         except exceptions.ConnectionNotFound:
             pass
 
@@ -315,7 +332,7 @@ class DashboardViewModel:
         Returns:
             ConnectedToVPNInfo
         """
-        connection_status = self.protonvpn.get_connection_status()
+        connection_status = protonvpn.get_connection_status()
         server = connection_status[
             ConnectionStatusEnum.SERVER_INFORMATION
         ]
@@ -377,7 +394,7 @@ class DashboardViewModel:
         a thread. It is mainly used to track when a VPN connection
         is stopped and/or removed.
         """
-        protonvpn_connection = self.protonvpn\
+        protonvpn_connection = protonvpn\
             .get_active_protonvpn_connection()
         if not protonvpn_connection:
             result = self.get_not_connected_state()
@@ -403,14 +420,14 @@ class DashboardViewModel:
     def on_update_server_load_sync(self):
         """Update server load.
 
-        This metho actually refresh server cache. The library
+        This method refreshes server cache. The library
         will automatically decide what it should cache, so this
         method can be safely used at anytime.
 
         This method is and should be executed within a python thread.
         """
         try:
-            self.protonvpn.session.refresh_servers()
+            protonvpn.session.refresh_servers()
         except Exception as e:
             logger.exception(e)
 
@@ -452,13 +469,14 @@ class DashboardViewModel:
 
         self.state.on_next(result)
 
-    def on_sort_conutries_by_tier(self, server_list):
-        protonvpn_user = self.protonvpn.protonvpn_user
+    def on_sort_countries_by_tier(self, server_list):
+        user_tier = protonvpn.get_session().vpn_tier
         self.dashboard_server_list.sort_countries_by_tier(
-            protonvpn_user.tier, server_list
+            ServerTierEnum(user_tier), server_list
         )
 
-    def on_sort_conutries_by_name(self, server_list):
+    def on_sort_countries_by_name(self, server_list):
+        user_tier = protonvpn.get_session().vpn_tier
         self.dashboard_server_list.sort_countries_by_name(
-            server_list
+            ServerTierEnum(user_tier), server_list
         )
