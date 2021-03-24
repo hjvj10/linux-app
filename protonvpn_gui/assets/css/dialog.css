@@ -1,5 +1,3 @@
-@import "common.css";
-
 #dialog_container_grid grid.grid-spacing{
     margin: 50px 30px;
 }
@@ -28,13 +26,3 @@
 #dialog_container_grid  button.transparent-white{
     margin: 0px;
 }
-#server-list-grid button.transparent{
-	padding: 0px 8px;
-	border-radius: 15px;
-	margin: 0;
-	border-width: 1px;
-}
-#server-list-grid button.transparent label{
-	font-size: 10px;
-}
-
