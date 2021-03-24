@@ -529,13 +529,32 @@
               </packing>
             </child>
             <child>
-              <!-- n-columns=1 n-rows=1 -->
-              <object class="GtkGrid" id="dashboard_server_list_grid">
-                <property name="name">dashboard-server-list-grid</property>
+              <object class="GtkScrolledWindow" id="server_list_scrolled_window">
+                <property name="name">server-list-scrolled-window</property>
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
+                <property name="can-focus">True</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
                 <child>
-                  <placeholder/>
+                  <object class="GtkViewport" id="server_list_view_port">
+                    <property name="name">server-list-view-port</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="shadow-type">none</property>
+                    <child>
+                      <!-- n-columns=1 n-rows=1 -->
+                      <object class="GtkGrid" id="server_list_grid">
+                        <property name="name">server-list-grid</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
                 </child>
               </object>
               <packing>

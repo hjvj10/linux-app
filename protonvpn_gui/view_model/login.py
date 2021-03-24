@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum, auto
-
+from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib import exceptions
 from ..rx.subject.replaysubject import ReplaySubject
+from ..logger import logger
 
 
 class LoginState(Enum):
@@ -17,7 +18,7 @@ class LoginError:
 
 class LoginViewModel:
 
-    def __init__(self, protonvpn, bg_process):
+    def __init__(self, bg_process):
         self.protonvpn = protonvpn
         self.bg_process = bg_process
 
@@ -33,9 +34,10 @@ class LoginViewModel:
     def login_sync(self, username, password):
         result = None
         try:
-            self.protonvpn._login(username, password)
+            self.protonvpn.login(username, password)
             result = LoginState.SUCCESS
         except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
             result = LoginError("{}".format(str(e)))
 
         self.state.on_next(result)

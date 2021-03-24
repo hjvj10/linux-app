@@ -7,7 +7,7 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio, Gtk
 from proton.constants import VERSION as proton_version
-from protonvpn_nm_lib import protonvpn
+from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
 
 from .constants import APP_VERSION
@@ -18,9 +18,10 @@ from .view.dashboard import DashboardView
 from .view.login import LoginView
 from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
+from .view.dialog import DialogView
 
 
-class ProtonVPN(Gtk.Application):
+class ProtonVPNGUI(Gtk.Application):
     """ProtonVPN GTK Applcation.
 
     Windows are composite objects. Follows
@@ -31,7 +32,6 @@ class ProtonVPN(Gtk.Application):
             application_id='com.protonvpn.www',
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
-        self.protonvpn = protonvpn
 
     def do_startup(self):
         """Default GTK method.
@@ -97,10 +97,12 @@ class ProtonVPN(Gtk.Application):
 
         Runs at window startup.
         """
+        # self.dialog_window = DialogView(application=self)
+        # self.dialog_window.display_upgrade()
         win = self.props.active_window
 
         if not win:
-            if not self.protonvpn._check_session_exists():
+            if not protonvpn.check_session_exists():
                 win = self.get_login_window
             else:
                 win = self.get_dashboard_window
@@ -116,7 +118,7 @@ class ProtonVPN(Gtk.Application):
             LoginView
         """
         login_view_model = LoginViewModel(
-            self.protonvpn, BackgroundProcess
+            BackgroundProcess
         )
         return LoginView(
             application=self,
@@ -131,7 +133,7 @@ class ProtonVPN(Gtk.Application):
             DashboardView
         """
         dashboard_view_model = DashboardViewModel(
-            self.protonvpn, Utilities, BackgroundProcess
+            Utilities, BackgroundProcess
         )
         return DashboardView(
             application=self,
@@ -140,6 +142,6 @@ class ProtonVPN(Gtk.Application):
 
 
 def main():
-    app = ProtonVPN()
+    app = ProtonVPNGUI()
     exit_status = app.run(sys.argv)
     sys.exit(exit_status)
