@@ -185,6 +185,14 @@ class ImageFactory(WidgetFactory, metaclass=ABCMeta):
         )
 
 
+class Dummy(ImageFactory):
+    """Dummy class."""
+    image = "dummy"
+
+    def __init__(self, _):
+        super().__init__()
+
+
 class Chevron(ImageFactory):
     """Chevron icon class."""
     image = "chevron_icon"
@@ -261,6 +269,23 @@ class FeaturePlus(ImageFactory):
             )
         )
         self.add_class("server-icon")
+        self.show = True
+
+
+class LargeFlag(ImageFactory):
+    """LargeFlag class."""
+    image = "large_flag"
+
+    def __init__(self, country_code):
+        super().__init__()
+        self.align_v = Gtk.Align.CENTER
+        self.add_class("country-flag")
+        self.set_from_pixbuf(
+            self.create_image_pixbuf_from_name(
+                "flags/large/" + country_code.lower() + ".jpg",
+                width=400, height=400
+            )
+        )
         self.show = True
 
 

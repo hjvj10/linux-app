@@ -5,12 +5,11 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from protonvpn_nm_lib.api import protonvpn
-from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
+from gi.repository import Gdk, Gio, GLib, Gtk
 from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 
-from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH,
-                         IMG_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
+from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
                          SECURE_CORE_ICON_SET, UI_DIR_PATH)
 from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
                      DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
@@ -22,6 +21,7 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     NetworkSpeed, NotConnectedToVPNInfo,
                                     ServerList)
 from .dashboard_server_list import DashboardServerList
+from ..factory import WidgetFactory
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -262,10 +262,10 @@ class DashboardView(Gtk.ApplicationWindow):
             country_code (string): country IS code
         """
         try:
-            sidebar_flag_pixbuff = self.create_image_pixbuf_from_name(
+            dummy_object = WidgetFactory.image("dummy")
+            sidebar_flag_pixbuff = dummy_object.create_image_pixbuf_from_name(
                 "flags/large/" + country_code.lower() + ".jpg",
-                width=400,
-                height=400,
+                width=400, height=400,
             )
         except gi.repository.GLib.Error:
             return
@@ -291,50 +291,56 @@ class DashboardView(Gtk.ApplicationWindow):
         of the sidebar flag.
         """
         logger.info("Setting up dashboard images and icons")
+        dummy_object = WidgetFactory.image("dummy")
 
         # Get pixbuf objects
-        protonvpn_headerbar_pixbuf = self.create_icon_pixbuf_from_name(
+        protonvpn_headerbar_pixbuf = dummy_object.create_icon_pixbuf_from_name(
             "protonvpn-sign-green.svg",
             width=50, height=50,
         )
-        logo_pixbuf = self.create_image_pixbuf_from_name(
+        logo_pixbuf = dummy_object.create_image_pixbuf_from_name(
             "protonvpn-logo-white.svg",
             width=325, height=250
         )
-        window_icon = self.create_icon_pixbuf_from_name(
+        window_icon = dummy_object.create_icon_pixbuf_from_name(
             "protonvpn_logo.png",
         )
-        upload_pixbuff = self.create_icon_pixbuf_from_name(
+        upload_pixbuff = dummy_object.create_icon_pixbuf_from_name(
             "up-icon.svg",
             width=15, height=15
         )
-        download_pixbuff = self.create_icon_pixbuf_from_name(
+        download_pixbuff = dummy_object.create_icon_pixbuf_from_name(
             "down-icon.svg",
             width=15, height=15
         )
-        feature_button_secure_core_pixbuf = self.create_icon_pixbuf_from_name(
-            self.features_icon_set_dict[
-                DashboardFeaturesEnum.SECURE_CORE
-            ][DashboardSecureCoreIconEnum.OFF],
-            width=self.feature_button_icon_width,
-            height=self.feature_button_icon_height
-        )
-        feature_button_netshield_pixbuf = self.create_icon_pixbuf_from_name(
-            self.features_icon_set_dict[
-                DashboardFeaturesEnum.NETSHIELD
-            ][DashboardNetshieldIconEnum.OFF],
-            width=self.feature_button_icon_width,
-            height=self.feature_button_icon_height
-        )
-        feature_button_killswitch_pixbuf = self.create_icon_pixbuf_from_name(
-            self.features_icon_set_dict[
-                DashboardFeaturesEnum.KILLSWITCH
-            ][DashboardKillSwitchIconEnum.OFF],
-            width=self.feature_button_icon_width,
-            height=self.feature_button_icon_height
-        )
+        feature_button_secure_core_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.SECURE_CORE
+                ][DashboardSecureCoreIconEnum.OFF],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
+        feature_button_netshield_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.NETSHIELD
+                ][DashboardNetshieldIconEnum.OFF],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
+        feature_button_killswitch_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.KILLSWITCH
+                ][DashboardKillSwitchIconEnum.OFF],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
 
         # Set images and icons
+        self.set_icon(window_icon)
+
         self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)
         self.overlay_logo_image.set_from_pixbuf(logo_pixbuf)
         self.download_speed_image.set_from_pixbuf(download_pixbuff)
@@ -347,77 +353,6 @@ class DashboardView(Gtk.ApplicationWindow):
         )
         self.dashboard_killswitch_button_image.set_from_pixbuf(
             feature_button_killswitch_pixbuf
-        )
-
-        self.set_icon(window_icon)
-
-    def create_icon_pixbuf_from_name(
-        self, icon_name, width=None, height=None
-    ):
-        """Gets the icon pixbuff for the specified filename.
-
-        If width and/or height are not provided, then the icon
-        is set with original values. Else, the icon is resized.
-
-        Args:
-            icon_name (string):
-            width (int|float): optional
-            height (int|float): optional
-
-        Returns:
-            GdkPixbuf instance with loaded image
-        """
-        if width and height:
-            return GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                filename=os.path.join(
-                    ICON_DIR_PATH,
-                    icon_name,
-
-                ),
-                width=width,
-                height=height,
-                preserve_aspect_ratio=True
-            )
-
-        return GdkPixbuf.Pixbuf.new_from_file(
-            filename=os.path.join(
-                ICON_DIR_PATH,
-                icon_name
-            )
-        )
-
-    def create_image_pixbuf_from_name(
-        self, image_name, width=None, height=None
-    ):
-        """Gets the icon pixbuff for the specified filename.
-
-        If width and/or height are not provided, then the image
-        is set with original values. Else, the image is resized.
-
-        Args:
-            icon_name (string):
-            width (int|float): optional
-            height (int|float): optional
-
-        Returns:
-            GdkPixbuf instance with loaded image
-        """
-        if width and height:
-            return GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                filename=os.path.join(
-                    IMG_DIR_PATH,
-                    image_name
-                ),
-                width=width,
-                height=height,
-                preserve_aspect_ratio=True
-            )
-
-        return GdkPixbuf.Pixbuf.new_from_file(
-            filename=os.path.join(
-                IMG_DIR_PATH,
-                image_name
-            )
         )
 
     def setup_css(self):
