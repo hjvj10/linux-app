@@ -36,12 +36,13 @@ class LoginView(Gtk.ApplicationWindow):
     def __init__(self, **kwargs):
         self.login_view_model = kwargs.pop("view_model")
         self.dashboard_window = kwargs.pop("dashboard_window")
+        self.application = kwargs.pop("application")
 
         self.login_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
 
-        super().__init__(**kwargs)
+        super().__init__(application=self.application)
         self.setup_images()
         self.setup_css()
         self.setup_actions()

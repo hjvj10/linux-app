@@ -130,10 +130,13 @@ class DashboardView(Gtk.ApplicationWindow):
 
     def __init__(self, **kwargs):
         self.dashboard_view_model = kwargs.pop("view_model")
+        self.application = kwargs.pop("application")
+
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
-        super().__init__(**kwargs)
+
+        super().__init__(application=self.application)
         self.overlay_spinner.set_property("width-request", 200)
         self.overlay_spinner.set_property("height-request", 200)
         self.connecting_overlay_spinner.set_property("width-request", 200)

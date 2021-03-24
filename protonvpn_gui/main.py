@@ -18,6 +18,7 @@ from .view.dashboard import DashboardView
 from .view.login import LoginView
 from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
+from .view.dialog import DialogView
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -96,6 +97,8 @@ class ProtonVPNGUI(Gtk.Application):
 
         Runs at window startup.
         """
+        # self.dialog_window = DialogView(application=self)
+        # self.dialog_window.display_upgrade()
         win = self.props.active_window
 
         if not win:

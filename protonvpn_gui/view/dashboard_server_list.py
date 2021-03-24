@@ -7,6 +7,7 @@ from protonvpn_nm_lib.country_codes import country_codes
 from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum
 from ..factory import WidgetFactory
 from ..enums import GLibEventSourceEnum
+from .dialog import DialogView
 
 
 class DashboardServerList:
@@ -211,11 +212,12 @@ class CountryRowRightGrid:
         gtk_chevron_img, chevron_btn_ctx,
         revealer
     ):
+        dummy_object = WidgetFactory.image("dummy")
         if chevron_btn_ctx.has_class("chevron-unfold"):
             chevron_btn_ctx.remove_class("chevron-unfold")
             chevron_btn_ctx.add_class("chevron-fold")
             revealer.set_reveal_child(True)
-            chevron_pixbuf = self.dv.create_icon_pixbuf_from_name(
+            chevron_pixbuf = dummy_object.create_icon_pixbuf_from_name(
                 "chevron-hover.svg",
                 width=25, height=25
             ).rotate_simple(GdkPixbuf.PixbufRotation.UPSIDEDOWN)
@@ -223,7 +225,7 @@ class CountryRowRightGrid:
             chevron_btn_ctx.remove_class("chevron-fold")
             chevron_btn_ctx.add_class("chevron-unfold")
             revealer.set_reveal_child(False)
-            chevron_pixbuf = self.dv.create_icon_pixbuf_from_name(
+            chevron_pixbuf = dummy_object.create_icon_pixbuf_from_name(
                 "chevron-default.svg",
                 width=25, height=25
             ).rotate_simple(GdkPixbuf.PixbufRotation.NONE)
@@ -404,6 +406,9 @@ class ServerRowRightGrid:
                 self.city_label = WidgetFactory.label(
                     "city", "Upgrade"
                 )
+                self.connect_server_button.connect(
+                    "clicked", self.display_upgrade
+                )
             else:
                 self.connect_server_button.connect(
                     "clicked", self.connect_to_server,
@@ -424,3 +429,7 @@ class ServerRowRightGrid:
             GLibEventSourceEnum.ON_MONITOR_VPN
         )
         self.dv.dashboard_view_model.on_servername_connect(servername)
+
+    def display_upgrade(self, gtk_button_object):
+        dialog = DialogView(self.dv.application)
+        dialog.display_upgrade()

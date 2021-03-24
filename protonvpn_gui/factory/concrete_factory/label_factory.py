@@ -95,6 +95,38 @@ class LabelFactory(WidgetFactory, metaclass=ABCMeta):
         """Set vertical align."""
         return self.__widget.set_valign(newvalue)
 
+    @property
+    def justify(self):
+        return self.__widget.get_justify()
+
+    @justify.setter
+    def justify(self, newvalue):
+        self.__widget.set_justify(newvalue)
+
+    @property
+    def width_in_chars(self):
+        return self.__widget.get_width_chars()
+
+    @width_in_chars.setter
+    def width_in_chars(self, newvalue):
+        self.__widget.set_width_chars(newvalue)
+
+    @property
+    def max_width_in_chars(self):
+        return self.__widget.get_max_width_chars()
+
+    @max_width_in_chars.setter
+    def max_width_in_chars(self, newvalue):
+        self.__widget.set_max_width_chars(newvalue)
+
+    @property
+    def line_wrap(self):
+        return self.__widget.get_line_wrap()
+
+    @line_wrap.setter
+    def line_wrap(self, newvalue):
+        self.__widget.set_line_wrap(newvalue)
+
     def add_class(self, css_class):
         """Add CSS class."""
         self.__widget_context.add_class(css_class)
@@ -107,6 +139,20 @@ class LabelFactory(WidgetFactory, metaclass=ABCMeta):
     def has_class(self, css_class):
         """Check if has CSS class."""
         return True if self.__widget_context.has_class(css_class) else False
+
+
+class DialogUpgrade(LabelFactory):
+    """DialogUpgrade class."""
+    label = "dialog_upgrade"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.max_width_in_chars = 50
+        self.max_width_in_chars = 50
+        self.line_wrap = True
+        self.show = True
+        self.add_class("default-text-color")
 
 
 class Country(LabelFactory):

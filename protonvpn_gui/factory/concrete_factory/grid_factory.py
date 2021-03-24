@@ -90,6 +90,22 @@ class GridFactory(WidgetFactory, metaclass=ABCMeta):
     def tooltip(self, newvalue):
         self.__widget.set_property("has-tooltip", newvalue)
 
+    @property
+    def row_spacing(self):
+        return self.__widget.get_row_spacing()
+
+    @row_spacing.setter
+    def row_spacing(self, newvalue):
+        self.__widget.set_row_spacing(newvalue)
+
+    @property
+    def column_spacing(self):
+        return self.__widget.get_column_spacing()
+
+    @column_spacing.setter
+    def column_spacing(self, newvalue):
+        self.__widget.set_column_spacing(newvalue)
+
     def add_class(self, css_class):
         """Add CSS class."""
         self.__widget_context.add_class(css_class)
@@ -111,6 +127,39 @@ class GridFactory(WidgetFactory, metaclass=ABCMeta):
 
     def attach_next_to(self, *args, **kwargs):
         self.__widget.attach_next_to(*args, **kwargs)
+
+
+class Default(GridFactory):
+    grid = "default"
+
+    def __init__(self):
+        super().__init__()
+        self.show = True
+
+
+class DialogContent(GridFactory):
+    grid = "dialog_content"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.START
+        self.align_v = Gtk.Align.FILL
+        self.expand_v = True
+        self.row_spacing = 20
+        self.expand_h = False
+        self.add_class("grid-spacing")
+        self.show = True
+
+
+class DialogButtons(GridFactory):
+    grid = "dialog_buttons"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.FILL
+        self.align_v = Gtk.Align.END
+        self.expand_h = True
+        self.show = True
 
 
 class MainCountryRow(GridFactory):

@@ -118,7 +118,7 @@ class ButtonFactory(WidgetFactory, metaclass=ABCMeta):
     def remove_class(self, css_class):
         """Remove CSS class."""
         if self.has_class(css_class):
-            self.__widget_context.remvove_class(css_class)
+            self.__widget_context.remove_class(css_class)
 
     def has_class(self, css_class):
         """Check if has CSS class."""
@@ -130,20 +130,6 @@ class ButtonFactory(WidgetFactory, metaclass=ABCMeta):
 
 class Default(ButtonFactory):
     button = "gtk_default"
-
-    def __init__(self):
-        super().__init__()
-
-
-class MainConnect(ButtonFactory):
-    button = "main_connect"
-
-    def __init__(self):
-        super().__init__()
-
-
-class MainDisconnect(ButtonFactory):
-    button = "main_disconnect"
 
     def __init__(self):
         super().__init__()
@@ -202,3 +188,26 @@ class Chevron(ButtonFactory):
         self.align_h = Gtk.Align.END
         self.show = True
         self.add_class("chevron-unfold")
+
+
+class DialogUpgrade(ButtonFactory):
+    button = "dialog_upgrade"
+
+    def __init__(self):
+        super().__init__()
+        self.expand_h = True
+        self.align_h = Gtk.Align.END
+        self.align_v = Gtk.Align.CENTER
+        self.label = "Upgrade"
+        self.show = True
+        self.add_class("enabled")
+
+
+class DialogClose(ButtonFactory):
+    button = "dialog_close"
+
+    def __init__(self):
+        super().__init__()
+        self.label = "Close"
+        self.show = True
+        self.add_class("transparent-white")

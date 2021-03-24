@@ -40,6 +40,10 @@ entry:focus{
   border-bottom: 1px solid @green-color;
 }
 
+label.default-text-color{
+  color: rgb(255,255,255)
+}
+
 button {
   -gtk-icon-effect: none;
   -gtk-icon-source: none;
