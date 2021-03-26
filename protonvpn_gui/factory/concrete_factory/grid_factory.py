@@ -237,6 +237,22 @@ class GridFactory(WidgetFactory, metaclass=ABCMeta):
         """
         self.__widget.remove_column(col_number)
 
+    def get_child_at(self, left_pos=0, top_pos=0):
+        """Gets child widget from specified position.
+
+        Args:
+            left_pos (int)
+            top_pos (int)
+        """
+        return self.__widget.get_child_at(left_pos, top_pos)
+
+
+class Dummy(GridFactory):
+    grid = "dummy"
+
+    def __init__(self):
+        super().__init__()
+
 
 class Default(GridFactory):
     grid = "default"
@@ -247,7 +263,7 @@ class Default(GridFactory):
 
 
 class QuickSettings(GridFactory):
-    grid = "quick_settings"
+    grid = "container"
 
     def __init__(self):
         super().__init__()
@@ -256,10 +272,11 @@ class QuickSettings(GridFactory):
         self.expand_h = True
         self.expand_v = True
         self.show = True
+        self.add_class("quick-settings-content")
 
 
 class QuickSettingsButtons(GridFactory):
-    grid = "quick_settings_buttons"
+    grid = "buttons"
 
     def __init__(self):
         super().__init__()

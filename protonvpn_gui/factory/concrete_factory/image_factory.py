@@ -333,3 +333,123 @@ class Load(ImageFactory):
         )
         self.add_class("server-icon")
         self.show = True
+
+
+class SecureCoreOff(ImageFactory):
+    """SecureCoreOff icon class."""
+    image = "secure_cure_off"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "secure-core.imageset/secure-core-off.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class SecureCoreOn(ImageFactory):
+    """SecureCoreOn icon class."""
+    image = "secure_cure_on"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "secure-core.imageset/secure-core-on-default.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class NetshiledOff(ImageFactory):
+    """NetshieldOff icon class."""
+    image = "netshield_off"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "netshield.imageset/netshield-off.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class NetshiledMalware(ImageFactory):
+    """NetshieldMalware icon class."""
+    image = "netshield_malware"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "netshield.imageset/netshield-malware-default.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class NetshiledAdsMalware(ImageFactory):
+    """NetshiledAdsMalware icon class."""
+    image = "netshield_ads_malware"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "netshield.imageset/netshield-malware-ad-default.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class KillSwitchOff(ImageFactory):
+    """KillSwitchOff icon class."""
+    image = "killswitch_off"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "kill-switch.imageset/killswitch-off.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class KillSwitchOn(ImageFactory):
+    """KillSwitchOn icon class."""
+    image = "killswitch_on"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "kill-switch.imageset/killswitch-on-default.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class KillSwitchAlwaysOn(ImageFactory):
+    """KillSwitchAlwaysOn icon class."""
+    image = "killswitch_always_on"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "kill-switch.imageset/killswitch-always-on-default.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True

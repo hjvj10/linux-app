@@ -127,12 +127,30 @@ class ButtonFactory(WidgetFactory, metaclass=ABCMeta):
     def connect(self, *args, **kwargs):
         self.__widget.connect(*args, **kwargs)
 
+    def custom_content(self, widget):
+        self.__widget.add(widget)
+
+
+class Dummy(ButtonFactory):
+    button = "dummy"
+
+    def __init__(self):
+        super().__init__()
+
 
 class Default(ButtonFactory):
     button = "gtk_default"
 
     def __init__(self):
         super().__init__()
+
+
+class QuickSetting(ButtonFactory):
+    button = "quick_setting"
+
+    def __init__(self):
+        super().__init__()
+        self.show = True
 
 
 class ConnectToCountry(ButtonFactory):
@@ -202,6 +220,19 @@ class DialogUpgrade(ButtonFactory):
         self.label = "Upgrade"
         self.show = True
         self.add_class("enabled")
+
+
+class QuickSettingsUpgrade(ButtonFactory):
+    button = "dialog_upgrade"
+
+    def __init__(self):
+        super().__init__()
+        self.expand_h = True
+        self.align_h = Gtk.Align.CENTER
+        self.align_v = Gtk.Align.CENTER
+        self.label = "Upgrade"
+        self.show = True
+        self.add_class("quick-settings")
 
 
 class DialogClose(ButtonFactory):

@@ -96,6 +96,16 @@ class LabelFactory(WidgetFactory, metaclass=ABCMeta):
         return self.__widget.set_valign(newvalue)
 
     @property
+    def ident_h(self):
+        """Get vertical align."""
+        return self.__widget.get_xalign()
+
+    @ident_h.setter
+    def ident_h(self, newvalue):
+        """Set vertical align."""
+        return self.__widget.set_xalign(float(newvalue))
+
+    @property
     def justify(self):
         return self.__widget.get_justify()
 
@@ -152,6 +162,7 @@ class QuickSettingsTitle(LabelFactory):
         self.align_v = Gtk.Align.CENTER
         self.show = True
         self.add_class("default-text-color")
+        self.add_class("quick-settings-title")
 
 
 class QuickSettingsDescription(LabelFactory):
@@ -163,7 +174,12 @@ class QuickSettingsDescription(LabelFactory):
         self.align_h = Gtk.Align.START
         self.expand_h = True
         self.align_v = Gtk.Align.FILL
+        self.width_in_chars = 37
+        self.max_width_in_chars = 37
+        self.ident_h = 0
+        self.line_wrap = True
         self.show = True
+        self.add_class("quick-settings-description")
         self.add_class("default-text-color")
 
 
@@ -177,7 +193,19 @@ class QuickSettingsFootnote(LabelFactory):
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        self.add_class("default-text-color")
+        self.add_class("quick-settings-footnote")
+
+
+class QuickSettingsButton(LabelFactory):
+    """QuickSettingsDescription class."""
+    label = "quick_settings_button"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
 
 
 class DialogUpgrade(LabelFactory):
@@ -187,7 +215,7 @@ class DialogUpgrade(LabelFactory):
     def __init__(self, label_text):
         super().__init__(label_text)
         self.align_h = Gtk.Align.START
-        self.max_width_in_chars = 50
+        self.width_in_chars = 50
         self.max_width_in_chars = 50
         self.line_wrap = True
         self.show = True
