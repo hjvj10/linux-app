@@ -187,6 +187,7 @@ class Chevron(ButtonFactory):
         self.align_v = Gtk.Align.CENTER
         self.align_h = Gtk.Align.END
         self.show = True
+        self.add_class("chevron")
         self.add_class("chevron-unfold")
 
 

@@ -23,6 +23,7 @@ entry{
   outline: none;
   text-shadow: none;
   box-shadow: none;
+  background-image: none;
   background-color: transparent;
   color: rgb(255,255,255);
   caret-color: white;
@@ -32,6 +33,9 @@ entry{
   border-bottom: 1px solid rgba(255,255,255, 0.3);
   font-size: 17px;
   padding-bottom: 5px;
+}
+entry image:first-child{
+  color: rgba(255,255,255, 0.6)
 }
 entry:focus{
   border-image:none;
