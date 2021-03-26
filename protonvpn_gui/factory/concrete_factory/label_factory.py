@@ -32,12 +32,12 @@ class LabelFactory(WidgetFactory, metaclass=ABCMeta):
         return self.__widget_context
 
     @property
-    def label(self):
+    def content(self):
         """Get widget label."""
         return self.__widget.props.label
 
-    @label.setter
-    def label(self, newvalue):
+    @content.setter
+    def content(self, newvalue):
         """Set widget label.
 
         Args:
@@ -139,6 +139,45 @@ class LabelFactory(WidgetFactory, metaclass=ABCMeta):
     def has_class(self, css_class):
         """Check if has CSS class."""
         return True if self.__widget_context.has_class(css_class) else False
+
+
+class QuickSettingsTitle(LabelFactory):
+    """QuickSettingsTitle class."""
+    label = "quick_settings_title"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("default-text-color")
+
+
+class QuickSettingsDescription(LabelFactory):
+    """QuickSettingsDescription class."""
+    label = "quick_settings_description"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.FILL
+        self.show = True
+        self.add_class("default-text-color")
+
+
+class QuickSettingsFootnote(LabelFactory):
+    """QuickSettingsDescription class."""
+    label = "quick_settings_footnote"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("default-text-color")
 
 
 class DialogUpgrade(LabelFactory):

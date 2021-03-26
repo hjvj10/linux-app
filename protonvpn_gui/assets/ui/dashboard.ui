@@ -425,21 +425,22 @@
                 <property name="hexpand">True</property>
                 <child>
                   <object class="GtkButtonBox">
+                    <property name="name">dashboard_button_box</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="hexpand">True</property>
                     <child>
-                      <object class="GtkMenuButton" id="dashboard_secure_core_button_menu">
+                      <object class="GtkButton" id="dashboard_secure_core_button_menu">
+                        <property name="name">dashboard_secure_core_button_menu</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="focus-on-click">False</property>
                         <property name="receives-default">True</property>
                         <property name="action-name">win.display_secure_core_popover</property>
                         <child>
                           <object class="GtkImage" id="dashboard_secure_core_button_image">
+                            <property name="name">dashboard_secure_core_button_image</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-missing-image</property>
                           </object>
                         </child>
                       </object>
@@ -450,17 +451,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkMenuButton" id="dashboard_netshield_button">
+                      <object class="GtkButton" id="dashboard_netshield_button">
+                        <property name="name">dashboard_netshield_button</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="focus-on-click">False</property>
                         <property name="receives-default">True</property>
                         <property name="action-name">win.display_netshield_popover</property>
                         <child>
                           <object class="GtkImage" id="dashboard_netshield_button_image">
+                            <property name="name">dashboard_netshield_button_image</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-missing-image</property>
                           </object>
                         </child>
                       </object>
@@ -471,16 +472,16 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkMenuButton" id="dashboard_killswitch_button">
+                      <object class="GtkButton" id="dashboard_killswitch_button">
+                        <property name="name">dashboard_killswitch_button</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="focus-on-click">False</property>
                         <property name="receives-default">True</property>
+                        <property name="action-name">win.display_killswitch_popover</property>
                         <child>
                           <object class="GtkImage" id="dashboard_killswitch_button_image">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="stock">gtk-missing-image</property>
                           </object>
                         </child>
                       </object>

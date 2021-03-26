@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 
-from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib import exceptions
+from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
-                                    ConnectionStatusEnum, ConnectionTypeEnum,
                                     ConnectionStartStatusEnum,
+                                    ConnectionStatusEnum, ConnectionTypeEnum,
+                                    FeatureEnum, ServerTierEnum,
                                     VPNConnectionReasonEnum,
-                                    VPNConnectionStateEnum, FeatureEnum, ServerTierEnum)
-from ..rx.subject.replaysubject import ReplaySubject
-from ..model.dashboard_server_list import DashboardServerList
+                                    VPNConnectionStateEnum)
 
 from ..logger import logger
+from ..rx.subject.replaysubject import ReplaySubject
 
 
 @dataclass
@@ -135,10 +135,7 @@ class DashboardViewModel:
         VPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
-    def __init__(
-        self, utils,
-        bg_process, dashboard_server_list=DashboardServerList()
-    ):
+    def __init__(self, utils, bg_process, dashboard_server_list):
         self.utils = utils
         self.bg_process = bg_process
         self.dashboard_server_list = dashboard_server_list
@@ -152,7 +149,7 @@ class DashboardViewModel:
         so that the animiation does not stopped during this loading state.
         """
         self.state.on_next(Loading())
-        process = self.bg_process.setup_no_params(self.on_startup_sync)
+        process = self.bg_process.setup(self.on_startup_sync)
         process.start()
 
     def on_startup_sync(self):
@@ -181,17 +178,20 @@ class DashboardViewModel:
         else:
             result = self.get_connected_state()
 
-        self.on_load_servers_sync()
+        self.on_load_servers_sync(secure_core=False)
         self.state.on_next(result)
 
-    def on_load_servers(self):
-        process = self.bg_process.setup_no_params(self.on_load_servers_sync)
+    def on_load_servers(self, secure_core=False):
+        process = self.bg_process.setup(
+            self.on_load_servers_sync, secure_core
+        )
         process.start()
         return True
 
-    def on_load_servers_sync(self):
+    def on_load_servers_sync(self, secure_core):
         self.dashboard_server_list.generate_server_list(
-            ServerTierEnum(protonvpn.get_session().vpn_tier)
+            user_tier=ServerTierEnum(protonvpn.get_session().vpn_tier),
+            only_secure_core=secure_core
         )
         servers = self.dashboard_server_list.server_list
         state = ServerList(servers)
@@ -383,7 +383,7 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = self.bg_process.setup_no_params(self.on_monitor_vpn_async)
+        process = self.bg_process.setup(self.on_monitor_vpn_async)
         process.start()
         return True
 
@@ -411,7 +411,7 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = self.bg_process.setup_no_params(
+        process = self.bg_process.setup(
             self.on_update_server_load_sync
         )
         process.start()
@@ -445,7 +445,7 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = self.bg_process.setup_no_params(
+        process = self.bg_process.setup(
             self.on_update_speed_sync
         )
         process.start()

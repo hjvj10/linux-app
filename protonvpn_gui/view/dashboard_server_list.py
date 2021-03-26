@@ -59,10 +59,10 @@ class CountryRow:
             self.dv
         )
 
-        self.row_grid.attach(self.left_child.grid.widget, 0, 0, 1, 1)
-        self.row_grid.attach_next_to(
-            self.right_child.grid.widget, self.left_child.grid.widget,
-            Gtk.PositionType.RIGHT, 1, 1
+        self.row_grid.attach(self.left_child.grid.widget)
+        self.row_grid.attach_right_next_to(
+            self.right_child.grid.widget,
+            self.left_child.grid.widget,
         )
         if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.row_grid.tooltip = True
@@ -72,7 +72,8 @@ class CountryRow:
             )
 
             self.row_grid.attach(
-                self.server_list_revealer.revealer.widget, 0, 1, 2, 1
+                self.server_list_revealer.revealer.widget,
+                row=1, width=2
             )
         self.create_event_box(country_item)
 
@@ -114,10 +115,9 @@ class CountryRowLeftGrid:
         )
         if not country_item.available_to_free_users:
             self.country_name.add_class("disabled-label")
-        self.grid.attach(self.country_flag, 0, 0, 1, 1)
-        self.grid.attach_next_to(
+        self.grid.attach(self.country_flag)
+        self.grid.attach_right_next_to(
             self.country_name.widget, self.country_flag,
-            Gtk.PositionType.RIGHT, 1, 1
         )
 
 
@@ -133,12 +133,8 @@ class CountryRowRightGrid:
         self.chevron_button = WidgetFactory.button("chevron")
         self.chevron_icon = WidgetFactory.image("chevron_icon")
         self.chevron_button.image = self.chevron_icon.widget
-        self.grid.attach(
-            self.chevron_button.widget, 0, 0, 1, 1
-        )
-        self.grid.attach(
-            self.maintenance_icon.widget, 0, 0, 1, 1
-        )
+        self.grid.attach(self.chevron_button.widget)
+        self.grid.attach(self.maintenance_icon.widget)
 
         if not country_item.available_to_free_users:
             return
@@ -171,23 +167,20 @@ class CountryRowRightGrid:
 
     def attach_feature_icon(self, pixbuf_feature_icon):
         if len(self.feature_icon_list) < 1:
-            self.grid.attach_next_to(
-                pixbuf_feature_icon, self.connect_country_button.widget,
-                Gtk.PositionType.LEFT, 1, 1
+            self.grid.attach_left_next_to(
+                pixbuf_feature_icon,
+                self.connect_country_button.widget,
             )
         else:
             gtk_image = self.feature_icon_list[-1]
-            self.grid.attach_next_to(
-                pixbuf_feature_icon, gtk_image,
-                Gtk.PositionType.LEFT, 1, 1
-            )
+            self.grid.attach_left_next_to(pixbuf_feature_icon, gtk_image)
 
         self.feature_icon_list.append(pixbuf_feature_icon)
 
     def attach_connect_button(self):
-        self.grid.attach_next_to(
-            self.connect_country_button.widget, self.chevron_button.widget,
-            Gtk.PositionType.LEFT, 1, 1
+        self.grid.attach_left_next_to(
+            self.connect_country_button.widget,
+            self.chevron_button.widget,
         )
 
     def connect_callback(self, country_item):
@@ -242,9 +235,9 @@ class ServerListRevealer:
         self.revealer_child_grid = WidgetFactory.grid("revealer_child")
 
         for server in servers:
-            self.revealer_child_grid.widget.attach(
-                ServerRow(self.dv, server).event_box, 0,
-                self._row_counter, 1, 1
+            self.revealer_child_grid.attach(
+                ServerRow(self.dv, server).event_box,
+                row=self._row_counter
             )
             self._row_counter += 1
 
@@ -257,12 +250,10 @@ class ServerRow:
         self.grid = WidgetFactory.grid("server_row")
         self.left_child = ServerRowLeftGrid(server)
         self.right_child = ServerRowRightGrid(self.dv, server)
-        self.grid.attach(
-            self.left_child.grid.widget, 0, 0, 1, 1
-        )
-        self.grid.attach_next_to(
-            self.right_child.grid.widget, self.left_child.grid.widget,
-            Gtk.PositionType.RIGHT, 1, 1
+        self.grid.attach(self.left_child.grid.widget)
+        self.grid.attach_right_next_to(
+            self.right_child.grid.widget,
+            self.left_child.grid.widget,
         )
         if server.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.grid.tooltip = True
@@ -312,9 +303,7 @@ class ServerRowLeftGrid:
             )
         )
 
-        self.grid.attach(
-            self.load_icon.widget, 0, 0, 1, 1
-        )
+        self.grid.attach(self.load_icon.widget)
         self.create_servername_label(server.name)
         self.set_server_features(server.features)
         self.create_is_plus_server_icon(server.is_plus)
@@ -323,9 +312,9 @@ class ServerRowLeftGrid:
 
     def create_servername_label(self, servername):
         self.servername_label = WidgetFactory.label("server", servername)
-        self.grid.attach_next_to(
-            self.servername_label.widget, self.load_icon.widget,
-            Gtk.PositionType.RIGHT, 1, 1
+        self.grid.attach_right_next_to(
+            self.servername_label.widget,
+            self.load_icon.widget,
         )
 
     def create_is_plus_server_icon(self, is_plus_server):
@@ -336,15 +325,15 @@ class ServerRowLeftGrid:
         plus_server_icon.tooltip = True
         plus_server_icon.tooltip_text = "Plus Server"
         if len(self.feature_icon_list) < 1:
-            self.grid.attach_next_to(
-                plus_server_icon.widget, self.servername_label.widget,
-                Gtk.PositionType.RIGHT, 1, 1
+            self.grid.attach_right_next_to(
+                plus_server_icon.widget,
+                self.servername_label.widget,
             )
             return
 
-        self.grid.attach_next_to(
-            plus_server_icon.widget, self.feature_icon_list[-1],
-            Gtk.PositionType.RIGHT, 1, 1
+        self.grid.attach_right_next_to(
+            plus_server_icon.widget,
+            self.feature_icon_list[-1],
         )
 
     def set_server_features(self, server_features):
@@ -369,16 +358,13 @@ class ServerRowLeftGrid:
 
     def attach_feature_icon(self, pixbuf_feature_icon):
         if len(self.feature_icon_list) < 1:
-            self.grid.attach_next_to(
-                pixbuf_feature_icon, self.servername_label.widget,
-                Gtk.PositionType.RIGHT, 1, 1
+            self.grid.attach_right_next_to(
+                pixbuf_feature_icon,
+                self.servername_label.widget
             )
         else:
             gtk_image = self.feature_icon_list[-1]
-            self.grid.attach_next_to(
-                pixbuf_feature_icon, gtk_image,
-                Gtk.PositionType.RIGHT, 1, 1
-            )
+            self.grid.attach_right_next_to(pixbuf_feature_icon, gtk_image)
 
         self.feature_icon_list.append(pixbuf_feature_icon)
 
@@ -415,14 +401,11 @@ class ServerRowRightGrid:
                     server.name
                 )
 
-        self.grid.attach(
-            self.city_label.widget, 0,
-            0, 1, 1
-        )
-        self.grid.attach(
-            object_to_attach.widget, 0,
-            0, 1, 1
-        )
+        # Both widgets are attached to the same position
+        # as they are mutually exclusive. Only one at the
+        # time can be displayed.
+        self.grid.attach(self.city_label.widget)
+        self.grid.attach(object_to_attach.widget)
 
     def connect_to_server(self, gtk_button_object, servername):
         self.dv.remove_background_glib(

@@ -25,7 +25,7 @@ class DashboardServerList:
     """
     __server_list: list = None
 
-    def __init__(self, country_item=CountryItem):
+    def __init__(self, country_item):
         self.country_item = country_item
 
     @property
