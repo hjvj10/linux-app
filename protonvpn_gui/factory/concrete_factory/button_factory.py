@@ -1,5 +1,3 @@
-from abc import ABCMeta
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -8,7 +6,7 @@ from gi.repository import Gtk
 from ..abstract_widget_factory import WidgetFactory
 
 
-class ButtonFactory(WidgetFactory, metaclass=ABCMeta):
+class ButtonFactory(WidgetFactory):
     """Concrete Button Factory class."""
 
     concrete_factory = "button"

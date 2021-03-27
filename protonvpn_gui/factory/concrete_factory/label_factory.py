@@ -1,5 +1,3 @@
-from abc import ABCMeta
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -8,7 +6,7 @@ from gi.repository import Gtk
 from ..abstract_widget_factory import WidgetFactory
 
 
-class LabelFactory(WidgetFactory, metaclass=ABCMeta):
+class LabelFactory(WidgetFactory):
     """Concrete Label Factory class."""
 
     concrete_factory = "label"
@@ -205,6 +203,8 @@ class QuickSettingsButton(LabelFactory):
         self.align_h = Gtk.Align.START
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
+        self.add_class("padding-y-10px")
+        self.add_class("padding-x-5px")
         self.show = True
 
 

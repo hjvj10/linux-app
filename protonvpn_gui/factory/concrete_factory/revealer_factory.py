@@ -1,5 +1,3 @@
-from abc import ABCMeta
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -9,7 +7,7 @@ from gi.repository import Gtk
 from ..abstract_widget_factory import WidgetFactory
 
 
-class RevealerFactory(WidgetFactory, metaclass=ABCMeta):
+class RevealerFactory(WidgetFactory):
     """Concrete Revealer Factory class."""
 
     concrete_factory = "revealer"

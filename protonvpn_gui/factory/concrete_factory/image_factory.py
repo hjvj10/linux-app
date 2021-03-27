@@ -1,5 +1,4 @@
 import os
-from abc import ABCMeta
 
 import gi
 
@@ -12,7 +11,7 @@ from gi.repository import GdkPixbuf, Gtk
 from ..abstract_widget_factory import WidgetFactory
 
 
-class ImageFactory(WidgetFactory, metaclass=ABCMeta):
+class ImageFactory(WidgetFactory):
     concrete_factory = "image"
 
     def __init__(self):

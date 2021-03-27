@@ -1,5 +1,3 @@
-from abc import ABCMeta
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -9,7 +7,7 @@ from gi.repository import Gtk
 from ..abstract_widget_factory import WidgetFactory
 
 
-class GridFactory(WidgetFactory, metaclass=ABCMeta):
+class GridFactory(WidgetFactory):
     """Concrete Grid Factory class."""
 
     concrete_factory = "grid"
