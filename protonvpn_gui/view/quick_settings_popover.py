@@ -1,14 +1,17 @@
 import os
 from abc import abstractmethod
+
 import gi
 
 gi.require_version('Gtk', '3.0')
 
-from protonvpn_nm_lib.api import protonvpn
 from gi.repository import Gdk, Gio, GLib, Gtk
+from protonvpn_nm_lib.api import protonvpn
 
 from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
                          SECURE_CORE_ICON_SET, UI_DIR_PATH)
+from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
+                     DashboardSecureCoreIconEnum)
 from ..factory.abstract_widget_factory import WidgetFactory
 
 
@@ -52,7 +55,9 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.footnote.content = "Secure Core may reduce VPN speed"
         self.footnote.show = True
 
-        self.__display_expected_content(self.secure_core_buttons_grid.widget)
+        self.__display_content_which_is_context_specific(
+            self.secure_core_buttons_grid.widget
+        )
         self.set_relative_to(button)
         self.__add_pressed_style(button)
         self.popup()
@@ -65,7 +70,9 @@ class QuickSettingsPopoverView(Gtk.Popover):
             "disabling Netshield"
         self.footnote.show = True
 
-        self.__display_expected_content(self.netshield_buttons_grid.widget)
+        self.__display_content_which_is_context_specific(
+            self.netshield_buttons_grid.widget
+        )
         self.set_relative_to(button)
         self.popup()
         self.__add_pressed_style(button)
@@ -77,15 +84,17 @@ class QuickSettingsPopoverView(Gtk.Popover):
             "<LinkButton>Learn more."
         self.footnote.show = False
 
-        self.__display_expected_content(self.killswitch_buttons_grid.widget)
+        self.__display_content_which_is_context_specific(
+            self.killswitch_buttons_grid.widget
+        )
         self.set_relative_to(button)
         self.popup()
         self.__add_pressed_style(button)
 
-    def __display_expected_content(self, resolve_for):
+    def __display_content_which_is_context_specific(self, resolve_for):
         child_widget = self.buttons_holder.get_child_at()
         # isinstance() was not picking up the types, so had to use ==
-        if type(child_widget) == type(self.content_grid.widget):
+        if type(child_widget) == type(self.content_grid.widget): # noqa
             if not child_widget == resolve_for:
                 self.buttons_holder.remove_row(0)
                 self.buttons_holder.attach(resolve_for)
@@ -320,10 +329,9 @@ class SecureCoreOn(QuickSettingButton):
             "secure_cure_on",
             "Secure Cure On"
         )
-        self.base_path = "secure-core.imageset"
-        self.selected_path = os.path.join(self.base_path, "secure-core-on-active.svg") # noqa
-        self.available_path = os.path.join(self.base_path, "secure-core-on-default.svg") # noqa
-        self.unavailable_path = os.path.join(self.base_path, "secure-core-on-disable.svg") # noqa
+        self.selected_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_ACTIVE] # noqa
+        self.available_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DEFAULT] # noqa
+        self.unavailable_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DISABLE] # noqa
         self.set_available()
 
 
@@ -348,10 +356,9 @@ class NetshieldMalware(QuickSettingButton):
             "netshield_malware",
             "Block malware only"
         )
-        self.base_path = "netshield.imageset"
-        self.selected_path = os.path.join(self.base_path, "netshield-malware-active.svg") # noqa
-        self.available_path = os.path.join(self.base_path, "netshield-malware-default.svg") # noqa
-        self.unavailable_path = os.path.join(self.base_path, "netshield-malware-disable.svg")  # noqa
+        self.selected_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_ACTIVE] # noqa
+        self.available_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_DEFAULT] # noqa
+        self.unavailable_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_DISABLE]  # noqa
         self.set_unavailable()
 
 
@@ -362,10 +369,9 @@ class NetshieldAdsMalware(QuickSettingButton):
             "netshield_ads_malware",
             "Block malware, ads & trackers"
         )
-        self.base_path = "netshield.imageset"
-        self.selected_path = os.path.join(self.base_path, "netshield-malware-ad-active.svg") # noqa
-        self.available_path = os.path.join(self.base_path, "netshield-malware-ad-default.svg") # noqa
-        self.unavailable_path = os.path.join(self.base_path, "netshield-malware-ad-disable.svg")  # noqa
+        self.selected_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_ADS_ACTIVE] # noqa
+        self.available_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_ADS_DEFAULT] # noqa
+        self.unavailable_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_ADS_DISABLE]  # noqa
         self.set_unavailable()
 
 
@@ -391,10 +397,9 @@ class KillSwitchOn(QuickSettingButton):
             "Kill Switch On"
         )
         self.display_upgrade_label = False
-        self.base_path = "kill-switch.imageset"
-        self.selected_path = os.path.join(self.base_path, "killswitch-on-active.svg") # noqa
-        self.available_path = os.path.join(self.base_path, "killswitch-on-default.svg") # noqa
-        self.unavailable_path = os.path.join(self.base_path, "killswitch-on-disable.svg")  # noqa
+        self.selected_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ON_ACTIVE] # noqa
+        self.available_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ON_DEFAULT] # noqa
+        self.unavailable_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ON_DISABLE] # noqa
         self.set_available()
 
 
@@ -406,8 +411,7 @@ class KillSwitchAlwaysOn(QuickSettingButton):
             "Kill Switch Always-On"
         )
         self.display_upgrade_label = False
-        self.base_path = "kill-switch.imageset"
-        self.selected_path = os.path.join(self.base_path, "killswitch-always-on-active.svg") # noqa
-        self.available_path = os.path.join(self.base_path, "killswitch-always-on-default.svg") # noqa
-        self.unavailable_path = os.path.join(self.base_path, "killswitch-always-on-disable.svg") # noqa
+        self.selected_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE] # noqa
+        self.available_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_DEFAULT] # noqa
+        self.unavailable_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_DISABLE] # noqa
         self.set_available()

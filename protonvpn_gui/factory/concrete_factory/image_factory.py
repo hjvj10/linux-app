@@ -2,7 +2,10 @@ import os
 
 import gi
 
-from ...constants import ICON_DIR_PATH, IMG_DIR_PATH
+from ...constants import (ICON_DIR_PATH, IMG_DIR_PATH, KILLSWITCH_ICON_SET,
+                          NETSHIELD_ICON_SET, SECURE_CORE_ICON_SET)
+from ...enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
+                      DashboardSecureCoreIconEnum)
 
 gi.require_version('Gtk', '3.0')
 
@@ -142,7 +145,7 @@ class ImageFactory(WidgetFactory):
         """Check if has CSS class."""
         return True if self.__widget_context.has_class(css_class) else False
 
-    def replace_with_new_img(sel, img_path, width, height):
+    def replace_with_new_img(self, img_path, width, height):
         pixbuff = self.create_image_pixbuf_from_name(
             img_path,
             width=height, height=width
@@ -387,7 +390,7 @@ class SecureCoreOff(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "secure-core.imageset/secure-core-off.svg",
+                SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.OFF],
                 width=25, height=25
             )
         )
@@ -402,7 +405,7 @@ class SecureCoreOn(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "secure-core.imageset/secure-core-on-default.svg",
+                SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DEFAULT],
                 width=25, height=25
             )
         )
@@ -417,7 +420,7 @@ class NetshiledOff(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "netshield.imageset/netshield-off.svg",
+                NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.OFF],
                 width=25, height=25
             )
         )
@@ -432,7 +435,7 @@ class NetshiledMalware(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "netshield.imageset/netshield-malware-default.svg",
+                NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_DEFAULT],
                 width=25, height=25
             )
         )
@@ -447,7 +450,7 @@ class NetshiledAdsMalware(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "netshield.imageset/netshield-malware-ad-default.svg",
+                NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_ADS_DEFAULT], # noqa
                 width=25, height=25
             )
         )
@@ -462,7 +465,7 @@ class KillSwitchOff(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "kill-switch.imageset/killswitch-off.svg",
+                KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.OFF],
                 width=25, height=25
             )
         )
@@ -477,7 +480,7 @@ class KillSwitchOn(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "kill-switch.imageset/killswitch-on-default.svg",
+                KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ON_DEFAULT],
                 width=25, height=25
             )
         )
@@ -492,7 +495,7 @@ class KillSwitchAlwaysOn(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "kill-switch.imageset/killswitch-always-on-default.svg",
+                KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_DEFAULT], # noqa
                 width=25, height=25
             )
         )
