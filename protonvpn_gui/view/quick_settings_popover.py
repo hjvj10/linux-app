@@ -421,10 +421,12 @@ class NetshieldOff(QuickSettingButton):
             "Don't block"
         )
         self.display_upgrade_label = False
-
         if (
             self.session.vpn_tier < ServerTierEnum.BASIC.value
-            and self.settings.netshield != NetshieldTranslationEnum.DISABLED
+            and (
+                self.settings.netshield != NetshieldTranslationEnum.DISABLED
+                or self.settings.netshield == NetshieldTranslationEnum.DISABLED
+            )
         ) or (
             self.session.vpn_tier >= ServerTierEnum.BASIC.value
             and self.settings.netshield == NetshieldTranslationEnum.DISABLED
