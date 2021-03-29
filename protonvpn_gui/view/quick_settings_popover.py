@@ -122,8 +122,8 @@ class QuickSettingsPopoverView(Gtk.Popover):
     def __create_secure_core_buttons(self):
         self.secure_core_buttons_grid = WidgetFactory.grid("buttons")
         self.secure_core_buttons_grid.row_spacing = 15
-        self.secure_core_button_off = SecureCoreOff()
-        self.secure_core_button_on = SecureCoreOn()
+        self.secure_core_button_off = SecureCoreOff(self)
+        self.secure_core_button_on = SecureCoreOn(self)
         self.secure_core_buttons_grid.attach(
             self.secure_core_button_off.widget
         )
@@ -135,9 +135,9 @@ class QuickSettingsPopoverView(Gtk.Popover):
     def __create_netshield_buttons(self):
         self.netshield_buttons_grid = WidgetFactory.grid("buttons")
         self.netshield_buttons_grid.row_spacing = 15
-        self.netshield_button_off = NetshieldOff()
-        self.netshield_button_malware = NetshieldMalware()
-        self.netshield_button_ads_malware = NetshieldAdsMalware()
+        self.netshield_button_off = NetshieldOff(self)
+        self.netshield_button_malware = NetshieldMalware(self)
+        self.netshield_button_ads_malware = NetshieldAdsMalware(self)
 
         self.netshield_buttons_grid.attach(self.netshield_button_off.widget)
         self.netshield_buttons_grid.attach_bottom_next_to(
@@ -152,9 +152,9 @@ class QuickSettingsPopoverView(Gtk.Popover):
     def __create_killswitch_buttons(self):
         self.killswitch_buttons_grid = WidgetFactory.grid("buttons")
         self.killswitch_buttons_grid.row_spacing = 15
-        self.killswitch_button_off = KillSwitchOff()
-        self.killswitch_button_on = KillSwitchOn()
-        self.killswitch_button_alway_on = KillSwitchAlwaysOn()
+        self.killswitch_button_off = KillSwitchOff(self)
+        self.killswitch_button_on = KillSwitchOn(self)
+        self.killswitch_button_alway_on = KillSwitchAlwaysOn(self)
 
         self.killswitch_buttons_grid.attach(self.killswitch_button_off.widget)
         self.killswitch_buttons_grid.attach_bottom_next_to(
@@ -183,7 +183,8 @@ class QuickSettingButton:
     available_path = None
     unavailable_path = None
 
-    def __init__(self, img_factory_name, text):
+    def __init__(self, popover_widget, img_factory_name, text):
+        self.__popover_widget = popover_widget
         self.__content = WidgetFactory.grid("buttons")
         self.__content.row_spacing = 10
         self.__content.column_spacing = 10
@@ -196,8 +197,15 @@ class QuickSettingButton:
         self.__button.custom_content(self.__content.widget)
         self.build()
 
-    def on_button_enter_notify(self, gtk_button):
-        self.set_cursor(Gtk.gdk.Cursor(Gtk.gdk.HAND1))
+    def on_button_enter_notify(self, gtk_button, event_crossing):
+        # TO-DO: Implement hand cursor when hovering
+        # The line below shows how to create a new cursor object
+        # cursor = Gdk.Cursor.new(Gdk.CursorType.HAND1)
+        pass
+
+    def on_button_leave_notify(self, gtk_button, event_crossing):
+        # TO-DO: Implement hand cursor when hovering
+        pass
 
     @property
     def widget(self):
@@ -222,6 +230,13 @@ class QuickSettingButton:
         )
         self.__content.attach_right_next_to(
             self.__upgrade_label.widget, self.__label.widget
+        )
+
+        self.__button.connect(
+            "enter-notify-event", self.on_button_enter_notify
+        )
+        self.__button.connect(
+            "leave-notify-event", self.on_button_leave_notify
         )
 
     def __selected(self, img_path=None):
@@ -285,8 +300,9 @@ class QuickSettingButton:
 
 
 class SecureCoreOff(QuickSettingButton):
-    def __init__(self):
+    def __init__(self, popover_widget):
         super().__init__(
+            popover_widget,
             "secure_cure_off",
             "Secure Cure Off"
         )
@@ -298,8 +314,9 @@ class SecureCoreOff(QuickSettingButton):
 
 
 class SecureCoreOn(QuickSettingButton):
-    def __init__(self):
+    def __init__(self, popover_widget):
         super().__init__(
+            popover_widget,
             "secure_cure_on",
             "Secure Cure On"
         )
@@ -311,8 +328,9 @@ class SecureCoreOn(QuickSettingButton):
 
 
 class NetshieldOff(QuickSettingButton):
-    def __init__(self):
+    def __init__(self, popover_widget):
         super().__init__(
+            popover_widget,
             "netshield_off",
             "Don't block"
         )
@@ -324,8 +342,9 @@ class NetshieldOff(QuickSettingButton):
 
 
 class NetshieldMalware(QuickSettingButton):
-    def __init__(self):
+    def __init__(self, popover_widget):
         super().__init__(
+            popover_widget,
             "netshield_malware",
             "Block malware only"
         )
@@ -337,8 +356,9 @@ class NetshieldMalware(QuickSettingButton):
 
 
 class NetshieldAdsMalware(QuickSettingButton):
-    def __init__(self):
+    def __init__(self, popover_widget):
         super().__init__(
+            popover_widget,
             "netshield_ads_malware",
             "Block malware, ads & trackers"
         )
@@ -350,8 +370,9 @@ class NetshieldAdsMalware(QuickSettingButton):
 
 
 class KillSwitchOff(QuickSettingButton):
-    def __init__(self):
+    def __init__(self, popover_widget):
         super().__init__(
+            popover_widget,
             "killswitch_off",
             "Kill Switch Off"
         )
@@ -363,8 +384,9 @@ class KillSwitchOff(QuickSettingButton):
 
 
 class KillSwitchOn(QuickSettingButton):
-    def __init__(self):
+    def __init__(self, popover_widget):
         super().__init__(
+            popover_widget,
             "killswitch_on",
             "Kill Switch On"
         )
@@ -377,8 +399,9 @@ class KillSwitchOn(QuickSettingButton):
 
 
 class KillSwitchAlwaysOn(QuickSettingButton):
-    def __init__(self):
+    def __init__(self, popover_widget):
         super().__init__(
+            popover_widget,
             "killswitch_always_on",
             "Kill Switch Always-On"
         )
