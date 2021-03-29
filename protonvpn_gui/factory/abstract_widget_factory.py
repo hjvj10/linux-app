@@ -7,12 +7,10 @@ class WidgetFactory(SubclassesMixin, metaclass=ABCMeta):
 
     @classmethod
     def button(cls, widget):
-        subclasses = cls._get_subclasses_with("concrete_factory")
+        subclasses = cls._get_subclasses_with("abstract_buton_factory")
         for subclass in subclasses:
-            if "buttonfactory" == subclass.__name__.lower():
+            if "abstractbuttonfactory" == subclass.__name__.lower():
                 return subclass.factory(widget)
-
-        raise NotImplementedError("Button not implemented")
 
     @classmethod
     def grid(cls, widget):
