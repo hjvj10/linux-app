@@ -2,23 +2,31 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk
-from ..abstract_button_factory import AbstractButtonFactory
+from gi.repository import Gtk, Pango
+from ..abstract_widget_factory import WidgetFactory
 
 
-class LinkButtonFactory(AbstractButtonFactory):
-    """Concrete Button Factory class."""
+class TextViewFactory(WidgetFactory):
+    """Concrete Button Factory class.
+    A textview can be used instead of a label where
+    there is multiple lines to displays or edit.
+    """
 
-    concrete_factory = "link_button"
+    concrete_factory = "textview"
 
-    def __init__(self):
-        self.__widget = Gtk.LinkButton(uri="", label="")
+    def __init__(self, text):
+        self.__textbuffer = Gtk.TextBuffer()
+        self.__tag_link = self.__textbuffer.create_tag(
+            "bold", weight=Pango.Weight.BOLD
+        )
+        self.__textbuffer.set_text(text)
+        self.__widget = Gtk.TextView(buffer=self.__textbuffer)
         self.__widget_context = self.__widget.get_style_context()
 
     @classmethod
-    def factory(cls, widget_name):
-        subclasses_dict = cls._get_subclasses_dict("link")
-        return subclasses_dict[widget_name]()
+    def factory(cls, widget_name, text):
+        subclasses_dict = cls._get_subclasses_dict("textview")
+        return subclasses_dict[widget_name](text)
 
     @property
     def widget(self):
@@ -30,38 +38,28 @@ class LinkButtonFactory(AbstractButtonFactory):
         return self.__widget_context
 
     @property
-    def label(self):
-        """Get widget label."""
-        return self.__widget.props.label
+    def text(self):
+        """Get widget text."""
+        return self.__textbuffer.get_text(
+            self.__textbuffer.get_start_iter(),
+            self.__textbuffer.get_end_iter(),
+            self.__textbuffer
+        )
 
-    @label.setter
-    def label(self, newvalue):
-        """Set widget label.
+    @text.setter
+    def text(self, newvalue):
+        """Set widget text.
 
         Args:
             newvalue (string)
         """
-        self.__widget.props.label = newvalue
+        self.__textbuffer.set_text(newvalue)
 
-    @property
-    def url(self):
-        return self.__widget.get_uri()
-
-    @url.setter
-    def url(self, newvalue):
-        return self.__widget.set_uri(newvalue)
-
-    @property
-    def ident_h(self):
-        """Get vertical align."""
-        pass
-        # return self.__widget.label.get_xalign()
-
-    @ident_h.setter
-    def ident_h(self, newvalue):
-        """Set vertical align."""
-        pass
-        # return self.__widget.label.set_xalign(float(newvalue))
+    def insert_link_at_end(self, string):
+        end_iter = self.__textbuffer.get_end_iter()
+        self.__textbuffer.insert(end_iter, string)
+        new_end_iter = self.__textbuffer.get_end_iter()
+        self.__textbuffer.apply_tag(self.__tag_link, end_iter, new_end_iter)
 
     @property
     def image(self):
@@ -129,6 +127,57 @@ class LinkButtonFactory(AbstractButtonFactory):
         """Set vertical align."""
         return self.__widget.set_valign(newvalue)
 
+    # @property
+    # def ident_h(self):
+    #     """Get vertical align."""
+    #     return self.__widget.get_xalign()
+
+    # @ident_h.setter
+    # def ident_h(self, newvalue):
+    #     """Set vertical align."""
+    #     return self.__widget.set_xalign(float(newvalue))
+
+    @property
+    def justify(self):
+        return self.__widget.get_justify()
+
+    @justify.setter
+    def justify(self, newvalue):
+        self.__widget.set_justify(newvalue)
+
+    # @property
+    # def width_in_chars(self):
+    #     return self.__widget.get_width_chars()
+
+    # @width_in_chars.setter
+    # def width_in_chars(self, newvalue):
+    #     self.__widget.set_width_chars(newvalue)
+
+    # @property
+    # def max_width_in_chars(self):
+    #     return self.__widget.get_max_width_chars()
+
+    # @max_width_in_chars.setter
+    # def max_width_in_chars(self, newvalue):
+    #     self.__widget.set_max_width_chars(newvalue)
+
+    @property
+    def line_wrap(self):
+        return self.__widget.get_wrap_mode()
+
+    @line_wrap.setter
+    def line_wrap(self, newvalue):
+        wrap_dict = {
+            "none": Gtk.WrapMode(0),
+            "char": Gtk.WrapMode(1),
+            "word": Gtk.WrapMode(2),
+            "word_char": Gtk.WrapMode(3),
+        }
+        if newvalue not in wrap_dict:
+            raise NotImplementedError("Wrap mode not supported")
+
+        self.__widget.set_wrap_mode(wrap_dict[newvalue])
+
     def add_class(self, css_class):
         """Add CSS class."""
         self.__widget_context.add_class(css_class)
@@ -180,19 +229,22 @@ class LinkButtonFactory(AbstractButtonFactory):
         self.__widget.add(widget)
 
 
-class Dummy(LinkButtonFactory):
-    link = "dummy_link"
+class Dummy(TextViewFactory):
+    textview = "dummy_textview"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, text):
+        super().__init__(text)
 
 
-class LearnMore(LinkButtonFactory):
-    link = "learn_more"
+class QuickSettingDescription(TextViewFactory):
+    textview = "quick_setting_description"
 
-    def __init__(self):
-        super().__init__()
-        self.add_class("view-more")
-        self.show = True
+    def __init__(self, text):
+        super().__init__(text)
         self.align_h = Gtk.Align.START
-        self.ident_h = 0
+        self.expand_h = True
+        self.align_v = Gtk.Align.FILL
+        self.line_wrap = "word"
+        self.show = True
+        self.add_class("quick-settings-description")
+        self.add_class("default-text-color")

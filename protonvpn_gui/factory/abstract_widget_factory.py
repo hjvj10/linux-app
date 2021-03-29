@@ -48,6 +48,15 @@ class WidgetFactory(SubclassesMixin, metaclass=ABCMeta):
 
         raise NotImplementedError("Revealer not implemented")
 
+    @classmethod
+    def textview(cls, widget, text=""):
+        subclasses = cls._get_subclasses_with("concrete_factory")
+        for subclass in subclasses:
+            if "textviewfactory" == subclass.__name__.lower():
+                return subclass.factory(widget, text)
+
+        raise NotImplementedError("Revealer not implemented")
+
     @abstractclassmethod
     def factory():
         """Factory method to produce products."""
