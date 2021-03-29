@@ -148,7 +148,8 @@ grid.connecting_overlay_grid label{
 
 #server-list-grid button.chevron{
 	background-color: transparent;
-	background-image: none
+	background-image: none;
+	box-shadow: none;
 }
 
 .test-class{

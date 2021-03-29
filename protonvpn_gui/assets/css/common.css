@@ -52,7 +52,6 @@ button {
   -gtk-icon-effect: none;
   -gtk-icon-source: none;
   outline: none;
-  box-shadow: none;
   background-image: none;
   text-shadow: none;
 }
@@ -64,6 +63,7 @@ button.enabled, button.disabled, button.transparent, button.transparent-white{
   border-radius: 100px;
   transition: all .115s ease-in-out;
   border: 2px solid;
+  box-shadow: none;
 }
 
 button.enabled{

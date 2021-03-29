@@ -142,7 +142,38 @@ class LabelFactory(WidgetFactory):
     def remove_class(self, css_class):
         """Remove CSS class."""
         if self.has_class(css_class):
-            self.__widget_context.remvove_class(css_class)
+            self.__widget_context.remove_class(css_class)
+
+    def remove_all_classes(self):
+        css_list = self.__widget_context.list_classes()
+        for css_class in css_list:
+            self.__widget_context.remove_class(css_class)
+
+    def replace_all_by(self, css_class):
+        self.remove_all_classes()
+        self.add_class(css_class)
+
+    def replace_old_class_with_new_class(self, old_classes, new_classes):
+        """Replaces old_classes with new_classes.
+
+        Args:
+            old_classes (str|list)
+            new_classes (str|list)
+        """
+        def worker(css_class):
+            if isinstance(css_class, list):
+                for class_ in css_class:
+                    self.remove_class(class_)
+            elif isinstance(css_class, str):
+                self.remove_class(css_class)
+            else:
+                raise TypeError(
+                    "Unexpected type (list or str expected, but got {})".format( # noqa
+                        type(css_class)
+                    )
+                )
+        worker(old_classes)
+        worker(new_classes)
 
     def has_class(self, css_class):
         """Check if has CSS class."""
@@ -202,9 +233,26 @@ class QuickSettingsButton(LabelFactory):
         super().__init__(label_text)
         self.align_h = Gtk.Align.START
         self.expand_h = True
+        self.width_in_chars = 20
+        self.max_width_in_chars = 20
+        self.line_wrap = True
+        self.ident_h = 0
         self.align_v = Gtk.Align.CENTER
         self.add_class("padding-y-10px")
         self.add_class("padding-x-5px")
+        self.show = True
+
+
+class QuickSettingsButtonUpgrade(LabelFactory):
+    """QuickSettingsDescription class."""
+    label = "quick_settings_upgrade_in_button"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.expand_h = False
+        self.align_h = Gtk.Align.END
+        self.align_v = Gtk.Align.CENTER
+        self.add_class("upgrade-in-button")
         self.show = True
 
 

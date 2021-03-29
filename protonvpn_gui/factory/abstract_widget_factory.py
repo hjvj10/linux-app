@@ -91,3 +91,18 @@ class WidgetFactory(SubclassesMixin, metaclass=ABCMeta):
     def has_class():
         """Check if widget has CSS class."""
         pass
+
+    @abstractmethod
+    def remove_all_classes():
+        """Remove all CSS classes."""
+        pass
+
+    @abstractmethod
+    def replace_all_by():
+        """Replace all CSS classes with a specific one."""
+        pass
+
+    @abstractmethod
+    def replace_old_class_with_new_class():
+        """Replace specified CSS class(es) with specificied class(es)."""
+        pass

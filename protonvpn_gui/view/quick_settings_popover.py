@@ -1,5 +1,5 @@
 import os
-
+from abc import abstractmethod
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -23,6 +23,13 @@ class QuickSettingsPopoverView(Gtk.Popover):
         super().__init__()
         self.dashboard_view_model = dashboard_view_model
 
+        self.__create_widgets()
+        self.__attach_widgets_to_grid()
+        self.quick_settings_popover_container_grid.attach(
+            self.content_grid.widget, 0, 0, 1, 1
+        )
+        self.connect("closed", self.on_closed_popover)
+
         self.provider = Gtk.CssProvider()
         self.provider.load_from_path(
             os.path.join(CSS_DIR_PATH, "quick_settings_popover.css")
@@ -33,12 +40,6 @@ class QuickSettingsPopoverView(Gtk.Popover):
             self.provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
-        self.__create_widgets()
-        self.__attach_widgets_to_grid()
-        self.quick_settings_popover_container_grid.attach(
-            self.content_grid.widget, 0, 0, 1, 1
-        )
-        self.connect("closed", self.on_closed_popover)
 
     def on_closed_popover(self, gtk_popver):
         self.__remove_pressed_style(self.get_relative_to())
@@ -51,15 +52,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.footnote.content = "Secure Core may reduce VPN speed"
         self.footnote.show = True
 
-        child_widget = self.buttons_holder.get_child_at()
-        # isinstance() was not picking up the types, so had to use ==
-        if type(child_widget) == type(self.content_grid.widget):
-            if not child_widget == self.secure_core_buttons_grid.widget:
-                self.buttons_holder.remove_row(0)
-                self.buttons_holder.attach(self.secure_core_buttons_grid.widget)
-        else:
-            self.buttons_holder.attach(self.secure_core_buttons_grid.widget)
-
+        self.__display_expected_content(self.secure_core_buttons_grid.widget)
         self.set_relative_to(button)
         self.__add_pressed_style(button)
         self.popup()
@@ -72,15 +65,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
             "disabling Netshield"
         self.footnote.show = True
 
-        child_widget = self.buttons_holder.get_child_at()
-        # isinstance() was not picking up the types, so had to use ==
-        if type(child_widget) == type(self.content_grid.widget):
-            if not child_widget == self.netshield_buttons_grid.widget:
-                self.buttons_holder.remove_row(0)
-                self.buttons_holder.attach(self.netshield_buttons_grid.widget)
-        else:
-            self.buttons_holder.attach(self.netshield_buttons_grid.widget)
-
+        self.__display_expected_content(self.netshield_buttons_grid.widget)
         self.set_relative_to(button)
         self.popup()
         self.__add_pressed_style(button)
@@ -92,18 +77,20 @@ class QuickSettingsPopoverView(Gtk.Popover):
             "<LinkButton>Learn more."
         self.footnote.show = False
 
-        child_widget = self.buttons_holder.get_child_at()
-        # isinstance() was not picking up the types, so had to use ==
-        if type(child_widget) == type(self.content_grid.widget):
-            if not child_widget == self.killswitch_buttons_grid.widget:
-                self.buttons_holder.remove_row(0)
-                self.buttons_holder.attach(self.killswitch_buttons_grid.widget)
-        else:
-            self.buttons_holder.attach(self.killswitch_buttons_grid.widget)
-
+        self.__display_expected_content(self.killswitch_buttons_grid.widget)
         self.set_relative_to(button)
         self.popup()
         self.__add_pressed_style(button)
+
+    def __display_expected_content(self, resolve_for):
+        child_widget = self.buttons_holder.get_child_at()
+        # isinstance() was not picking up the types, so had to use ==
+        if type(child_widget) == type(self.content_grid.widget):
+            if not child_widget == resolve_for:
+                self.buttons_holder.remove_row(0)
+                self.buttons_holder.attach(resolve_for)
+        else:
+            self.buttons_holder.attach(resolve_for)
 
     def __create_widgets(self):
         self.content_grid = WidgetFactory.grid("container")
@@ -189,16 +176,28 @@ class QuickSettingsPopoverView(Gtk.Popover):
 
 
 class QuickSettingButton:
-    def __init__(self, img_factory_name, text, display_upgrade=False):
+
+    icon_w = 25
+    icon_h = 25
+    selected_path = None
+    available_path = None
+    unavailable_path = None
+
+    def __init__(self, img_factory_name, text):
         self.__content = WidgetFactory.grid("buttons")
         self.__content.row_spacing = 10
         self.__content.column_spacing = 10
         self.__button = WidgetFactory.button("quick_setting")
         self.__img = WidgetFactory.image(img_factory_name)
         self.__label = WidgetFactory.label("quick_settings_button", text)
-        self.display_upgrade = display_upgrade
+        self.__upgrade_label = WidgetFactory.label(
+            "quick_settings_upgrade_in_button", "UPGRADE"
+        )
         self.__button.custom_content(self.__content.widget)
         self.build()
+
+    def on_button_enter_notify(self, gtk_button):
+        self.set_cursor(Gtk.gdk.Cursor(Gtk.gdk.HAND1))
 
     @property
     def widget(self):
@@ -217,11 +216,72 @@ class QuickSettingButton:
         return self.__img
 
     def build(self):
-        self.__label.add_class("default-text-color")
         self.__content.attach(self.__img.widget)
         self.__content.attach_right_next_to(
             self.__label.widget, self.__img.widget
         )
+        self.__content.attach_right_next_to(
+            self.__upgrade_label.widget, self.__label.widget
+        )
+
+    def __selected(self, img_path=None):
+        self.__label.replace_all_by("selected")
+        self.__button.replace_all_by("selected")
+        if not img_path:
+            return
+        self.__img.replace_with_new_icon(
+            img_path, self.icon_w, self.icon_h
+        )
+
+    def __available(self, img_path=None):
+        self.__label.replace_all_by("available")
+        self.__button.replace_all_by("available")
+        if not img_path:
+            return
+        self.__img.replace_with_new_icon(
+            img_path, self.icon_w, self.icon_h
+        )
+
+    def __unavailable(self, img_path=None):
+        self.__label.replace_all_by("unavailable")
+        self.__button.replace_all_by("unavailable")
+        if not img_path:
+            return
+        self.__img.replace_with_new_icon(
+            img_path, self.icon_w, self.icon_h
+        )
+
+    def set_selected(self):
+        if self.selected_path:
+            self.__selected(
+                self.selected_path
+            )
+        else:
+            self.__selected()
+
+    def set_available(self):
+        if self.available_path:
+            self.__available(
+                self.available_path
+            )
+        else:
+            self.__available()
+
+    def set_unavailable(self):
+        if self.unavailable_path:
+            self.__unavailable(
+                self.unavailable_path
+            )
+        else:
+            self.__unavailable()
+
+    @property
+    def display_upgrade_label(self):
+        return self.__upgrade_label.show
+
+    @display_upgrade_label.setter
+    def display_upgrade_label(self, newvalue):
+        self.__upgrade_label.show = newvalue
 
 
 class SecureCoreOff(QuickSettingButton):
@@ -230,6 +290,11 @@ class SecureCoreOff(QuickSettingButton):
             "secure_cure_off",
             "Secure Cure Off"
         )
+        self.display_upgrade_label = False
+        self.set_selected()
+
+    def set_unavailable(self):
+        pass
 
 
 class SecureCoreOn(QuickSettingButton):
@@ -238,6 +303,11 @@ class SecureCoreOn(QuickSettingButton):
             "secure_cure_on",
             "Secure Cure On"
         )
+        self.base_path = "secure-core.imageset"
+        self.selected_path = os.path.join(self.base_path, "secure-core-on-active.svg") # noqa
+        self.available_path = os.path.join(self.base_path, "secure-core-on-default.svg") # noqa
+        self.unavailable_path = os.path.join(self.base_path, "secure-core-on-disable.svg") # noqa
+        self.set_available()
 
 
 class NetshieldOff(QuickSettingButton):
@@ -246,6 +316,11 @@ class NetshieldOff(QuickSettingButton):
             "netshield_off",
             "Don't block"
         )
+        self.display_upgrade_label = False
+        self.set_selected()
+
+    def set_unavailable(self):
+        pass
 
 
 class NetshieldMalware(QuickSettingButton):
@@ -254,6 +329,11 @@ class NetshieldMalware(QuickSettingButton):
             "netshield_malware",
             "Block malware only"
         )
+        self.base_path = "netshield.imageset"
+        self.selected_path = os.path.join(self.base_path, "netshield-malware-active.svg") # noqa
+        self.available_path = os.path.join(self.base_path, "netshield-malware-default.svg") # noqa
+        self.unavailable_path = os.path.join(self.base_path, "netshield-malware-disable.svg")  # noqa
+        self.set_unavailable()
 
 
 class NetshieldAdsMalware(QuickSettingButton):
@@ -262,6 +342,11 @@ class NetshieldAdsMalware(QuickSettingButton):
             "netshield_ads_malware",
             "Block malware, ads & trackers"
         )
+        self.base_path = "netshield.imageset"
+        self.selected_path = os.path.join(self.base_path, "netshield-malware-ad-active.svg") # noqa
+        self.available_path = os.path.join(self.base_path, "netshield-malware-ad-default.svg") # noqa
+        self.unavailable_path = os.path.join(self.base_path, "netshield-malware-ad-disable.svg")  # noqa
+        self.set_unavailable()
 
 
 class KillSwitchOff(QuickSettingButton):
@@ -270,6 +355,11 @@ class KillSwitchOff(QuickSettingButton):
             "killswitch_off",
             "Kill Switch Off"
         )
+        self.display_upgrade_label = False
+        self.set_selected()
+
+    def set_unavailable(self):
+        pass
 
 
 class KillSwitchOn(QuickSettingButton):
@@ -278,6 +368,12 @@ class KillSwitchOn(QuickSettingButton):
             "killswitch_on",
             "Kill Switch On"
         )
+        self.display_upgrade_label = False
+        self.base_path = "kill-switch.imageset"
+        self.selected_path = os.path.join(self.base_path, "killswitch-on-active.svg") # noqa
+        self.available_path = os.path.join(self.base_path, "killswitch-on-default.svg") # noqa
+        self.unavailable_path = os.path.join(self.base_path, "killswitch-on-disable.svg")  # noqa
+        self.set_available()
 
 
 class KillSwitchAlwaysOn(QuickSettingButton):
@@ -286,3 +382,9 @@ class KillSwitchAlwaysOn(QuickSettingButton):
             "killswitch_always_on",
             "Kill Switch Always-On"
         )
+        self.display_upgrade_label = False
+        self.base_path = "kill-switch.imageset"
+        self.selected_path = os.path.join(self.base_path, "killswitch-always-on-active.svg") # noqa
+        self.available_path = os.path.join(self.base_path, "killswitch-always-on-default.svg") # noqa
+        self.unavailable_path = os.path.join(self.base_path, "killswitch-always-on-disable.svg") # noqa
+        self.set_available()

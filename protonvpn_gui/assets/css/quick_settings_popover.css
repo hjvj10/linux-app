@@ -26,9 +26,47 @@
     font-style: italic;
     color: rgba(255,255,255, 0.5)
 }
-#quick_settings_popover_container_grid label.enabled{
+
+
+#quick_settings_popover_container_grid button,
+#quick_settings_popover_container_grid label{
+    border: none;
+    background-image: none;
+    outline: none;
+    -gtk-icon-shadow: none;
+}
+#quick_settings_popover_container_grid button{
+    border-radius: 2px;
+    box-shadow: 2px 2px 3px -3px black;
+}
+
+#quick_settings_popover_container_grid button.selected{
+    background-color: #303540;
+	box-shadow: inset 1px 1px 5px -5px black;
+}
+#quick_settings_popover_container_grid label.selected{
+    color: rgb(255,255,255);
     font-weight: bold;
 }
+
+#quick_settings_popover_container_grid button.available{
+    background-color: #3C414E;
+}
+
+#quick_settings_popover_container_grid label.available{
+    color: rgb(255,255,255);
+    font-weight: normal;
+}
+
+#quick_settings_popover_container_grid button.unavailable{
+    background-color: #3C414E;
+}
+
+#quick_settings_popover_container_grid label.unavailable{
+    font-weight: normal;
+    color: rgba(255,255,255, 0.3);
+}
+
 #quick_settings_popover_container_grid button.quick-settings{
     -gtk-icon-effect: none;
     -gtk-icon-source: none;
@@ -56,4 +94,12 @@
 	font-size: small;
     font-weight: bold;
     color: rgb(255,255,255)
+}
+
+#quick_settings_popover_container_grid label.upgrade-in-button{
+    border: 1px solid rgba(255,255,255, 0.1);
+    padding: 5px 5px;
+	border-radius: 100px;
+    font-size: small;
+    color: rgba(255,255,255, 0.2);
 }
