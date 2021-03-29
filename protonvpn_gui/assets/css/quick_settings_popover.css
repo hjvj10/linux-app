@@ -18,7 +18,13 @@
 }
 #quick_settings_popover_container_grid grid.quick-settings-content label.quick-settings-description{
     font-size: medium;
-    margin-bottom: 15px;
+}
+#quick_settings_popover_container_grid button.view-more label{
+    color: @green-color;
+}
+#quick_settings_popover_container_grid button.view-more{
+    margin-bottom: 20px;
+    padding: 0;
 }
 #quick_settings_popover_container_grid grid.quick-settings-content label.quick-settings-footnote{
     font-size: small;
@@ -35,7 +41,7 @@
     outline: none;
     -gtk-icon-shadow: none;
 }
-#quick_settings_popover_container_grid button{
+#quick_settings_popover_container_grid button:not(.view-more){
     border-radius: 2px;
     box-shadow: 2px 2px 3px -3px black;
 }

@@ -52,8 +52,9 @@ class QuickSettingsPopoverView(Gtk.Popover):
     def display_secure_core_settings(self, gio_action, _, button):
         self.title_label.content = "Secure-Core"
         self.description_label.content = "Route your most sensitive data " \
-            "through our safest servers in privacy-friendly countries. " \
-            "<LinkButton>Learn more."
+            "through our safest servers in privacy-friendly countries. "
+        self.view_more_link.label = "Learn more."
+        self.view_more_link.url = "https://protonvpn.com/support/secure-core-vpn/"
         self.footnote.content = "Secure Core may reduce VPN speed"
         self.footnote.show = True
         if self.protonvpn.get_session().vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value: # noqa
@@ -68,7 +69,9 @@ class QuickSettingsPopoverView(Gtk.Popover):
     def display_netshield_settings(self, gio_action, _, button):
         self.title_label.content = "Netshield"
         self.description_label.content = "Browse the Internet without ads " \
-            "and malware. <LinkButton>Learn more."
+            "and malware."
+        self.view_more_link.label = "Learn more."
+        self.view_more_link.url = "https://protonvpn.com/support/netshield/"
         self.footnote.content = "If websites don't load, try " \
             "disabling Netshield"
         self.footnote.show = True
@@ -84,10 +87,10 @@ class QuickSettingsPopoverView(Gtk.Popover):
     def display_killswitch_settings(self, gio_action, _, button):
         self.title_label.content = "Kill Switch"
         self.description_label.content = "Disables Internet if the VPN " \
-            "connection drops to prevent accidental IP leak. "\
-            "<LinkButton>Learn more."
+            "connection drops to prevent accidental IP leak. "
         self.footnote.show = False
-
+        self.view_more_link.label = "Learn more."
+        self.view_more_link.url = "https://protonvpn.com/support/what-is-kill-switch/"
         self.__display_content_which_is_context_specific(
             self.killswitch_buttons_grid.widget
         )
@@ -124,6 +127,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.content_grid = WidgetFactory.grid("container")
         self.title_label = WidgetFactory.label("quick_settings_title")
         self.description_label = WidgetFactory.label("quick_settings_description") # noqa
+        self.view_more_link = WidgetFactory.button("learn_more") # noqa
         self.buttons_holder = WidgetFactory.grid("buttons")
         self.buttons_holder.add_class("margin-bottom-20px")
         self.upgrade_button = WidgetFactory.button("dialog_upgrade")
@@ -142,7 +146,10 @@ class QuickSettingsPopoverView(Gtk.Popover):
             self.description_label.widget, self.title_label.widget
         )
         self.content_grid.attach_bottom_next_to(
-            self.buttons_holder.widget, self.description_label.widget
+            self.view_more_link.widget, self.description_label.widget
+        )
+        self.content_grid.attach_bottom_next_to(
+            self.buttons_holder.widget, self.view_more_link.widget
         )
         self.content_grid.attach_bottom_next_to(
             self.upgrade_button.widget, self.buttons_holder.widget
