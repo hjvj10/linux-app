@@ -49,7 +49,7 @@ KILLSWITCH_ICON_SET = {
     DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE:
         os.path.join(
             ICON_DIR_PATH,
-            "kill-switch.imagesetkillswitch-always-on-active.svg"
+            "kill-switch.imageset/killswitch-always-on-active.svg"
         ),
 }
 

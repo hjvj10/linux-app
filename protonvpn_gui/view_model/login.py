@@ -27,7 +27,7 @@ class LoginViewModel:
     def login(self, username, password):
         self.state.on_next(LoginState.IN_PROGRESS)
         process = self.bg_process.setup(
-            self.login_sync, (username, password)
+            self.login_sync, username, password
         )
         process.start()
 
