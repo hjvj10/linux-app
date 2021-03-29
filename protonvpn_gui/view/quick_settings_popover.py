@@ -1,11 +1,9 @@
 import os
-from abc import abstractmethod
-
 import gi
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gdk, Gio, GLib, Gtk
+from gi.repository import Gdk, Gtk
 from protonvpn_nm_lib.api import protonvpn
 
 from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
@@ -92,10 +90,25 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.__add_pressed_style(button)
 
     def __display_content_which_is_context_specific(self, resolve_for):
+        """Displyes content which is based on which button is clicked.
+
+        The argument that is passed is the one which is to be inserted
+        into the popover since it contains the buttons that are context
+        specific. If pressed on NetShield, then the netshield grid with
+        buttons should be displayed.
+
+        What this method does is check if the child of buttons_holder
+        is a grid. If it is, then it means that there is another button grid
+        being displayed. Thus is need to be first removed and then replaced
+        with the resolved_for widget, which is the one that we want to display.
+
+        Args:
+            resolve_for (Gtk.Widget)
+        """
         child_widget = self.buttons_holder.get_child_at()
         # isinstance() was not picking up the types, so had to use ==
         if type(child_widget) == type(self.content_grid.widget): # noqa
-            if not child_widget == resolve_for:
+            if child_widget != resolve_for:
                 self.buttons_holder.remove_row(0)
                 self.buttons_holder.attach(resolve_for)
         else:
