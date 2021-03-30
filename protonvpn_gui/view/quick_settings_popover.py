@@ -261,6 +261,10 @@ class QuickSettingButton:
     def on_button_click(self):
         pass
 
+    def set_char_width(self, char_width_in_int):
+        self.__label.width_in_chars = char_width_in_int
+        self.__label.max_width_in_chars = char_width_in_int
+
     def route_user_to_webpage(self):
         self.__popover_widget.route_user_to_webpage()
 
@@ -498,8 +502,10 @@ class NetshieldAdsMalware(QuickSettingButton):
 
         self.set_unavailable()
         self.display_upgrade_label = True
+        self.set_char_width(20)
         if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
             self.display_upgrade_label = False
+            self.set_char_width(30)
             self.set_available()
             if self.settings.netshield == NetshieldTranslationEnum.ADS_MALWARE:
                 self.set_selected()
