@@ -37,49 +37,49 @@ class CountryItem:
     sort countries in alphabetical order.
     """
     def __init__(self, server_item=ServerItem):
-        self._server_item: ServerItem = server_item
+        self.__server_item: ServerItem = server_item
 
-        self._entry_country_code: str = None
-        self._status: ServerStatusEnum = None
-        self._tiers: list = list()
-        self._features: list = set()
-        self._servers: list = list()
+        self.__entry_country_code: str = None
+        self.__status: ServerStatusEnum = None
+        self.__tiers: list = list()
+        self.__features: list = set()
+        self.__servers: list = list()
         self._available_to_free_users: bool = False
 
         # This is set on the view.
-        self._country_name = None
+        self.__country_name = None
 
     @property
     def country_name(self):
-        return self._country_name
+        return self.__country_name
 
     @country_name.setter
     def country_name(self, new_country_name):
-        self._country_name = new_country_name
+        self.__country_name = new_country_name
 
     @property
     def entry_country_code(self):
-        return self._entry_country_code
+        return self.__entry_country_code
 
     @entry_country_code.setter
     def entry_country_code(self, new_entry_country_code):
-        self._entry_country_code = new_entry_country_code
+        self.__entry_country_code = new_entry_country_code
 
     @property
     def status(self):
-        return self._status
+        return self.__status
 
     @property
     def tiers(self):
-        return self._tiers
+        return self.__tiers
 
     @property
     def features(self):
-        return self._features
+        return self.__features
 
     @property
     def servers(self):
-        return self._servers
+        return self.__servers
 
     @property
     def available_to_free_users(self):
@@ -97,7 +97,7 @@ class CountryItem:
                 lambda server: server.name.lower() == servername.lower()
             )[0]
 
-            server_item = self._server_item.create(logical_server)
+            server_item = self.__server_item.create(logical_server)
             if (
                 not any(
                     feature == FeatureEnum.SECURE_CORE
@@ -107,7 +107,7 @@ class CountryItem:
             ):
                 continue
 
-            self._servers.append(server_item)
+            self.__servers.append(server_item)
             self.add_feature_to_feature_collector(
                 feature_collector, server_item
             )
@@ -120,7 +120,7 @@ class CountryItem:
         self.set_status(status_collector)
         self.set_tiers(tier_collector)
         self._available_to_free_users = True\
-            if ServerTierEnum in self._tiers else False
+            if ServerTierEnum in self.__tiers else False
 
     def create_non_secure_core_country(
         self, user_tier, servername_list, server_list
@@ -133,7 +133,7 @@ class CountryItem:
             logical_server = protonvpn.get_session().servers.filter(
                 lambda server: server.name.lower() == servername.lower()
             )[0]
-            server_item = self._server_item.create(logical_server)
+            server_item = self.__server_item.create(logical_server)
             if (
                 any(
                     feature == FeatureEnum.SECURE_CORE
@@ -143,7 +143,7 @@ class CountryItem:
             ):
                 continue
 
-            self._servers.append(server_item)
+            self.__servers.append(server_item)
             self.add_feature_to_feature_collector(
                 feature_collector, server_item.features
             )
@@ -159,7 +159,7 @@ class CountryItem:
             if (
                 (
                     user_tier == ServerTierEnum.FREE
-                    and ServerTierEnum.FREE in self._tiers
+                    and ServerTierEnum.FREE in self.__tiers
                 ) or (
                     user_tier.value > ServerTierEnum.FREE.value
                 )
@@ -178,15 +178,15 @@ class CountryItem:
         tier_collector.add(server_tier)
 
     def set_features(self, features_collector):
-        self._features = list(features_collector)
+        self.__features = list(features_collector)
 
     def set_status(self, status_collector):
-        self._status = self.get_country_status(
+        self.__status = self.get_country_status(
             list(status_collector)
         )
 
     def set_tiers(self, tier_collector):
-        self._tiers = list(tier_collector)
+        self.__tiers = list(tier_collector)
 
     def get_country_status(self, status_collector):
         if len(status_collector) == 2:
