@@ -10,7 +10,7 @@ from ..enums import GLibEventSourceEnum
 from .dialog import DialogView
 
 
-class DashboardServerList:
+class ServerListView:
     """ServerList class.
 
     Setup the server list.

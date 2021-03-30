@@ -1,9 +1,8 @@
 from protonvpn_nm_lib.api import protonvpn
-from .country_item import CountryItem
 from protonvpn_nm_lib.enums import ServerTierEnum
 
 
-class DashboardServerList:
+class ServerList:
     """DashboardServerList class.
 
     This class holds the list of servers that are to be fed to the

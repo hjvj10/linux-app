@@ -18,7 +18,7 @@ from .view.dashboard import DashboardView
 from .view.login import LoginView
 from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
-from .model.dashboard_server_list import DashboardServerList
+from .model.server_list import ServerList
 from .model.country_item import CountryItem
 
 
@@ -131,11 +131,11 @@ class ProtonVPNGUI(Gtk.Application):
         Returns:
             DashboardView
         """
-        dashboard_server_list = DashboardServerList(
+        server_list = ServerList(
             country_item=CountryItem
         )
         dashboard_view_model = DashboardViewModel(
-            Utilities, BackgroundProcess, dashboard_server_list
+            Utilities, BackgroundProcess, server_list
         )
         return DashboardView(
             application=self,

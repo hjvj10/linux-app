@@ -62,7 +62,7 @@ class NotConnectedToVPNInfo:
 
 
 @dataclass
-class ServerList:
+class ServerListData:
     server_list: list
 
 
@@ -135,10 +135,10 @@ class DashboardViewModel:
         VPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
-    def __init__(self, utils, bg_process, dashboard_server_list):
+    def __init__(self, utils, bg_process, server_list):
         self.utils = utils
         self.bg_process = bg_process
-        self.dashboard_server_list = dashboard_server_list
+        self.server_list = server_list
         self.state = ReplaySubject(buffer_size=1)
 
     def on_startup(self):
@@ -189,12 +189,12 @@ class DashboardViewModel:
         return True
 
     def on_load_servers_sync(self, secure_core):
-        self.dashboard_server_list.generate_server_list(
+        self.server_list.generate_server_list(
             user_tier=ServerTierEnum(protonvpn.get_session().vpn_tier),
             only_secure_core=secure_core
         )
-        servers = self.dashboard_server_list.server_list
-        state = ServerList(servers)
+        servers = self.server_list.server_list
+        state = ServerListData(servers)
         self.state.on_next(state)
 
     def on_quick_connect(self):
@@ -471,12 +471,12 @@ class DashboardViewModel:
 
     def on_sort_countries_by_tier(self, server_list):
         user_tier = protonvpn.get_session().vpn_tier
-        self.dashboard_server_list.sort_countries_by_tier(
+        self.server_list.sort_countries_by_tier(
             ServerTierEnum(user_tier), server_list
         )
 
     def on_sort_countries_by_name(self, server_list):
         user_tier = protonvpn.get_session().vpn_tier
-        self.dashboard_server_list.sort_countries_by_name(
+        self.server_list.sort_countries_by_name(
             ServerTierEnum(user_tier), server_list
         )

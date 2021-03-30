@@ -19,8 +19,8 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
                                     ConnectPreparingInfo, Loading,
                                     NetworkSpeed, NotConnectedToVPNInfo,
-                                    ServerList)
-from .dashboard_server_list import DashboardServerList
+                                    ServerListData)
+from .server_list import ServerListView
 from ..factory import WidgetFactory
 from .quick_settings_popover import QuickSettingsPopoverView
 
@@ -203,21 +203,21 @@ class DashboardView(Gtk.ApplicationWindow):
         UI can be updated accordingly.
         """
         if isinstance(state, Loading):
-            InitLoad(self, state)
+            InitLoadView(self, state)
         elif isinstance(state, NotConnectedToVPNInfo):
-            NotConnectedVPN(self, state)
+            NotConnectedVPNView(self, state)
         elif isinstance(state, ConnectPreparingInfo):
-            ConnectVPNPreparing(self, state)
+            ConnectVPNPreparingView(self, state)
         elif isinstance(state, ConnectInProgressInfo):
-            ConnectVPNInProgress(self, state)
+            ConnectVPNInProgressView(self, state)
         elif isinstance(state, ConnectedToVPNInfo):
-            ConnectedVPN(self, state)
+            ConnectedVPNView(self, state)
         elif isinstance(state, ConnectError):
-            ConnectVPNError(self, state)
+            ConnectVPNErrorView(self, state)
         elif isinstance(state, NetworkSpeed):
-            UpdateNetworkSpeed(self, state)
-        elif isinstance(state, ServerList):
-            DashboardServerList(self, state)
+            UpdateNetworkSpeedView(self, state)
+        elif isinstance(state, ServerListData):
+            ServerListView(self, state)
 
     def on_click_disconnect(self, gtk_button_object):
         """On click on Disconnect event handler.
@@ -509,7 +509,7 @@ class DashboardView(Gtk.ApplicationWindow):
             ] = None
 
 
-class InitLoad:
+class InitLoadView:
     """UI class.
 
     Setup the UI to an initial loading state (app start).
@@ -522,7 +522,7 @@ class InitLoad:
         dv.overlay_box.props.visible = True
 
 
-class UpdateNetworkSpeed:
+class UpdateNetworkSpeedView:
     """UI class.
 
     Updates network speeds labels.
@@ -533,7 +533,7 @@ class UpdateNetworkSpeed:
         dv.download_speed_label.props.label = state.download
 
 
-class NotConnectedVPN:
+class NotConnectedVPNView:
     """UI class.
 
     Setup the UI to not connected state.
@@ -581,7 +581,7 @@ class NotConnectedVPN:
         )
 
 
-class ConnectedVPN:
+class ConnectedVPNView:
     """UI class.
 
     Setup the UI to connected state.
@@ -638,7 +638,7 @@ class ConnectedVPN:
         dv.gtk_property_setter(dv.SET_UI_CONNECTED)
 
 
-class ConnectVPNPreparing:
+class ConnectVPNPreparingView:
     """UI class.
 
     Setup the UI during VPN prepare state.
@@ -654,7 +654,7 @@ class ConnectVPNPreparing:
         dv.connecting_overlay_box.props.visible = True
 
 
-class ConnectVPNInProgress:
+class ConnectVPNInProgressView:
     """UI class.
 
     Setup the UI during VPN connection in progress state.
@@ -670,7 +670,7 @@ class ConnectVPNInProgress:
             )
 
 
-class ConnectVPNError:
+class ConnectVPNErrorView:
     """UI class.
 
     Setup the UI state when an error occurs
