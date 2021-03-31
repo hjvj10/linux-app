@@ -29,39 +29,71 @@ class ServerItem:
         has_to_upgrade: bool
             if a user has to upgrade to access server
     """
-    name: str = None
-    load: int = None
-    city: str = None
-    features: list = None
-    tier: int = None
-    is_plus: bool = None
-    status: int = None
-    exit_country_code: str = None
-    has_to_upgrade: bool = None
+    def __init__(self, logical_server):
+        self.__name: str = None
+        self.__load: int = None
+        self.__city: str = None
+        self.__features: list = []
+        self.__tier: int = None
+        self.__is_plus: bool = None
+        self.__status: int = None
+        self.__exit_country_code: str = None
+        self.__has_to_upgrade: bool = None
+        self.create(logical_server)
 
-    @staticmethod
-    def create(logical_server):
-        server_item = ServerItem()
-        server_item.name = logical_server.name
-        server_item.load = str(int(logical_server.load))
-        server_item.city = logical_server.city
-        server_item.features = [FeatureEnum(logical_server.features)]
-        server_item.tier = ServerTierEnum(logical_server.tier)
-        server_item.is_plus = server_item.check_server_item_is_plus(
-            server_item
-        )
-        server_item.status = ServerStatusEnum(logical_server.enabled)
-        server_item.exit_country_code = logical_server.exit_country
-        server_item.has_to_upgrade = (
-            True if server_item.tier.value > ServerTierEnum(
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def load(self):
+        return self.__load
+
+    @property
+    def city(self):
+        return self.__city
+
+    @property
+    def features(self):
+        return self.__features
+
+    @property
+    def tier(self):
+        return self.__tier
+
+    @property
+    def is_plus(self):
+        return self.__is_plus
+
+    @property
+    def status(self):
+        return self.__status
+
+    @property
+    def exit_country_code(self):
+        return self.__exit_country_code
+
+    @property
+    def has_to_upgrade(self):
+        return self.__has_to_upgrade
+
+    def create(self, logical_server):
+        self.__name = logical_server.name
+        self.__load = str(int(logical_server.load))
+        self.__city = logical_server.city
+        self.__features = [FeatureEnum(logical_server.features)]
+        self.__tier = ServerTierEnum(logical_server.tier)
+        self.__is_plus = self.__check_server_is_plus()
+        self.__status = ServerStatusEnum(logical_server.enabled)
+        self.__exit_country_code = logical_server.exit_country
+        self.__has_to_upgrade = (
+            True if self.__tier.value > ServerTierEnum(
                 protonvpn.get_session().vpn_tier
             ).value else False
         )
 
-        return server_item
-
-    def check_server_item_is_plus(self, server_item):
-        if server_item.tier.value < ServerTierEnum.PLUS_VISIONARY.value:
+    def __check_server_is_plus(self):
+        if self.__tier.value < ServerTierEnum.PLUS_VISIONARY.value:
             return False
 
         return True

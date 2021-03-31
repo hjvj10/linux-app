@@ -17,24 +17,27 @@ class ServerListView:
     """
     def __init__(self, dashboard_view, state):
         self.dv = dashboard_view
-        self.populate_list(state)
+        self.__server_list = state.server_list
+        self.populate()
 
-    def populate_list(self, state):
-        row_counter = 0
+    def populate(self):
+        self.__update_country_name()
+        self.__sort_countres_by_name()
+        self.__attach_countries()
 
-        for country_item in state.server_list:
+    def __update_country_name(self):
+        for country_item in self.__server_list.non_secure_core_servers:
             country_item.country_name = country_codes.get(
                 country_item.entry_country_code,
                 country_item.entry_country_code
             )
 
-        self.dv.dashboard_view_model.on_sort_countries_by_tier(
-            state.server_list
-        )
-        self.dv.dashboard_view_model.on_sort_countries_by_name(
-            state.server_list
-        )
-        for country_item in state.server_list:
+    def __sort_countres_by_name(self):
+        self.__server_list.sort_countries_by_name()
+
+    def __attach_countries(self):
+        row_counter = 0
+        for country_item in self.__server_list.non_secure_core_servers:
             country_grid_row = CountryRow(country_item, self.dv).event_box
             self.dv.server_list_grid.attach(
                 country_grid_row, 0,
@@ -113,7 +116,7 @@ class CountryRowLeftGrid:
         self.country_name = WidgetFactory.label(
             "country", country_item.country_name
         )
-        if not country_item.available_to_free_users:
+        if not country_item.can_connect:
             self.country_name.add_class("disabled-label")
         self.grid.attach(self.country_flag)
         self.grid.attach_right_next_to(
@@ -136,7 +139,7 @@ class CountryRowRightGrid:
         self.grid.attach(self.chevron_button.widget)
         self.grid.attach(self.maintenance_icon.widget)
 
-        if not country_item.available_to_free_users:
+        if not country_item.can_connect:
             return
         elif country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.connect_callback(country_item)

@@ -189,12 +189,10 @@ class DashboardViewModel:
         return True
 
     def on_load_servers_sync(self, secure_core):
-        self.server_list.generate_server_list(
-            user_tier=ServerTierEnum(protonvpn.get_session().vpn_tier),
-            only_secure_core=secure_core
+        self.server_list.generate_list(
+            ServerTierEnum(protonvpn.get_session().vpn_tier)
         )
-        servers = self.server_list.server_list
-        state = ServerListData(servers)
+        state = ServerListData(self.server_list)
         self.state.on_next(state)
 
     def on_quick_connect(self):
@@ -468,15 +466,3 @@ class DashboardViewModel:
         )
 
         self.state.on_next(result)
-
-    def on_sort_countries_by_tier(self, server_list):
-        user_tier = protonvpn.get_session().vpn_tier
-        self.server_list.sort_countries_by_tier(
-            ServerTierEnum(user_tier), server_list
-        )
-
-    def on_sort_countries_by_name(self, server_list):
-        user_tier = protonvpn.get_session().vpn_tier
-        self.server_list.sort_countries_by_name(
-            ServerTierEnum(user_tier), server_list
-        )

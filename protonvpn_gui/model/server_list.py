@@ -1,5 +1,6 @@
 from protonvpn_nm_lib.api import protonvpn
-from protonvpn_nm_lib.enums import ServerTierEnum
+from protonvpn_nm_lib.enums import ServerTierEnum, FeatureEnum
+import copy
 
 
 class ServerList:
@@ -26,48 +27,103 @@ class ServerList:
 
     def __init__(self, country_item):
         self.country_item = country_item
+        self.__non_secure_core_servers = None
+        self.__secure_core_servers = None
+        self.__unfiltered_server_list = None
+        self.__user_tier = None
 
     @property
-    def server_list(self):
-        return self.__server_list
+    def servers(self):
+        return self.__unfiltered_server_list
 
-    def generate_server_list(self, user_tier, only_secure_core=False):
+    @property
+    def non_secure_core_servers(self):
+        return self.__non_secure_core_servers
+
+    @property
+    def secure_core_servers(self):
+        return self.__secure_core_servers
+
+    def generate_list(self, user_tier):
         """Generate server list.
 
         Args:
             user_tier (ServerTierEnum)
             only_secure_core (bool)
         """
-        self.__server_list = []
+        self.__unfiltered_server_list = []
+        self.__user_tier = user_tier
         server_list = protonvpn.get_session().servers
         country_code_with_matching_servers = self\
-            ._get_country_code_with_matching_servers(server_list)
+            .__get_country_code_with_matching_servers(server_list)
 
         for country_code, servername_list in country_code_with_matching_servers.items(): # noqa
             country_item = self.country_item()
             country_item.entry_country_code = country_code
 
-            if only_secure_core:
-                country_item.create_secure_core_country(
-                    servername_list, server_list
-                )
-            else:
-                country_item.create_non_secure_core_country(
-                    user_tier, servername_list, server_list
-                )
+            country_item.create(
+                self.__user_tier, servername_list, server_list
+            )
+            self.__unfiltered_server_list.append(country_item)
 
-            self.__server_list.append(country_item)
+        self.__generate_secure_core_list()
+        self.__generate_non_secure_core_list()
 
-    def _get_country_code_with_matching_servers(self, server_list):
+    def __get_country_code_with_matching_servers(self, server_list):
         country = protonvpn.get_country()
         return country\
             .get_dict_with_country_code_servername(
                 server_list
             )
 
-    def sort_countries_by_tier(self, user_tier, connect_list):
-        if user_tier == ServerTierEnum.FREE:
-            connect_list.sort(
+    def __generate_secure_core_list(self):
+        self.__secure_core_servers = []
+        for country_item in self.__unfiltered_server_list:
+            copy_country_item = copy.deepcopy(country_item)
+            copy_country_item.servers = filter(
+                lambda server: any(
+                    feature == FeatureEnum.SECURE_CORE
+                    for feature
+                    in server.features
+                ), country_item.servers
+            )
+            # Shallow copy as this is a one layer list
+            features = copy.copy(country_item.features)
+            for feature in features:
+                if feature != FeatureEnum.SECURE_CORE:
+                    try:
+                        copy_country_item.features.pop(feature)
+                    except IndexError:
+                        pass
+
+            self.__secure_core_servers.append(copy_country_item)
+
+    def __generate_non_secure_core_list(self):
+        self.__non_secure_core_servers = []
+        for country_item in self.__unfiltered_server_list:
+            copy_country_item = copy.deepcopy(country_item)
+            copy_country_item.servers = list(filter(
+                lambda server: any(
+                    feature != FeatureEnum.SECURE_CORE
+                    for feature
+                    in server.features
+                ), country_item.servers
+            ))
+            try:
+                copy_country_item.features.pop(FeatureEnum.SECURE_CORE)
+            except IndexError:
+                pass
+
+            copy_country_item.servers = self.__sort_non_secure_servers(
+                copy_country_item
+            )
+            self.__non_secure_core_servers.append(copy_country_item)
+
+        self.__sort_countries_by_tier()
+
+    def __sort_countries_by_tier(self):
+        if self.__user_tier == ServerTierEnum.FREE:
+            self.__non_secure_core_servers.sort(
                 key=lambda country: any(
                     tier == ServerTierEnum.FREE
                     for tier
@@ -76,6 +132,41 @@ class ServerList:
                 reverse=True
             )
 
-    def sort_countries_by_name(self, user_tier, connect_list):
-        if user_tier != ServerTierEnum.FREE:
-            connect_list.sort(key=lambda country: country.country_name)
+    def __sort_non_secure_servers(self, country_item):
+        matching_server = list(filter(
+            lambda server: server.tier == self.__user_tier,
+            country_item.servers
+        ))
+        matching_server.sort(
+            key=lambda server: server.name
+        )
+        non_matching_servers = list(filter(
+            lambda server: server.tier != self.__user_tier,
+            country_item.servers
+        ))
+        non_matching_servers.sort(
+            key=lambda server: server.name
+        )
+        non_matching_servers.sort(
+            key=lambda server: server.tier.value, reverse=True
+        )
+        matching_server.extend(
+            non_matching_servers
+        )
+
+        return matching_server
+
+    def sort_countries_by_name(self):
+        if self.__user_tier != ServerTierEnum.FREE:
+            try:
+                self.__non_secure_core_servers.sort(
+                    key=lambda country: country.country_name
+                )
+            except TypeError:
+                pass
+        try:
+            self.__secure_core_servers.sort(
+                key=lambda country: country.country_name
+            )
+        except TypeError:
+            pass
