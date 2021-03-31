@@ -325,9 +325,7 @@
                   </packing>
                 </child>
                 <style>
-                  <class name="margin-x-50px"/>
-                  <class name="login_main_box"/>
-                  <class name="margin-top-50px"/>
+                  <class name="login-main-box"/>
                 </style>
               </object>
               <packing>

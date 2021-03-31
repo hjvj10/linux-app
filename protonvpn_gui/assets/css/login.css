@@ -50,3 +50,6 @@ box#box_login_label_links > button:hover{
   text-decoration: underline;
 }
 
+box.login-main-box{
+	margin: 50px 25px 0px 25px;
+}

@@ -130,7 +130,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.view_more_link = WidgetFactory.button("learn_more") # noqa
         self.buttons_holder = WidgetFactory.grid("buttons")
         self.buttons_holder.add_class("margin-bottom-20px")
-        self.upgrade_button = WidgetFactory.button("dialog_upgrade")
+        self.upgrade_button = WidgetFactory.button("quick_settings_upgrade")
         self.footnote = WidgetFactory.label("quick_settings_footnote")
         self.__create_secure_core_buttons()
         self.__create_netshield_buttons()

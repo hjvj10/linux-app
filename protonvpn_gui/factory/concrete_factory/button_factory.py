@@ -252,7 +252,7 @@ class DialogUpgrade(ButtonFactory):
 
 
 class QuickSettingsUpgrade(ButtonFactory):
-    button = "dialog_upgrade"
+    button = "quick_settings_upgrade"
 
     def __init__(self):
         super().__init__()
