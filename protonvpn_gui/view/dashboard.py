@@ -19,7 +19,7 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
                                     ConnectPreparingInfo, Loading,
                                     NetworkSpeed, NotConnectedToVPNInfo,
-                                    ServerListData)
+                                    ServerListData, QuickSettingsStatus)
 from .server_list import ServerListView
 from ..factory import WidgetFactory
 from .quick_settings_popover import QuickSettingsPopoverView
@@ -218,6 +218,45 @@ class DashboardView(Gtk.ApplicationWindow):
             UpdateNetworkSpeedView(self, state)
         elif isinstance(state, ServerListData):
             ServerListView(self, state)
+        elif isinstance(state, QuickSettingsStatus):
+            self.update_quick_settings(state)
+
+    def update_quick_settings(self, state):
+        dummy_object = WidgetFactory.image("dummy")
+        feature_button_secure_core_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.SECURE_CORE
+                ][state.secure_core],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
+        feature_button_netshield_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.NETSHIELD
+                ][state.netshield],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
+        feature_button_killswitch_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.KILLSWITCH
+                ][state.killswitch],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
+
+        self.dashboard_secure_core_button_image.set_from_pixbuf(
+            feature_button_secure_core_pixbuf
+        )
+        self.dashboard_netshield_button_image.set_from_pixbuf(
+            feature_button_netshield_pixbuf
+        )
+        self.dashboard_killswitch_button_image.set_from_pixbuf(
+            feature_button_killswitch_pixbuf
+        )
 
     def on_click_disconnect(self, gtk_button_object):
         """On click on Disconnect event handler.
@@ -292,7 +331,6 @@ class DashboardView(Gtk.ApplicationWindow):
             gio_simple_action(Gtk.Action)
 
         """
-        print("Called")
         self.dashboard_popover_menu.popup()
 
     def setup_icons_images(self):

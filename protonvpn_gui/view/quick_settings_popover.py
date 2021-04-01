@@ -7,7 +7,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk
 from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.enums import (KillswitchStatusEnum,
-                                    NetshieldTranslationEnum, ServerTierEnum)
+                                    NetshieldTranslationEnum,
+                                    SecureCoreStatusEnum, ServerTierEnum)
 
 from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
                          SECURE_CORE_ICON_SET, UI_DIR_PATH)
@@ -234,8 +235,8 @@ class QuickSettingButton:
 
     def __init__(self, popover_widget, img_factory_name, text):
         self.__popover_widget = popover_widget
-        self.session = self.__popover_widget.protonvpn.get_session()
-        self.settings = self.__popover_widget.protonvpn.get_settings()
+        self.__session = self.__popover_widget.protonvpn.get_session()
+        self.__settings = self.__popover_widget.protonvpn.get_settings()
         self.__content = WidgetFactory.grid("buttons")
         self.__content.row_spacing = 10
         self.__content.column_spacing = 10
@@ -267,6 +268,22 @@ class QuickSettingButton:
 
     def route_user_to_webpage(self):
         self.__popover_widget.route_user_to_webpage()
+
+    @property
+    def popover(self):
+        return self.__popover_widget
+
+    @property
+    def session(self):
+        return self.__session
+
+    @property
+    def settings(self):
+        return self.__settings
+
+    @property
+    def viewmodel(self):
+        return self.__popover_widget.dashboard_view_model
 
     @property
     def widget(self):
@@ -371,7 +388,10 @@ class SecureCoreOff(QuickSettingButton):
             "Secure Cure Off"
         )
         self.display_upgrade_label = False
-        self.set_available()
+        if self.settings.secure_core == SecureCoreStatusEnum.OFF:
+            self.set_selected()
+        else:
+            self.set_available()
         self.secure_core_collection.append(self)
 
     def set_unavailable(self):
@@ -381,9 +401,12 @@ class SecureCoreOff(QuickSettingButton):
         for button in self.secure_core_collection:
             if button == self:
                 self.set_selected()
-                print("Connect to fastest non-secure core server")
                 continue
             button.set_available()
+        self.popover.hide()
+        self.viewmodel.on_reconnect_secure_core(
+            SecureCoreStatusEnum.OFF
+        )
 
 
 class SecureCoreOn(QuickSettingButton):
@@ -401,7 +424,10 @@ class SecureCoreOn(QuickSettingButton):
 
         if self.session.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value:
             self.display_upgrade_label = False
-            self.set_available()
+            if self.settings.secure_core == SecureCoreStatusEnum.ON:
+                self.set_selected()
+            else:
+                self.set_available()
 
         self.secure_core_collection.append(self)
 
@@ -410,9 +436,12 @@ class SecureCoreOn(QuickSettingButton):
             for button in self.secure_core_collection:
                 if button == self:
                     self.set_selected()
-                    print("Reconnect to same server with secure core")
                     continue
                 button.set_available()
+            self.popover.hide()
+            self.viewmodel.on_reconnect_secure_core( # noqa
+                SecureCoreStatusEnum.ON
+            )
         else:
             self.route_user_to_webpage()
 
@@ -448,10 +477,12 @@ class NetshieldOff(QuickSettingButton):
         for button in self.netshield_collection:
             if button == self:
                 self.set_selected()
-                self.settings.netshield = NetshieldTranslationEnum.DISABLED
-                print("Reconnect to same server without netshield")
                 continue
             button.set_available()
+        self.popover.hide()
+        self.viewmodel.on_reconnect_netshield(
+            NetshieldTranslationEnum.DISABLED
+        )
 
 
 class NetshieldMalware(QuickSettingButton):
@@ -480,11 +511,13 @@ class NetshieldMalware(QuickSettingButton):
         if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
             for button in self.netshield_collection:
                 if button == self:
-                    print("Reconnect to same server with malware enabled")
-                    self.settings.netshield = NetshieldTranslationEnum.MALWARE
                     self.set_selected()
                     continue
                 button.set_available()
+            self.popover.hide()
+            self.viewmodel.on_reconnect_netshield(
+                NetshieldTranslationEnum.MALWARE
+            )
         else:
             self.route_user_to_webpage()
 
@@ -514,13 +547,15 @@ class NetshieldAdsMalware(QuickSettingButton):
 
     def on_button_click(self, gtk_button):
         if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
-            print("Reconnect to same server with ads malware enabled")
             for button in self.netshield_collection:
                 if button == self:
                     self.set_selected()
-                    self.settings.netshield = NetshieldTranslationEnum.ADS_MALWARE
                     continue
                 button.set_available()
+            self.popover.hide()
+            self.viewmodel.on_reconnect_netshield(
+                NetshieldTranslationEnum.ADS_MALWARE
+            )
         else:
             self.route_user_to_webpage()
 
@@ -549,6 +584,8 @@ class KillSwitchOff(QuickSettingButton):
                 self.set_selected()
                 continue
             button.set_available()
+        self.popover.hide()
+        self.viewmodel.on_reconnect_killswitch(KillswitchStatusEnum.DISABLED)
 
 
 class KillSwitchOn(QuickSettingButton):
@@ -572,10 +609,11 @@ class KillSwitchOn(QuickSettingButton):
         for button in self.killswitch_collection:
             if button == self:
                 self.settings.killswitch = KillswitchStatusEnum.SOFT
-                print("Recoonect with on interface and set in configs")
                 self.set_selected()
                 continue
             button.set_available()
+        self.popover.hide()
+        self.viewmodel.on_reconnect_killswitch(KillswitchStatusEnum.SOFT)
 
 
 class KillSwitchAlwaysOn(QuickSettingButton):
@@ -599,7 +637,8 @@ class KillSwitchAlwaysOn(QuickSettingButton):
         for button in self.killswitch_collection:
             if button == self:
                 self.settings.killswitch = KillswitchStatusEnum.HARD
-                print("Add always-on interface and set in configs")
                 self.set_selected()
                 continue
             button.set_available()
+        self.popover.hide()
+        self.viewmodel.on_reconnect_killswitch(KillswitchStatusEnum.HARD)
