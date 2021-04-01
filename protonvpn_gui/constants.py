@@ -112,4 +112,9 @@ SECURE_CORE_ICON_SET = {
             ICON_DIR_PATH,
             "secure-core.imageset/secure-core-on-active.svg"
         ),
+    DashboardSecureCoreIconEnum.CHEVRON:
+        os.path.join(
+            ICON_DIR_PATH,
+            "secure-core.imageset/secure-core-chevrons-active.svg"
+        )
 }

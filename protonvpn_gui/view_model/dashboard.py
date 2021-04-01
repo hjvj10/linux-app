@@ -191,20 +191,25 @@ class DashboardViewModel:
             result = self.get_connected_state()
 
         self.state.on_next(self.get_quick_settings_state())
-        self.on_load_servers_sync(secure_core=False)
+        self.on_load_servers_sync()
         self.state.on_next(result)
 
-    def on_load_servers(self, secure_core=False):
+    def on_load_servers(self):
         process = self.bg_process.setup(
-            self.on_load_servers_sync, secure_core
+            self.on_load_servers_sync
         )
         process.start()
         return True
 
-    def on_load_servers_sync(self, secure_core):
+    def on_load_servers_sync(self):
         self.server_list.generate_list(
             ServerTierEnum(protonvpn.get_session().vpn_tier)
         )
+        if protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON:
+            self.server_list.display_secure_core = True
+        else:
+            self.server_list.display_secure_core = False
+
         state = ServerListData(self.server_list)
         self.state.on_next(state)
 
@@ -416,10 +421,9 @@ class DashboardViewModel:
         server = connection_status[
             ConnectionStatusEnum.SERVER_INFORMATION
         ]
-
         countries = [server.exit_country]
         if FeatureEnum.SECURE_CORE in [FeatureEnum(server.features)]:
-            countries.append(server.ENTRY_COUNTRY)
+            countries.append(server.entry_country)
 
         result = ConnectedToVPNInfo(
             protocol=connection_status[ConnectionStatusEnum.PROTOCOL],

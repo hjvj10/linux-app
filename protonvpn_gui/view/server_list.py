@@ -26,7 +26,7 @@ class ServerListView:
         self.__attach_countries()
 
     def __update_country_name(self):
-        for country_item in self.__server_list.non_secure_core_servers:
+        for country_item in self.__server_list.servers:
             country_item.country_name = country_codes.get(
                 country_item.entry_country_code,
                 country_item.entry_country_code
@@ -37,8 +37,13 @@ class ServerListView:
 
     def __attach_countries(self):
         row_counter = 0
-        for country_item in self.__server_list.non_secure_core_servers:
-            country_grid_row = CountryRow(country_item, self.dv).event_box
+        for country_item in self.__server_list.servers:
+            if len(country_item) < 1:
+                continue
+            country_grid_row = CountryRow(
+                country_item, self.dv,
+                display_sc=self.__server_list.display_secure_core
+            ).event_box
             self.dv.server_list_grid.attach(
                 country_grid_row, 0,
                 row_counter, 1, 1
@@ -48,14 +53,15 @@ class ServerListView:
 
 
 class CountryRow:
-    def __init__(self, country_item, dashboard_view):
+    def __init__(self, country_item, dashboard_view, display_sc):
         self.dv = dashboard_view
         self.server_list_revealer = ServerListRevealer(
             self.dv,
-            country_item.servers
+            country_item.servers,
+            display_sc
         )
         self.row_grid = WidgetFactory.grid("country_row")
-        self.left_child = CountryRowLeftGrid(country_item)
+        self.left_child = CountryRowLeftGrid(country_item, display_sc)
         self.right_child = CountryRowRightGrid(
             country_item,
             self.server_list_revealer.revealer,
@@ -103,7 +109,7 @@ class CountryRow:
 
 
 class CountryRowLeftGrid:
-    def __init__(self, country_item):
+    def __init__(self, country_item, display_sc):
         self.grid = WidgetFactory.grid("left_child_in_country_row")
 
         try:
@@ -112,16 +118,24 @@ class CountryRowLeftGrid:
             ).widget
         except gi.repository.GLib.Error:
             self.country_flag = WidgetFactory.image("dummy_small_flag").widget
+        self.grid.attach(self.country_flag)
+
+        self.sc_chevron = WidgetFactory.image("secure_cure_chevron")
+        self.grid.attach_right_next_to(
+            self.sc_chevron.widget, self.country_flag
+        )
 
         self.country_name = WidgetFactory.label(
             "country", country_item.country_name
         )
         if not country_item.can_connect:
             self.country_name.add_class("disabled-label")
-        self.grid.attach(self.country_flag)
+
         self.grid.attach_right_next_to(
-            self.country_name.widget, self.country_flag,
+            self.country_name.widget, self.sc_chevron.widget,
         )
+        self.sc_chevron.show = True if display_sc else False
+
 
 
 class CountryRowRightGrid:
@@ -232,14 +246,14 @@ class CountryRowRightGrid:
 class ServerListRevealer:
     _row_counter = 0
 
-    def __init__(self, dasbhoard_view, servers):
+    def __init__(self, dasbhoard_view, servers, display_sc):
         self.dv = dasbhoard_view
         self.revealer = WidgetFactory.revealer("server_list")
         self.revealer_child_grid = WidgetFactory.grid("revealer_child")
 
         for server in servers:
             self.revealer_child_grid.attach(
-                ServerRow(self.dv, server).event_box,
+                ServerRow(self.dv, server, display_sc).event_box,
                 row=self._row_counter
             )
             self._row_counter += 1
@@ -248,10 +262,10 @@ class ServerListRevealer:
 
 
 class ServerRow:
-    def __init__(self, dasbhoard_view, server):
+    def __init__(self, dasbhoard_view, server, display_sc):
         self.dv = dasbhoard_view
         self.grid = WidgetFactory.grid("server_row")
-        self.left_child = ServerRowLeftGrid(server)
+        self.left_child = ServerRowLeftGrid(server, display_sc)
         self.right_child = ServerRowRightGrid(self.dv, server)
         self.grid.attach(self.left_child.grid.widget)
         self.grid.attach_right_next_to(
@@ -295,35 +309,75 @@ class ServerRow:
 
 
 class ServerRowLeftGrid:
-    def __init__(self, server):
+    def __init__(self, server, display_sc):
         self.feature_icon_list = []
+        self.server = server
+        self.display_sc = display_sc
         self.grid = WidgetFactory.grid("left_child_in_server_row")
+        self.populate_left_grid()
 
-        self.load_icon = WidgetFactory.image(
-            "load_icon_flag",
-            "{}% Load".format(
-                server.load
-            )
-        )
-
-        self.grid.attach(self.load_icon.widget)
-        self.create_servername_label(server.name)
-        self.set_server_features(server.features)
-        self.create_is_plus_server_icon(server.is_plus)
         if not server.status.value:
             self.servername_label.add_class("disabled-label")
 
-    def create_servername_label(self, servername):
-        self.servername_label = WidgetFactory.label("server", servername)
+    def populate_left_grid(self):
+        self.create_load_icon()
+        self.create_exit_flag()
+        self.create_servername_label()
+        self.create_secure_core_chevron()
+        self.set_server_features()
+        if self.display_sc:
+            return
+        self.create_is_plus_server_icon()
+
+    def create_load_icon(self):
+        self.load_icon = WidgetFactory.image(
+            "load_icon_flag",
+            "{}% Load".format(
+                self.server.load
+            )
+        )
+        self.grid.attach(self.load_icon.widget)
+
+    def create_exit_flag(self):
+        try:
+            self.country_flag = WidgetFactory.image(
+                "small_flag", self.server.entry_country_code
+            )
+        except gi.repository.GLib.Error:
+            self.country_flag = WidgetFactory.image("dummy_small_flag")
+
         self.grid.attach_right_next_to(
-            self.servername_label.widget,
+            self.country_flag.widget,
             self.load_icon.widget,
         )
 
-    def create_is_plus_server_icon(self, is_plus_server):
-        if not is_plus_server:
-            return
+    def create_servername_label(self):
+        self.servername_label = WidgetFactory.label(
+            "server", self.server.name
+        )
+        if self.display_sc:
+            country_name = country_codes.get(
+                self.server.entry_country_code,
+                self.server.entry_country_code
+            )
+            self.servername_label.content = "via {}".format(country_name)
 
+        self.grid.attach_right_next_to(
+            self.servername_label.widget,
+            self.country_flag.widget,
+        )
+
+    def create_secure_core_chevron(self):
+        self.sc_chevron = WidgetFactory.image("secure_cure_chevron")
+        self.grid.attach_right_next_to(
+            self.sc_chevron.widget,
+            self.servername_label.widget,
+        )
+        self.sc_chevron.show = True if self.display_sc else False
+
+    def create_is_plus_server_icon(self):
+        if not self.server.is_plus:
+            return
         plus_server_icon = WidgetFactory.image("plus_icon")
         plus_server_icon.tooltip = True
         plus_server_icon.tooltip_text = "Plus Server"
@@ -339,14 +393,14 @@ class ServerRowLeftGrid:
             self.feature_icon_list[-1],
         )
 
-    def set_server_features(self, server_features):
+    def set_server_features(self):
         feature_to_img_dict = {
             FeatureEnum.TOR: ["tor_icon", "TOR Server"],
             FeatureEnum.P2P: ["p2p_icon", "P2P Server"],
         }
         features = list(set(
             [FeatureEnum.TOR, FeatureEnum.P2P]
-        ) & set(server_features))
+        ) & set(self.server.features))
 
         if len(features) < 1:
             return

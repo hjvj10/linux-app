@@ -31,10 +31,29 @@ class ServerList:
         self.__secure_core_servers = None
         self.__unfiltered_server_list = None
         self.__user_tier = None
+        self.__display_secure_core_servers = False
+        self.__default_list = None
+
+    @property
+    def display_secure_core(self):
+        return self.__display_secure_core_servers
+
+    @display_secure_core.setter
+    def display_secure_core(self, newvalue):
+        if newvalue:
+            self.__default_list = copy.deepcopy(
+                self.__secure_core_servers
+            )
+        else:
+            self.__default_list = copy.deepcopy(
+                self.non_secure_core_servers
+            )
+
+        self.__display_secure_core_servers = newvalue
 
     @property
     def servers(self):
-        return self.__unfiltered_server_list
+        return self.__default_list
 
     @property
     def non_secure_core_servers(self):
@@ -80,13 +99,13 @@ class ServerList:
         self.__secure_core_servers = []
         for country_item in self.__unfiltered_server_list:
             copy_country_item = copy.deepcopy(country_item)
-            copy_country_item.servers = filter(
+            copy_country_item.servers = list(filter(
                 lambda server: any(
                     feature == FeatureEnum.SECURE_CORE
                     for feature
                     in server.features
                 ), country_item.servers
-            )
+            ))
             # Shallow copy as this is a one layer list
             features = copy.copy(country_item.features)
             for feature in features:
@@ -159,14 +178,8 @@ class ServerList:
     def sort_countries_by_name(self):
         if self.__user_tier != ServerTierEnum.FREE:
             try:
-                self.__non_secure_core_servers.sort(
+                self.__default_list.sort(
                     key=lambda country: country.country_name
                 )
             except TypeError:
                 pass
-        try:
-            self.__secure_core_servers.sort(
-                key=lambda country: country.country_name
-            )
-        except TypeError:
-            pass

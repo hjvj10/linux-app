@@ -43,3 +43,4 @@ class DashboardSecureCoreIconEnum(Enum):
     ON_DEFAULT = auto()
     ON_DISABLE = auto()
     ON_ACTIVE = auto()
+    CHEVRON = auto()

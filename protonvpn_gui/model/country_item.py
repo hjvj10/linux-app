@@ -46,6 +46,9 @@ class CountryItem:
         # This is set on the view.
         self.__country_name = None
 
+    def __len__(self):
+        return len(self.__servers)
+
     @property
     def country_name(self):
         return self.__country_name

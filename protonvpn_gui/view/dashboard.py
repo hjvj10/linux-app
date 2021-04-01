@@ -634,7 +634,7 @@ class ConnectedVPNView:
             country_string = "{}".format(country.get_country_name(
                 state.countries[0]
             ))
-            country_string = country + " >> {}".format(
+            country_string = country_string + " >> {}".format(
                 country.get_country_name(state.countries[1])
             )
         dv.on_connect_load_sidebar_flag(state.exit_country_code)

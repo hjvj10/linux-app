@@ -382,6 +382,22 @@ class Load(ImageFactory):
         self.show = True
 
 
+class SecureCoreChevron(ImageFactory):
+    """SecureCoreOff icon class."""
+    image = "secure_cure_chevron"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.CHEVRON],
+                width=11, height=11
+            )
+        )
+        self.add_class("country-flag")
+        self.show = True
+
+
 class SecureCoreOff(ImageFactory):
     """SecureCoreOff icon class."""
     image = "secure_cure_off"

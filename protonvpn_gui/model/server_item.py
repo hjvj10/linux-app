@@ -38,6 +38,7 @@ class ServerItem:
         self.__is_plus: bool = None
         self.__status: int = None
         self.__exit_country_code: str = None
+        self.__entry_country_code: str = None
         self.__has_to_upgrade: bool = None
         self.create(logical_server)
 
@@ -74,6 +75,10 @@ class ServerItem:
         return self.__exit_country_code
 
     @property
+    def entry_country_code(self):
+        return self.__entry_country_code
+
+    @property
     def has_to_upgrade(self):
         return self.__has_to_upgrade
 
@@ -86,6 +91,7 @@ class ServerItem:
         self.__is_plus = self.__check_server_is_plus()
         self.__status = ServerStatusEnum(logical_server.enabled)
         self.__exit_country_code = logical_server.exit_country
+        self.__entry_country_code = logical_server.entry_country
         self.__has_to_upgrade = (
             True if self.__tier.value > ServerTierEnum(
                 protonvpn.get_session().vpn_tier
