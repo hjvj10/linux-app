@@ -1,3 +1,12 @@
+protonvpn-gui (0.1.0-1) unstable; urgency=medium
+
+  * Add quick-settings buttons
+  * Add reconnetion logic after clicking on quick-settings buttons
+  * Fix secure core server list reload
+  * Fix issue when connecting to servers with long names
+
+ -- Proton Technologies AG <opensource@proton.me>  Fri, 2 Apr 2021 10:30:00 +0100
+
 protonvpn-gui (0.0.3-1) unstable; urgency=low
 
   * First package
