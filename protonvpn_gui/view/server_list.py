@@ -37,6 +37,15 @@ class ServerListView:
 
     def __attach_countries(self):
         row_counter = 0
+        replaceable_child_grid = WidgetFactory.grid("dummy")
+        replaceable_child_grid.show = True
+
+        if self.dv.server_list_grid.get_child_at(0, 0):
+            self.dv.server_list_grid.remove_row(0)
+        self.dv.server_list_grid.attach(
+            replaceable_child_grid.widget, 0, 0, 1, 1
+        )
+
         for country_item in self.__server_list.servers:
             if len(country_item) < 1:
                 continue
@@ -44,9 +53,9 @@ class ServerListView:
                 country_item, self.dv,
                 display_sc=self.__server_list.display_secure_core
             ).event_box
-            self.dv.server_list_grid.attach(
-                country_grid_row, 0,
-                row_counter, 1, 1
+            replaceable_child_grid.attach(
+                country_grid_row, col=0,
+                row=row_counter, width=1, height=1
             )
 
             row_counter += 1
@@ -65,7 +74,8 @@ class CountryRow:
         self.right_child = CountryRowRightGrid(
             country_item,
             self.server_list_revealer.revealer,
-            self.dv
+            self.dv,
+            display_sc
         )
 
         self.row_grid.attach(self.left_child.grid.widget)
@@ -137,10 +147,10 @@ class CountryRowLeftGrid:
         self.sc_chevron.show = True if display_sc else False
 
 
-
 class CountryRowRightGrid:
-    def __init__(self, country_item, revealer, dashboard_view):
+    def __init__(self, country_item, revealer, dashboard_view, display_sc):
         self.dv = dashboard_view
+        self.display_sc = display_sc
         self.feature_icon_list = []
         self.revealer = revealer
         self.grid = WidgetFactory.grid("right_child_in_country_row")
@@ -177,22 +187,23 @@ class CountryRowRightGrid:
             return
 
         for feature in features:
-            pixbuf_feature_icon = WidgetFactory.image(
+            feature_icon = WidgetFactory.image(
                 feature_to_img_dict[feature]
-            ).widget
-            self.attach_feature_icon(pixbuf_feature_icon)
+            )
+            feature_icon.show = False if self.display_sc else True
+            self.attach_feature_icon(feature_icon.widget)
 
-    def attach_feature_icon(self, pixbuf_feature_icon):
+    def attach_feature_icon(self, feature_icon):
         if len(self.feature_icon_list) < 1:
             self.grid.attach_left_next_to(
-                pixbuf_feature_icon,
+                feature_icon,
                 self.connect_country_button.widget,
             )
         else:
             gtk_image = self.feature_icon_list[-1]
-            self.grid.attach_left_next_to(pixbuf_feature_icon, gtk_image)
+            self.grid.attach_left_next_to(feature_icon, gtk_image)
 
-        self.feature_icon_list.append(pixbuf_feature_icon)
+        self.feature_icon_list.append(feature_icon)
 
     def attach_connect_button(self):
         self.grid.attach_left_next_to(
@@ -350,6 +361,8 @@ class ServerRowLeftGrid:
             self.country_flag.widget,
             self.load_icon.widget,
         )
+
+        self.country_flag.show = True if self.display_sc else False
 
     def create_servername_label(self):
         self.servername_label = WidgetFactory.label(

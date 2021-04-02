@@ -404,7 +404,7 @@ class SecureCoreOff(QuickSettingButton):
                 continue
             button.set_available()
         self.popover.hide()
-        self.viewmodel.on_reconnect_secure_core(
+        self.viewmodel.on_secure_core_reconect(
             SecureCoreStatusEnum.OFF
         )
 
@@ -439,7 +439,7 @@ class SecureCoreOn(QuickSettingButton):
                     continue
                 button.set_available()
             self.popover.hide()
-            self.viewmodel.on_reconnect_secure_core( # noqa
+            self.viewmodel.on_secure_core_reconect( # noqa
                 SecureCoreStatusEnum.ON
             )
         else:
@@ -480,7 +480,7 @@ class NetshieldOff(QuickSettingButton):
                 continue
             button.set_available()
         self.popover.hide()
-        self.viewmodel.on_reconnect_netshield(
+        self.viewmodel.on_netshield_reconnect(
             NetshieldTranslationEnum.DISABLED
         )
 
@@ -515,7 +515,7 @@ class NetshieldMalware(QuickSettingButton):
                     continue
                 button.set_available()
             self.popover.hide()
-            self.viewmodel.on_reconnect_netshield(
+            self.viewmodel.on_netshield_reconnect(
                 NetshieldTranslationEnum.MALWARE
             )
         else:
@@ -553,7 +553,7 @@ class NetshieldAdsMalware(QuickSettingButton):
                     continue
                 button.set_available()
             self.popover.hide()
-            self.viewmodel.on_reconnect_netshield(
+            self.viewmodel.on_netshield_reconnect(
                 NetshieldTranslationEnum.ADS_MALWARE
             )
         else:
@@ -585,7 +585,7 @@ class KillSwitchOff(QuickSettingButton):
                 continue
             button.set_available()
         self.popover.hide()
-        self.viewmodel.on_reconnect_killswitch(KillswitchStatusEnum.DISABLED)
+        self.viewmodel.on_killswitch_reconnect(KillswitchStatusEnum.DISABLED)
 
 
 class KillSwitchOn(QuickSettingButton):
@@ -613,7 +613,7 @@ class KillSwitchOn(QuickSettingButton):
                 continue
             button.set_available()
         self.popover.hide()
-        self.viewmodel.on_reconnect_killswitch(KillswitchStatusEnum.SOFT)
+        self.viewmodel.on_killswitch_reconnect(KillswitchStatusEnum.SOFT)
 
 
 class KillSwitchAlwaysOn(QuickSettingButton):
@@ -641,4 +641,4 @@ class KillSwitchAlwaysOn(QuickSettingButton):
                 continue
             button.set_available()
         self.popover.hide()
-        self.viewmodel.on_reconnect_killswitch(KillswitchStatusEnum.HARD)
+        self.viewmodel.on_killswitch_reconnect(KillswitchStatusEnum.HARD)

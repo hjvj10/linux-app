@@ -201,10 +201,19 @@ class DashboardViewModel:
         process.start()
         return True
 
-    def on_load_servers_sync(self):
+    def __generate_server_list(self):
         self.server_list.generate_list(
             ServerTierEnum(protonvpn.get_session().vpn_tier)
         )
+
+    def on_load_servers_sync(self):
+        if (
+            self.server_list.display_secure_core is None
+            or self.server_list.display_secure_core is None
+            or self.server_list.servers is None
+        ):
+            self.__generate_server_list()
+
         if protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON:
             self.server_list.display_secure_core = True
         else:
@@ -269,18 +278,72 @@ class DashboardViewModel:
             servername
         )
 
-    def on_reconnect_secure_core(self, secure_core_enum):
+    def on_secure_core_reconect(self, secure_core_enum):
+        """On reconnect Secure Core."""
         logger.info("Setting secure core to \"{}\"".format(secure_core_enum))
         protonvpn.get_settings().secure_core = secure_core_enum
         if protonvpn.get_active_protonvpn_connection():
             logger.info("Preparing reconnect with \"{}\"".format(
                 secure_core_enum
             ))
-            # self.on_reconnect()
+            self.on_load_servers()
+            self.prepare_secure_core_reconnect(secure_core_enum)
         else:
             self.state.on_next(self.get_quick_settings_state())
 
-    def on_reconnect_netshield(self, netshield_enum):
+    def prepare_secure_core_reconnect(self, secure_core_enum):
+        """Prepares Secure Core reconnect.
+
+        Args:
+            secure_core_enum (SecureCoreStatusEnum)
+
+        If there is an active connection, this method will attempt
+        to reconnect to a server which the exit country matches
+        the entry country of a secure core server. If none is found,
+        then it will only call get_fastest_server(), since the library
+        is aware of this status.
+        """
+        connection_metadata = protonvpn.get_connection_metadata()
+        connected_server = connection_metadata[
+            ConnectionMetadataEnum.SERVER.value
+        ]
+        exit_country = protonvpn.config_for_server_with_servername(
+            connected_server
+        ).exit_country
+
+        server = None
+        if secure_core_enum == SecureCoreStatusEnum.ON:
+            servers_list = list(map(
+                lambda country: list(filter(
+                    lambda server:
+                    server.exit_country_code.lower() == exit_country.lower(),
+                    country.servers
+                )),
+                self.server_list.secure_core_servers
+            ))
+            flattened_servers = [
+                server for sub in servers_list for server in sub
+            ]
+            if len(flattened_servers) > 0:
+                flattened_servers.sort(
+                    key=lambda server: server.score, reverse=True
+                )
+                server = flattened_servers[0]
+
+        if server is None:
+            server = protonvpn.config_for_fastest_server()
+
+        result = ConnectPreparingInfo()
+        self.state.on_next(result)
+        logger.info("Preparing to connect to servername \"{}\"".format(
+            server.name
+        ))
+        self.connect(
+            ConnectionTypeEnum.SERVERNAME,
+            server.name
+        )
+
+    def on_netshield_reconnect(self, netshield_enum):
         logger.info("Setting netshield to \"{}\"".format(netshield_enum))
         protonvpn.get_settings().netshield = netshield_enum
         if protonvpn.get_active_protonvpn_connection():
@@ -291,7 +354,7 @@ class DashboardViewModel:
         else:
             self.state.on_next(self.get_quick_settings_state())
 
-    def on_reconnect_killswitch(self, ks_enum):
+    def on_killswitch_reconnect(self, ks_enum):
         logger.info("Setting killswitch to \"{}\"".format(ks_enum))
         protonvpn.get_settings().killswitch = ks_enum
         active_connection = protonvpn.get_active_protonvpn_connection()
@@ -405,7 +468,7 @@ class DashboardViewModel:
         result = self.get_not_connected_state()
         try:
             protonvpn.disconnect()
-        except exceptions.ConnectionNotFound:
+        except (exceptions.ConnectionNotFound, AttributeError):
             pass
 
         self.state.on_next(result)
