@@ -32,6 +32,7 @@ class ServerItem:
     def __init__(self, logical_server):
         self.__name: str = None
         self.__load: int = None
+        self.__score: int = None
         self.__city: str = None
         self.__features: list = []
         self.__tier: int = None
@@ -49,6 +50,10 @@ class ServerItem:
     @property
     def load(self):
         return self.__load
+
+    @property
+    def score(self):
+        return self.__score
 
     @property
     def city(self):
@@ -85,6 +90,7 @@ class ServerItem:
     def create(self, logical_server):
         self.__name = logical_server.name
         self.__load = str(int(logical_server.load))
+        self.__score = int(logical_server.score)
         self.__city = logical_server.city
         self.__features = [FeatureEnum(logical_server.features)]
         self.__tier = ServerTierEnum(logical_server.tier)
