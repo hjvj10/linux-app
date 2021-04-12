@@ -1,4 +1,4 @@
-protonvpn-gui (0.1.0-1) unstable; urgency=medium
+protonvpn-gui (0.1.0-2) unstable; urgency=medium
 
   * Add quick-settings buttons
   * Add reconnetion logic after clicking on quick-settings buttons

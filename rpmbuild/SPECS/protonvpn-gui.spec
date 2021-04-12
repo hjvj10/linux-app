@@ -1,6 +1,6 @@
 %define unmangled_name protonvpn-gui
 %define version 0.1.0
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
@@ -47,7 +47,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Fri Apr 2 2021 Proton Technologies AG <opensource@proton.me> 0.1.0-1
+* Fri Apr 2 2021 Proton Technologies AG <opensource@proton.me> 0.1.0-2
 - Add quick-settings buttons
 - Add reconnetion logic after clicking on quick-settings buttons
 - Fix secure core server list reload
