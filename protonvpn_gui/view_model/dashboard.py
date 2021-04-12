@@ -276,15 +276,17 @@ class DashboardViewModel:
             servername
         )
 
-    def on_secure_core_reconect(self, secure_core_enum):
+    def on_switch_secure_core_button(self, secure_core_enum):
         """On reconnect Secure Core."""
         logger.info("Setting secure core to \"{}\"".format(secure_core_enum))
         protonvpn.get_settings().secure_core = secure_core_enum
+
+        self.on_load_servers()
+
         if protonvpn.get_active_protonvpn_connection():
             logger.info("Preparing reconnect with \"{}\"".format(
                 secure_core_enum
             ))
-            self.on_load_servers()
             self.prepare_secure_core_reconnect(secure_core_enum)
         else:
             self.state.on_next(self.get_quick_settings_state())
@@ -341,7 +343,7 @@ class DashboardViewModel:
             server.name
         )
 
-    def on_netshield_reconnect(self, netshield_enum):
+    def on_switch_netshield_button(self, netshield_enum):
         logger.info("Setting netshield to \"{}\"".format(netshield_enum))
         protonvpn.get_settings().netshield = netshield_enum
         if protonvpn.get_active_protonvpn_connection():
@@ -352,7 +354,7 @@ class DashboardViewModel:
         else:
             self.state.on_next(self.get_quick_settings_state())
 
-    def on_killswitch_reconnect(self, ks_enum):
+    def on_switch_killswitch_button(self, ks_enum):
         logger.info("Setting killswitch to \"{}\"".format(ks_enum))
         protonvpn.get_settings().killswitch = ks_enum
         active_connection = protonvpn.get_active_protonvpn_connection()
