@@ -330,7 +330,7 @@ class DashboardViewModel:
                 )
                 server = flattened_servers[0]
 
-        if server is None:
+        if not server:
             server = protonvpn.config_for_fastest_server()
 
         result = ConnectPreparingInfo()
