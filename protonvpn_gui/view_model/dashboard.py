@@ -214,10 +214,8 @@ class DashboardViewModel:
         ):
             self.__generate_server_list()
 
-        if protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON:
-            self.server_list.display_secure_core = True
-        else:
-            self.server_list.display_secure_core = False
+        self.server_list.display_secure_core = \
+            protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON
 
         state = ServerListData(self.server_list)
         self.state.on_next(state)
@@ -399,32 +397,26 @@ class DashboardViewModel:
                 or ConnectionTypeEnum.SERVERNAME.
         """
         logger.info("Setting up connection")
-        if not reconnect:
-            try:
+        try:
+            if reconnect:
+                server = protonvpn.setup_reconnect()
+            else:
                 server = protonvpn.setup_connection(
                     connection_type=connection_type_enum,
                     connection_type_extra_arg=extra_arg
                 )
-            except (exceptions.ProtonVPNException, Exception) as e:
-                logger.exception(e)
-                result = ConnectError(
-                    str(e)
-                )
-                self.state.on_next(result)
-                return
-        else:
-            try:
-                server = protonvpn.setup_reconnect()
-            except (exceptions.ProtonVPNException, Exception) as e:
-                logger.exception(e)
-                result = ConnectError(
-                    str(e)
-                )
-                self.state.on_next(result)
+        except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
+            result = ConnectError(
+                str(e)
+            )
+            self.state.on_next(result)
+            return
 
         logger.info("Connection was setup")
         # step 1
         self.__display_connection_information_during_connect(server)
+
         # step 2
         logger.info("Attempting to connect")
         connect_response = protonvpn.connect()
