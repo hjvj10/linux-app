@@ -86,6 +86,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.popup()
 
     def display_killswitch_settings(self, gio_action, _, button):
+        self.upgrade_button.show = False
         self.title_label.content = "Kill Switch"
         self.description_label.content = "Disables Internet if the VPN " \
             "connection drops to prevent accidental IP leak. "
@@ -229,9 +230,9 @@ class QuickSettingButton:
     selected_path = None
     available_path = None
     unavailable_path = None
-    netshield_collection = []
-    secure_core_collection = []
-    killswitch_collection = []
+    netshield_button_collection = []
+    secure_core_button_collection = []
+    killswitch_button_collection = []
 
     def __init__(self, popover_widget, img_factory_name, text):
         self.__popover_widget = popover_widget
@@ -348,28 +349,19 @@ class QuickSettingButton:
         )
 
     def set_selected(self):
-        if self.selected_path:
-            self.__selected(
-                self.selected_path
-            )
-        else:
-            self.__selected()
+        self.__selected(
+            self.selected_path
+        )
 
     def set_available(self):
-        if self.available_path:
-            self.__available(
-                self.available_path
-            )
-        else:
-            self.__available()
+        self.__available(
+            self.available_path
+        )
 
     def set_unavailable(self):
-        if self.unavailable_path:
-            self.__unavailable(
-                self.unavailable_path
-            )
-        else:
-            self.__unavailable()
+        self.__unavailable(
+            self.unavailable_path
+        )
 
     @property
     def display_upgrade_label(self):
@@ -392,13 +384,13 @@ class SecureCoreOff(QuickSettingButton):
             self.set_selected()
         else:
             self.set_available()
-        self.secure_core_collection.append(self)
+        self.secure_core_button_collection.append(self)
 
     def set_unavailable(self):
         pass
 
     def on_button_click(self, gtk_button):
-        for button in self.secure_core_collection:
+        for button in self.secure_core_button_collection:
             if button == self:
                 self.set_selected()
                 continue
@@ -429,11 +421,11 @@ class SecureCoreOn(QuickSettingButton):
             else:
                 self.set_available()
 
-        self.secure_core_collection.append(self)
+        self.secure_core_button_collection.append(self)
 
     def on_button_click(self, gtk_button):
         if self.session.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value:
-            for button in self.secure_core_collection:
+            for button in self.secure_core_button_collection:
                 if button == self:
                     self.set_selected()
                     continue
@@ -468,13 +460,13 @@ class NetshieldOff(QuickSettingButton):
         else:
             self.set_available()
 
-        self.netshield_collection.append(self)
+        self.netshield_button_collection.append(self)
 
     def set_unavailable(self):
         pass
 
     def on_button_click(self, gtk_button):
-        for button in self.netshield_collection:
+        for button in self.netshield_button_collection:
             if button == self:
                 self.set_selected()
                 continue
@@ -505,11 +497,11 @@ class NetshieldMalware(QuickSettingButton):
             if self.settings.netshield == NetshieldTranslationEnum.MALWARE:
                 self.set_selected()
 
-        self.netshield_collection.append(self)
+        self.netshield_button_collection.append(self)
 
     def on_button_click(self, gtk_button):
         if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
-            for button in self.netshield_collection:
+            for button in self.netshield_button_collection:
                 if button == self:
                     self.set_selected()
                     continue
@@ -543,11 +535,11 @@ class NetshieldAdsMalware(QuickSettingButton):
             if self.settings.netshield == NetshieldTranslationEnum.ADS_MALWARE:
                 self.set_selected()
 
-        self.netshield_collection.append(self)
+        self.netshield_button_collection.append(self)
 
     def on_button_click(self, gtk_button):
         if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
-            for button in self.netshield_collection:
+            for button in self.netshield_button_collection:
                 if button == self:
                     self.set_selected()
                     continue
@@ -572,13 +564,13 @@ class KillSwitchOff(QuickSettingButton):
             self.set_selected()
         else:
             self.set_available()
-        self.killswitch_collection.append(self)
+        self.killswitch_button_collection.append(self)
 
     def set_unavailable(self):
         pass
 
     def on_button_click(self, gtk_button):
-        for button in self.killswitch_collection:
+        for button in self.killswitch_button_collection:
             if button == self:
                 self.settings.killswitch = KillswitchStatusEnum.DISABLED
                 self.set_selected()
@@ -603,10 +595,10 @@ class KillSwitchOn(QuickSettingButton):
             self.set_selected()
         else:
             self.set_available()
-        self.killswitch_collection.append(self)
+        self.killswitch_button_collection.append(self)
 
     def on_button_click(self, gtk_button):
-        for button in self.killswitch_collection:
+        for button in self.killswitch_button_collection:
             if button == self:
                 self.settings.killswitch = KillswitchStatusEnum.SOFT
                 self.set_selected()
@@ -631,10 +623,10 @@ class KillSwitchAlwaysOn(QuickSettingButton):
             self.set_selected()
         else:
             self.set_available()
-        self.killswitch_collection.append(self)
+        self.killswitch_button_collection.append(self)
 
     def on_button_click(self, gtk_button):
-        for button in self.killswitch_collection:
+        for button in self.killswitch_button_collection:
             if button == self:
                 self.settings.killswitch = KillswitchStatusEnum.HARD
                 self.set_selected()
