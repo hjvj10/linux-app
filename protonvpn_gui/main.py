@@ -80,6 +80,15 @@ class ProtonVPNGUI(Gtk.Application):
     def on_quit(self, *args):
         """On app quit event hanlder."""
         logger.info("Quit app")
+        if protonvpn.get_active_protonvpn_connection():
+            dialog = DialogView(self)
+            dialog.display_quit_confirmation(self.quit_)
+            return
+
+        self.quit_()
+
+    def quit_(self):
+        protonvpn.disconnect()
         self.quit()
 
     def on_logout(self, *args):

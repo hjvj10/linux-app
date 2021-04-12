@@ -65,6 +65,19 @@ class DialogView(Gtk.ApplicationWindow):
         self.__attach_grids(content_grid, bottom_grid)
         self.present()
 
+    def display_quit_confirmation(self, quit_callback):
+        """Display dialog with quit app confirmation."""
+        self.headerbar_label.set_text("VPN Connection Active")
+        top_text = "Quitting the application will disconnnect " \
+            "the active VPN connection. Do you want to continue ?"
+
+        content_grid = self.__generate_upgrade_content_grid(top_text)
+        bottom_grid = self.__generate_bottom_buttons_grid()
+        self.main_button.connect("clicked", self.__quit, quit_callback)
+        self.main_button.label = "Continue"
+        self.__attach_grids(content_grid, bottom_grid)
+        self.present()
+
     def display_upgrade(self):
         """Display dialog with upgrade request."""
         self.headerbar_label.set_text("Upgrade required")
@@ -134,3 +147,7 @@ class DialogView(Gtk.ApplicationWindow):
     def __logout(self, main_button, logout_callback):
         """Call logout callback."""
         logout_callback()
+
+    def __quit(self, main_button, quit_callback):
+        """Call logout callback."""
+        quit_callback()
