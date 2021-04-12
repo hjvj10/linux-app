@@ -1,6 +1,5 @@
 from protonvpn_nm_lib.api import protonvpn
-from protonvpn_nm_lib.enums import (FeatureEnum, ServerStatusEnum,
-                                    ServerTierEnum)
+from protonvpn_nm_lib.enums import ServerStatusEnum, ServerTierEnum
 
 from .server_item import ServerItem
 
@@ -36,93 +35,61 @@ class CountryItem:
     it here. Also, this property, after being set, shall be used to
     sort countries in alphabetical order.
     """
-    def __init__(self, server_item=ServerItem):
-        self._server_item: ServerItem = server_item
-
-        self._entry_country_code: str = None
-        self._status: ServerStatusEnum = None
-        self._tiers: list = list()
-        self._features: list = set()
-        self._servers: list = list()
-        self._available_to_free_users: bool = False
+    def __init__(self):
+        self.__entry_country_code: str = None
+        self.__status: ServerStatusEnum = None
+        self.__tiers: list = list()
+        self.__features: list = set()
+        self.__servers: list = list()
+        self.__can_connect: bool = False
 
         # This is set on the view.
-        self._country_name = None
+        self.__country_name = None
+
+    def __len__(self):
+        return len(self.__servers)
 
     @property
     def country_name(self):
-        return self._country_name
+        return self.__country_name
 
     @country_name.setter
     def country_name(self, new_country_name):
-        self._country_name = new_country_name
+        self.__country_name = new_country_name
 
     @property
     def entry_country_code(self):
-        return self._entry_country_code
+        return self.__entry_country_code
 
     @entry_country_code.setter
     def entry_country_code(self, new_entry_country_code):
-        self._entry_country_code = new_entry_country_code
+        self.__entry_country_code = new_entry_country_code
 
     @property
     def status(self):
-        return self._status
+        return self.__status
 
     @property
     def tiers(self):
-        return self._tiers
+        return self.__tiers
 
     @property
     def features(self):
-        return self._features
+        return self.__features
 
     @property
     def servers(self):
-        return self._servers
+        return self.__servers
+
+    @servers.setter
+    def servers(self, newvalue):
+        self.__servers = newvalue
 
     @property
-    def available_to_free_users(self):
-        return self._available_to_free_users
+    def can_connect(self):
+        return self.__can_connect
 
-    def create_secure_core_country(
-        self, servername_list, server_list
-    ):
-        status_collector = set()
-        tier_collector = set()
-        feature_collector = set()
-
-        for servername in servername_list:
-            logical_server = protonvpn.get_session().servers.filter(
-                lambda server: server.name.lower() == servername.lower()
-            )[0]
-
-            server_item = self._server_item.create(logical_server)
-            if (
-                not any(
-                    feature == FeatureEnum.SECURE_CORE
-                    for feature
-                    in server_item.features
-                )
-            ):
-                continue
-
-            self._servers.append(server_item)
-            self.add_feature_to_feature_collector(
-                feature_collector, server_item
-            )
-            self.add_status_to_status_collector(
-                status_collector, server_item
-            )
-            self.add_tier_to_tier_collector(tier_collector, server_item)
-
-        self.set_features(feature_collector)
-        self.set_status(status_collector)
-        self.set_tiers(tier_collector)
-        self._available_to_free_users = True\
-            if ServerTierEnum in self._tiers else False
-
-    def create_non_secure_core_country(
+    def create(
         self, user_tier, servername_list, server_list
     ):
         status_collector = set()
@@ -133,62 +100,53 @@ class CountryItem:
             logical_server = protonvpn.get_session().servers.filter(
                 lambda server: server.name.lower() == servername.lower()
             )[0]
-            server_item = self._server_item.create(logical_server)
-            if (
-                any(
-                    feature == FeatureEnum.SECURE_CORE
-                    for feature
-                    in server_item.features
-                )
-            ):
-                continue
-
-            self._servers.append(server_item)
-            self.add_feature_to_feature_collector(
+            server_item = ServerItem(logical_server)
+            self.__servers.append(server_item)
+            self.__add_feature_to_feature_collector(
                 feature_collector, server_item.features
             )
-            self.add_status_to_status_collector(
+            self.__add_status_to_status_collector(
                 status_collector, server_item.status
             )
-            self.add_tier_to_tier_collector(tier_collector, server_item.tier)
+            self.__add_tier_to_tier_collector(tier_collector, server_item.tier)
 
-        self.set_features(feature_collector)
-        self.set_status(status_collector)
-        self.set_tiers(tier_collector)
-        self._available_to_free_users = True\
+        self.__set_features(feature_collector)
+        self.__set_status(status_collector)
+        self.__set_tiers(tier_collector)
+        self.__can_connect = True\
             if (
                 (
                     user_tier == ServerTierEnum.FREE
-                    and ServerTierEnum.FREE in self._tiers
+                    and ServerTierEnum.FREE in self.__tiers
                 ) or (
                     user_tier.value > ServerTierEnum.FREE.value
                 )
 
             ) else False
 
-    def add_feature_to_feature_collector(
+    def __add_feature_to_feature_collector(
         self, feature_collector, server_features
     ):
         feature_collector.add(*server_features)
 
-    def add_status_to_status_collector(self, status_collector, server_status):
+    def __add_status_to_status_collector(self, status_collector, server_status):
         status_collector.add(server_status)
 
-    def add_tier_to_tier_collector(self, tier_collector, server_tier):
+    def __add_tier_to_tier_collector(self, tier_collector, server_tier):
         tier_collector.add(server_tier)
 
-    def set_features(self, features_collector):
-        self._features = list(features_collector)
+    def __set_features(self, features_collector):
+        self.__features = list(features_collector)
 
-    def set_status(self, status_collector):
-        self._status = self.get_country_status(
+    def __set_status(self, status_collector):
+        self.__status = self.__get_country_status(
             list(status_collector)
         )
 
-    def set_tiers(self, tier_collector):
-        self._tiers = list(tier_collector)
+    def __set_tiers(self, tier_collector):
+        self.__tiers = list(tier_collector)
 
-    def get_country_status(self, status_collector):
+    def __get_country_status(self, status_collector):
         if len(status_collector) == 2:
             return ServerStatusEnum.ACTIVE
         elif (

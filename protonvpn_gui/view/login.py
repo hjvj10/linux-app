@@ -5,30 +5,48 @@ from ..view_model.login import LoginError, LoginState
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk
+from gi.repository import Gdk, Gio, GLib, Gtk
 
 from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
+from ..factory import WidgetFactory
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
 class LoginView(Gtk.ApplicationWindow):
     __gtype_name__ = 'LoginView'
 
+    # Other objects
+    top_banner_revealer = Gtk.Template.Child()
+    overlay_spinner = Gtk.Template.Child()
+
+    # Entry
     proton_username_entry = Gtk.Template.Child()
     proton_password_entry = Gtk.Template.Child()
-    login_button = Gtk.Template.Child()
-    img_protonvpn_logo = Gtk.Template.Child()
+
+    # Popover menus
     popover_login_menu = Gtk.Template.Child()
-    banner_error_label = Gtk.Template.Child()
-    overlay_box = Gtk.Template.Child()
-    overlay_logo_image = Gtk.Template.Child()
-    overlay_bottom_label = Gtk.Template.Child()
-    top_banner_revealer = Gtk.Template.Child()
-    top_banner_revealer_grid = Gtk.Template.Child()
-    overlay_spinner = Gtk.Template.Child()
+
+    # Buttons
+    login_button = Gtk.Template.Child()
+
+    # Labels
     username_label = Gtk.Template.Child()
     password_label = Gtk.Template.Child()
+    banner_error_label = Gtk.Template.Child()
+    overlay_bottom_label = Gtk.Template.Child()
 
+    # Images/Icons
+    headerbar_sign_icon = Gtk.Template.Child()
+    img_protonvpn_logo = Gtk.Template.Child()
+    overlay_logo_image = Gtk.Template.Child()
+
+    # Grids
+    top_banner_revealer_grid = Gtk.Template.Child()
+
+    # Boxes
+    overlay_box = Gtk.Template.Child()
+
+    # Constants
     icon_width = 18
     icon_heigt = 18
     string_min_length = 0
@@ -149,37 +167,35 @@ class LoginView(Gtk.ApplicationWindow):
             self.close()
 
     def setup_images(self):
-        self.password_show_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
-            filename=os.path.join(
+        dummy_object = WidgetFactory.image("dummy")
+        protonvpn_headerbar_pixbuf = dummy_object.create_icon_pixbuf_from_name(
+            "protonvpn-sign-green.svg",
+            width=50, height=50,
+        )
+        window_icon = dummy_object.create_icon_pixbuf_from_name(
+            "protonvpn_logo.png",
+        )
+        self.password_show_entry_pixbuf = dummy_object.create_icon_pixbuf_from_name( # noqa
+            os.path.join(
                 ICON_DIR_PATH,
                 "eye-show.imageset/eye-show@3x.png",
-
-            ),
-            width=self.icon_width,
-            height=self.icon_heigt,
-            preserve_aspect_ratio=True
+            ), self.icon_width, self.icon_heigt
         )
-        self.password_hide_entry_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale( # noqa
-            filename=os.path.join(
+        self.password_hide_entry_pixbuf = dummy_object.create_icon_pixbuf_from_name( # noqa
+            os.path.join(
                 ICON_DIR_PATH,
                 "eye-hide.imageset/eye-hide@3x.png",
-
-            ),
-            width=self.icon_width,
-            height=self.icon_heigt,
-            preserve_aspect_ratio=True
+            ), width=self.icon_width, height=self.icon_heigt,
         )
 
-        logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(
+        logo_pixbuf = dummy_object.create_image_pixbuf_from_name(
+            os.path.join(
                 IMG_DIR_PATH,
                 "protonvpn-logo-white.svg"
-            ),
-            width=325,
-            height=250,
-            preserve_aspect_ratio=True
+            ), width=325, height=250
         )
-
+        self.set_icon(window_icon)
+        self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)
         self.img_protonvpn_logo.set_from_pixbuf(logo_pixbuf)
         self.overlay_logo_image.set_from_pixbuf(logo_pixbuf)
         self.proton_password_entry.set_icon_from_pixbuf(

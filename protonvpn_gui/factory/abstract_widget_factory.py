@@ -7,12 +7,10 @@ class WidgetFactory(SubclassesMixin, metaclass=ABCMeta):
 
     @classmethod
     def button(cls, widget):
-        subclasses = cls._get_subclasses_with("concrete_factory")
+        subclasses = cls._get_subclasses_with("abstract_buton_factory")
         for subclass in subclasses:
-            if "buttonfactory" == subclass.__name__.lower():
+            if "abstractbuttonfactory" == subclass.__name__.lower():
                 return subclass.factory(widget)
-
-        raise NotImplementedError("Button not implemented")
 
     @classmethod
     def grid(cls, widget):
@@ -47,6 +45,15 @@ class WidgetFactory(SubclassesMixin, metaclass=ABCMeta):
         for subclass in subclasses:
             if "labelfactory" == subclass.__name__.lower():
                 return subclass.factory(widget, label_text)
+
+        raise NotImplementedError("Revealer not implemented")
+
+    @classmethod
+    def textview(cls, widget, text=""):
+        subclasses = cls._get_subclasses_with("concrete_factory")
+        for subclass in subclasses:
+            if "textviewfactory" == subclass.__name__.lower():
+                return subclass.factory(widget, text)
 
         raise NotImplementedError("Revealer not implemented")
 
@@ -90,4 +97,19 @@ class WidgetFactory(SubclassesMixin, metaclass=ABCMeta):
     @abstractmethod
     def has_class():
         """Check if widget has CSS class."""
+        pass
+
+    @abstractmethod
+    def remove_all_classes():
+        """Remove all CSS classes."""
+        pass
+
+    @abstractmethod
+    def replace_all_by():
+        """Replace all CSS classes with a specific one."""
+        pass
+
+    @abstractmethod
+    def replace_old_class_with_new_class():
+        """Replace specified CSS class(es) with specificied class(es)."""
         pass

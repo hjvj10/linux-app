@@ -3,7 +3,7 @@ import os
 from .enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                     DashboardSecureCoreIconEnum)
 
-APP_VERSION = "0.0.3"
+APP_VERSION = "0.1.0"
 ABSOLUTE_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 ASSETS_DIR_PATH = os.path.join(ABSOLUTE_DIR_PATH, "assets")
 
@@ -49,7 +49,7 @@ KILLSWITCH_ICON_SET = {
     DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE:
         os.path.join(
             ICON_DIR_PATH,
-            "kill-switch.imagesetkillswitch-always-on-active.svg"
+            "kill-switch.imageset/killswitch-always-on-active.svg"
         ),
 }
 
@@ -112,4 +112,9 @@ SECURE_CORE_ICON_SET = {
             ICON_DIR_PATH,
             "secure-core.imageset/secure-core-on-active.svg"
         ),
+    DashboardSecureCoreIconEnum.CHEVRON:
+        os.path.join(
+            ICON_DIR_PATH,
+            "secure-core.imageset/secure-core-chevrons-active.svg"
+        )
 }

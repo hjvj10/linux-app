@@ -1,5 +1,3 @@
-from abc import ABCMeta
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -9,7 +7,7 @@ from gi.repository import Gtk
 from ..abstract_widget_factory import WidgetFactory
 
 
-class GridFactory(WidgetFactory, metaclass=ABCMeta):
+class GridFactory(WidgetFactory):
     """Concrete Grid Factory class."""
 
     concrete_factory = "grid"
@@ -115,6 +113,37 @@ class GridFactory(WidgetFactory, metaclass=ABCMeta):
         if self.has_class(css_class):
             self.__widget_context.remvove_class(css_class)
 
+    def remove_all_classes(self):
+        css_list = self.__widget_context.list_classes()
+        for css_class in css_list:
+            self.__widget_context.remove_class(css_class)
+
+    def replace_all_by(self, css_class):
+        self.remove_all_classes()
+        self.add_class(css_class)
+
+    def replace_old_class_with_new_class(self, old_classes, new_classes):
+        """Replaces old_classes with new_classes.
+
+        Args:
+            old_classes (str|list)
+            new_classes (str|list)
+        """
+        def worker(css_class):
+            if isinstance(css_class, list):
+                for class_ in css_class:
+                    self.remove_class(class_)
+            elif isinstance(css_class, str):
+                self.remove_class(css_class)
+            else:
+                raise TypeError(
+                    "Unexpected type (list or str expected, but got {})".format( # noqa
+                        type(css_class)
+                    )
+                )
+        worker(old_classes)
+        worker(new_classes)
+
     def has_class(self, css_class):
         """Check if has CSS class."""
         return True if self.__widget_context.has_class(css_class) else False
@@ -122,11 +151,136 @@ class GridFactory(WidgetFactory, metaclass=ABCMeta):
     def connect(self, *args, **kwargs):
         self.__widget.connect(*args, **kwargs)
 
-    def attach(self, *args, **kwargs):
-        self.__widget.attach(*args, **kwargs)
+    def clear(self):
+        """Remove all elements from grid."""
 
-    def attach_next_to(self, *args, **kwargs):
-        self.__widget.attach_next_to(*args, **kwargs)
+    def attach(self, widget, col=0, row=0, width=1, height=1):
+        """Attach widget to grid.
+
+        Args:
+            widget (Gtk.Widget)
+            col (int): column number to attach widget to
+            row (int): row number to attach widget to
+            width (int): widget width (default 1)
+            height (int): widget height (default 1)
+
+        All grids start counting at 0. To attach a widget to the
+        3rd row, then row=2 should be passed.
+        """
+        self.__widget.attach(
+            widget, col, row, width, height
+        )
+
+    def attach_right_next_to(
+        self, widget_to_attach,
+        sibling=None, width=1, height=1
+    ):
+        self.attach_next_to(
+            widget_to_attach,
+            sibling,
+            Gtk.PositionType.RIGHT,
+            width, height
+        )
+
+    def attach_left_next_to(
+        self, widget_to_attach,
+        sibling=None, width=1, height=1
+    ):
+        self.attach_next_to(
+            widget_to_attach,
+            sibling,
+            Gtk.PositionType.LEFT,
+            width, height
+        )
+
+    def attach_top_next_to(
+        self, widget_to_attach,
+        sibling=None, width=1, height=1
+    ):
+        self.attach_next_to(
+            widget_to_attach,
+            sibling,
+            Gtk.PositionType.TOP,
+            width, height
+        )
+
+    def attach_bottom_next_to(
+        self, widget_to_attach,
+        sibling=None, width=1, height=1
+    ):
+        self.attach_next_to(
+            widget_to_attach,
+            sibling,
+            Gtk.PositionType.BOTTOM,
+            width, height
+        )
+
+    def attach_next_to(
+        self, widget_to_attach,
+        sibling, attach_position,
+        width, height
+    ):
+        """Attach widget next to sibling.
+
+        Args:
+            widget_to_attach (Gtk.Widget)
+            sibling (None|Gtk.Widget)
+            attach_position (Gtk.PositionType)
+            width (int)
+            height (int)
+
+        Note about sibling:
+
+        When sibling is None, the widget is placed in row (for left
+        or right placement) or column 0 (for top or bottom placement),
+        at the end indicated by side. Attaching widgets labeled [1], [2], [3]
+        with sibling == None andside == GTK_POS_LEFT yields a layout of 3[1].
+        """
+        positions = [
+            Gtk.PositionType.BOTTOM, Gtk.PositionType.TOP,
+            Gtk.PositionType.LEFT, Gtk.PositionType.RIGHT
+        ]
+        if attach_position not in positions:
+            raise KeyError("The position {} is not supported".format(
+                attach_position
+            ))
+
+        self.__widget.attach_next_to(
+            widget_to_attach, sibling,
+            attach_position, width, height
+        )
+
+    def remove_row(self, row_number):
+        """Remove row from grid based on row_number.
+
+        Args:
+            row_number (int)
+        """
+        self.__widget.remove_row(row_number)
+
+    def remove_col(self, col_number):
+        """Remove row from grid based on col_number.
+
+        Args:
+            col_number (int)
+        """
+        self.__widget.remove_column(col_number)
+
+    def get_child_at(self, left_pos=0, top_pos=0):
+        """Gets child widget from specified position.
+
+        Args:
+            left_pos (int)
+            top_pos (int)
+        """
+        return self.__widget.get_child_at(left_pos, top_pos)
+
+
+class Dummy(GridFactory):
+    grid = "dummy"
+
+    def __init__(self):
+        super().__init__()
 
 
 class Default(GridFactory):
@@ -134,6 +288,30 @@ class Default(GridFactory):
 
     def __init__(self):
         super().__init__()
+        self.show = True
+
+
+class QuickSettings(GridFactory):
+    grid = "container"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.FILL
+        self.align_v = Gtk.Align.FILL
+        self.expand_h = True
+        self.expand_v = True
+        self.show = True
+        self.add_class("quick-settings-content")
+
+
+class QuickSettingsButtons(GridFactory):
+    grid = "buttons"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.FILL
+        self.align_v = Gtk.Align.FILL
+        self.expand_h = True
         self.show = True
 
 

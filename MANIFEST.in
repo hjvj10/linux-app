@@ -3,6 +3,7 @@ recursive-include protonvpn_gui *.css
 recursive-include protonvpn_gui *.ui
 recursive-include protonvpn_gui *.svg
 recursive-include protonvpn_gui *.png
+recursive-include protonvpn_gui *.jpg
 include LICENSE
 exclude tests/
 exclude .gitignore

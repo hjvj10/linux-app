@@ -1,5 +1,3 @@
-from abc import ABCMeta
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -8,7 +6,7 @@ from gi.repository import Gtk
 from ..abstract_widget_factory import WidgetFactory
 
 
-class LabelFactory(WidgetFactory, metaclass=ABCMeta):
+class LabelFactory(WidgetFactory):
     """Concrete Label Factory class."""
 
     concrete_factory = "label"
@@ -32,12 +30,12 @@ class LabelFactory(WidgetFactory, metaclass=ABCMeta):
         return self.__widget_context
 
     @property
-    def label(self):
+    def content(self):
         """Get widget label."""
         return self.__widget.props.label
 
-    @label.setter
-    def label(self, newvalue):
+    @content.setter
+    def content(self, newvalue):
         """Set widget label.
 
         Args:
@@ -96,6 +94,16 @@ class LabelFactory(WidgetFactory, metaclass=ABCMeta):
         return self.__widget.set_valign(newvalue)
 
     @property
+    def ident_h(self):
+        """Get vertical align."""
+        return self.__widget.get_xalign()
+
+    @ident_h.setter
+    def ident_h(self, newvalue):
+        """Set vertical align."""
+        return self.__widget.set_xalign(float(newvalue))
+
+    @property
     def justify(self):
         return self.__widget.get_justify()
 
@@ -134,11 +142,118 @@ class LabelFactory(WidgetFactory, metaclass=ABCMeta):
     def remove_class(self, css_class):
         """Remove CSS class."""
         if self.has_class(css_class):
-            self.__widget_context.remvove_class(css_class)
+            self.__widget_context.remove_class(css_class)
+
+    def remove_all_classes(self):
+        css_list = self.__widget_context.list_classes()
+        for css_class in css_list:
+            self.__widget_context.remove_class(css_class)
+
+    def replace_all_by(self, css_class):
+        self.remove_all_classes()
+        self.add_class(css_class)
+
+    def replace_old_class_with_new_class(self, old_classes, new_classes):
+        """Replaces old_classes with new_classes.
+
+        Args:
+            old_classes (str|list)
+            new_classes (str|list)
+        """
+        def worker(css_class):
+            if isinstance(css_class, list):
+                for class_ in css_class:
+                    self.remove_class(class_)
+            elif isinstance(css_class, str):
+                self.remove_class(css_class)
+            else:
+                raise TypeError(
+                    "Unexpected type (list or str expected, but got {})".format( # noqa
+                        type(css_class)
+                    )
+                )
+        worker(old_classes)
+        worker(new_classes)
 
     def has_class(self, css_class):
         """Check if has CSS class."""
         return True if self.__widget_context.has_class(css_class) else False
+
+
+class QuickSettingsTitle(LabelFactory):
+    """QuickSettingsTitle class."""
+    label = "quick_settings_title"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("default-text-color")
+        self.add_class("quick-settings-title")
+
+
+class QuickSettingsDescription(LabelFactory):
+    """QuickSettingsDescription class."""
+    label = "quick_settings_description"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.FILL
+        self.width_in_chars = 37
+        self.max_width_in_chars = 37
+        self.ident_h = 0
+        self.line_wrap = True
+        self.show = True
+        self.add_class("quick-settings-description")
+        self.add_class("default-text-color")
+
+
+class QuickSettingsFootnote(LabelFactory):
+    """QuickSettingsDescription class."""
+    label = "quick_settings_footnote"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("quick-settings-footnote")
+
+
+class QuickSettingsButton(LabelFactory):
+    """QuickSettingsDescription class."""
+    label = "quick_settings_button"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.width_in_chars = 20
+        self.max_width_in_chars = 20
+        self.line_wrap = True
+        self.ident_h = 0
+        self.align_v = Gtk.Align.CENTER
+        self.add_class("padding-y-10px")
+        self.add_class("padding-x-5px")
+        self.show = True
+
+
+class QuickSettingsButtonUpgrade(LabelFactory):
+    """QuickSettingsDescription class."""
+    label = "quick_settings_upgrade_in_button"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.expand_h = False
+        self.align_h = Gtk.Align.END
+        self.align_v = Gtk.Align.CENTER
+        self.add_class("upgrade-in-button")
+        self.show = True
 
 
 class DialogUpgrade(LabelFactory):
@@ -148,7 +263,7 @@ class DialogUpgrade(LabelFactory):
     def __init__(self, label_text):
         super().__init__(label_text)
         self.align_h = Gtk.Align.START
-        self.max_width_in_chars = 50
+        self.width_in_chars = 50
         self.max_width_in_chars = 50
         self.line_wrap = True
         self.show = True

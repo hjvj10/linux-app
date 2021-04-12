@@ -1,5 +1,3 @@
-from abc import ABCMeta
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -9,7 +7,7 @@ from gi.repository import Gtk
 from ..abstract_widget_factory import WidgetFactory
 
 
-class RevealerFactory(WidgetFactory, metaclass=ABCMeta):
+class RevealerFactory(WidgetFactory):
     """Concrete Revealer Factory class."""
 
     concrete_factory = "revealer"
@@ -130,6 +128,37 @@ class RevealerFactory(WidgetFactory, metaclass=ABCMeta):
         """Remove CSS class."""
         if self.has_class(css_class):
             self.__widget_context.remvove_class(css_class)
+
+    def remove_all_classes(self):
+        css_list = self.__widget_context.list_classes()
+        for css_class in css_list:
+            self.__widget_context.remove_class(css_class)
+
+    def replace_all_by(self, css_class):
+        self.remove_all_classes()
+        self.add_class(css_class)
+
+    def replace_old_class_with_new_class(self, old_classes, new_classes):
+        """Replaces old_classes with new_classes.
+
+        Args:
+            old_classes (str|list)
+            new_classes (str|list)
+        """
+        def worker(css_class):
+            if isinstance(css_class, list):
+                for class_ in css_class:
+                    self.remove_class(class_)
+            elif isinstance(css_class, str):
+                self.remove_class(css_class)
+            else:
+                raise TypeError(
+                    "Unexpected type (list or str expected, but got {})".format( # noqa
+                        type(css_class)
+                    )
+                )
+        worker(old_classes)
+        worker(new_classes)
 
     def has_class(self, css_class):
         """Check if has CSS class."""

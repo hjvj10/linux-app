@@ -19,9 +19,10 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
                                     ConnectPreparingInfo, Loading,
                                     NetworkSpeed, NotConnectedToVPNInfo,
-                                    ServerList)
-from .dashboard_server_list import DashboardServerList
+                                    ServerListData, QuickSettingsStatus)
+from .server_list import ServerListView
 from ..factory import WidgetFactory
+from .quick_settings_popover import QuickSettingsPopoverView
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -63,9 +64,14 @@ class DashboardView(Gtk.ApplicationWindow):
     dashboard_popover_menu = Gtk.Template.Child()
 
     # Buttons
-    headerbar_menu_button = Gtk.Template.Child()
+    # The button below is not used and is left only for
+    # reference that it exists and can be used if wished.
+    # headerbar_menu_button = Gtk.Template.Child()
     main_dashboard_button = Gtk.Template.Child()
     cancel_connect_overlay_button = Gtk.Template.Child()
+    dashboard_secure_core_button_menu = Gtk.Template.Child()
+    dashboard_netshield_button = Gtk.Template.Child()
+    dashboard_killswitch_button = Gtk.Template.Child()
 
     # Labels
     country_servername_label = Gtk.Template.Child()
@@ -135,7 +141,9 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
-
+        self.quick_settings_popover = QuickSettingsPopoverView(
+            self.dashboard_view_model
+        )
         super().__init__(application=self.application)
         self.overlay_spinner.set_property("width-request", 200)
         self.overlay_spinner.set_property("height-request", 200)
@@ -195,21 +203,60 @@ class DashboardView(Gtk.ApplicationWindow):
         UI can be updated accordingly.
         """
         if isinstance(state, Loading):
-            InitLoad(self, state)
+            InitLoadView(self, state)
         elif isinstance(state, NotConnectedToVPNInfo):
-            NotConnectedVPN(self, state)
+            NotConnectedVPNView(self, state)
         elif isinstance(state, ConnectPreparingInfo):
-            ConnectVPNPreparing(self, state)
+            ConnectVPNPreparingView(self, state)
         elif isinstance(state, ConnectInProgressInfo):
-            ConnectVPNInProgress(self, state)
+            ConnectVPNInProgressView(self, state)
         elif isinstance(state, ConnectedToVPNInfo):
-            ConnectedVPN(self, state)
+            ConnectedVPNView(self, state)
         elif isinstance(state, ConnectError):
-            ConnectVPNError(self, state)
+            ConnectVPNErrorView(self, state)
         elif isinstance(state, NetworkSpeed):
-            UpdateNetworkSpeed(self, state)
-        elif isinstance(state, ServerList):
-            DashboardServerList(self, state)
+            UpdateNetworkSpeedView(self, state)
+        elif isinstance(state, ServerListData):
+            ServerListView(self, state)
+        elif isinstance(state, QuickSettingsStatus):
+            self.update_quick_settings(state)
+
+    def update_quick_settings(self, state):
+        dummy_object = WidgetFactory.image("dummy")
+        feature_button_secure_core_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.SECURE_CORE
+                ][state.secure_core],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
+        feature_button_netshield_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.NETSHIELD
+                ][state.netshield],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
+        feature_button_killswitch_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                self.features_icon_set_dict[
+                    DashboardFeaturesEnum.KILLSWITCH
+                ][state.killswitch],
+                width=self.feature_button_icon_width,
+                height=self.feature_button_icon_height
+            )
+
+        self.dashboard_secure_core_button_image.set_from_pixbuf(
+            feature_button_secure_core_pixbuf
+        )
+        self.dashboard_netshield_button_image.set_from_pixbuf(
+            feature_button_netshield_pixbuf
+        )
+        self.dashboard_killswitch_button_image.set_from_pixbuf(
+            feature_button_killswitch_pixbuf
+        )
 
     def on_click_disconnect(self, gtk_button_object):
         """On click on Disconnect event handler.
@@ -390,20 +437,44 @@ class DashboardView(Gtk.ApplicationWindow):
         logger.info("Setting up actions")
 
         # create action
-        headerbar_menu = Gio.SimpleAction.new("show_menu", None)
         cancel_connect_overlay_button = Gio.SimpleAction.new(
             "close_connect_overlay", None
         )
+        display_secure_core_popover = Gio.SimpleAction.new(
+            "display_secure_core_popover", None
+        )
+        display_netshield_popover = Gio.SimpleAction.new(
+            "display_netshield_popover", None
+        )
+        display_killswitch_popover = Gio.SimpleAction.new(
+            "display_killswitch_popover", None
+        )
 
         # connect action to callback
-        headerbar_menu.connect("activate", self.on_display_main_popover_menu)
         cancel_connect_overlay_button.connect(
             "activate", self.on_click_hide_connect_overlay
         )
+        display_secure_core_popover.connect(
+            "activate",
+            self.quick_settings_popover.display_secure_core_settings,
+            self.dashboard_secure_core_button_menu
+        )
+        display_netshield_popover.connect(
+            "activate",
+            self.quick_settings_popover.display_netshield_settings,
+            self.dashboard_netshield_button
+        )
+        display_killswitch_popover.connect(
+            "activate",
+            self.quick_settings_popover.display_killswitch_settings,
+            self.dashboard_killswitch_button
+        )
 
         # add action
-        self.add_action(headerbar_menu)
         self.add_action(cancel_connect_overlay_button)
+        self.add_action(display_secure_core_popover)
+        self.add_action(display_netshield_popover)
+        self.add_action(display_killswitch_popover)
 
     def gtk_property_setter(self, *args):
         """GTK property setter.
@@ -476,7 +547,7 @@ class DashboardView(Gtk.ApplicationWindow):
             ] = None
 
 
-class InitLoad:
+class InitLoadView:
     """UI class.
 
     Setup the UI to an initial loading state (app start).
@@ -489,7 +560,7 @@ class InitLoad:
         dv.overlay_box.props.visible = True
 
 
-class UpdateNetworkSpeed:
+class UpdateNetworkSpeedView:
     """UI class.
 
     Updates network speeds labels.
@@ -500,7 +571,7 @@ class UpdateNetworkSpeed:
         dv.download_speed_label.props.label = state.download
 
 
-class NotConnectedVPN:
+class NotConnectedVPNView:
     """UI class.
 
     Setup the UI to not connected state.
@@ -548,7 +619,7 @@ class NotConnectedVPN:
         )
 
 
-class ConnectedVPN:
+class ConnectedVPNView:
     """UI class.
 
     Setup the UI to connected state.
@@ -563,7 +634,7 @@ class ConnectedVPN:
             country_string = "{}".format(country.get_country_name(
                 state.countries[0]
             ))
-            country_string = country + " >> {}".format(
+            country_string = country_string + " >> {}".format(
                 country.get_country_name(state.countries[1])
             )
         dv.on_connect_load_sidebar_flag(state.exit_country_code)
@@ -605,7 +676,7 @@ class ConnectedVPN:
         dv.gtk_property_setter(dv.SET_UI_CONNECTED)
 
 
-class ConnectVPNPreparing:
+class ConnectVPNPreparingView:
     """UI class.
 
     Setup the UI during VPN prepare state.
@@ -621,7 +692,7 @@ class ConnectVPNPreparing:
         dv.connecting_overlay_box.props.visible = True
 
 
-class ConnectVPNInProgress:
+class ConnectVPNInProgressView:
     """UI class.
 
     Setup the UI during VPN connection in progress state.
@@ -637,7 +708,7 @@ class ConnectVPNInProgress:
             )
 
 
-class ConnectVPNError:
+class ConnectVPNErrorView:
     """UI class.
 
     Setup the UI state when an error occurs

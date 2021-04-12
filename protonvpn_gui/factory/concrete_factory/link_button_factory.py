@@ -6,18 +6,18 @@ from gi.repository import Gtk
 from ..abstract_button_factory import AbstractButtonFactory
 
 
-class ButtonFactory(AbstractButtonFactory):
+class LinkButtonFactory(AbstractButtonFactory):
     """Concrete Button Factory class."""
 
-    concrete_factory = "button"
+    concrete_factory = "link_button"
 
     def __init__(self):
-        self.__widget = Gtk.Button()
+        self.__widget = Gtk.LinkButton(uri="", label="")
         self.__widget_context = self.__widget.get_style_context()
 
     @classmethod
     def factory(cls, widget_name):
-        subclasses_dict = cls._get_subclasses_dict("button")
+        subclasses_dict = cls._get_subclasses_dict("link")
         return subclasses_dict[widget_name]()
 
     @property
@@ -42,6 +42,26 @@ class ButtonFactory(AbstractButtonFactory):
             newvalue (string)
         """
         self.__widget.props.label = newvalue
+
+    @property
+    def url(self):
+        return self.__widget.get_uri()
+
+    @url.setter
+    def url(self, newvalue):
+        return self.__widget.set_uri(newvalue)
+
+    @property
+    def ident_h(self):
+        """Get vertical align."""
+        pass
+        # return self.__widget.label.get_xalign()
+
+    @ident_h.setter
+    def ident_h(self, newvalue):
+        """Set vertical align."""
+        pass
+        # return self.__widget.label.set_xalign(float(newvalue))
 
     @property
     def image(self):
@@ -160,115 +180,19 @@ class ButtonFactory(AbstractButtonFactory):
         self.__widget.add(widget)
 
 
-class Dummy(ButtonFactory):
-    button = "dummy"
+class Dummy(LinkButtonFactory):
+    link = "dummy_link"
 
     def __init__(self):
         super().__init__()
 
 
-class Default(ButtonFactory):
-    button = "gtk_default"
+class LearnMore(LinkButtonFactory):
+    link = "learn_more"
 
     def __init__(self):
         super().__init__()
-
-
-class QuickSetting(ButtonFactory):
-    button = "quick_setting"
-
-    def __init__(self):
-        super().__init__()
+        self.add_class("view-more")
         self.show = True
-
-
-class ConnectToCountry(ButtonFactory):
-    button = "connect_country"
-
-    def __init__(self):
-        super().__init__()
-        self.expand_h = True
-        self.align_h = Gtk.Align.END
-        self.align_v = Gtk.Align.CENTER
-        self.add_class("transparent")
-        self.label = "CONNECT"
-
-
-class ConnectToServer(ButtonFactory):
-    button = "connect_server"
-
-    def __init__(self):
-        super().__init__()
-        self.expand_h = True
-        self.align_h = Gtk.Align.END
-        self.align_v = Gtk.Align.CENTER
-        self.add_class("transparent")
-        self.label = "CONNECT"
-
-
-class DisconnectFromServer(ButtonFactory):
-    button = "disconnect"
-
-    def __init__(self):
-        super().__init__()
-        self.expand_h = True
-        self.align_h = Gtk.Align.END
-        self.align_v = Gtk.Align.CENTER
-        self.add_class("transparent")
-        self.label = "DISCONNECT"
-
-
-class Transparent(ButtonFactory):
-    button = "transparent"
-
-    def __init__(self):
-        super().__init__()
-
-
-class Chevron(ButtonFactory):
-    button = "chevron"
-
-    def __init__(self):
-        super().__init__()
-        self.expand_h = True
-        self.align_v = Gtk.Align.CENTER
-        self.align_h = Gtk.Align.END
-        self.show = True
-        self.add_class("chevron")
-        self.add_class("chevron-unfold")
-
-
-class DialogUpgrade(ButtonFactory):
-    button = "dialog_upgrade"
-
-    def __init__(self):
-        super().__init__()
-        self.expand_h = True
-        self.align_h = Gtk.Align.END
-        self.align_v = Gtk.Align.CENTER
-        self.label = "Upgrade"
-        self.show = True
-        self.add_class("enabled")
-
-
-class QuickSettingsUpgrade(ButtonFactory):
-    button = "quick_settings_upgrade"
-
-    def __init__(self):
-        super().__init__()
-        self.expand_h = True
-        self.align_h = Gtk.Align.CENTER
-        self.align_v = Gtk.Align.CENTER
-        self.label = "Upgrade"
-        self.show = True
-        self.add_class("quick-settings")
-
-
-class DialogClose(ButtonFactory):
-    button = "dialog_close"
-
-    def __init__(self):
-        super().__init__()
-        self.label = "Close"
-        self.show = True
-        self.add_class("transparent-white")
+        self.align_h = Gtk.Align.START
+        self.ident_h = 0

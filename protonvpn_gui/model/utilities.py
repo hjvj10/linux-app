@@ -70,7 +70,6 @@ class Utilities:
         ]
         ul = Utilities.convert_network_speed(ul)
         dl = Utilities.convert_network_speed(dl)
-
         return [ul, dl]
 
     @staticmethod
@@ -89,6 +88,8 @@ class Utilities:
         Returns:
             string
         """
+        if byte_per_second <= 0:
+            return "- B/s"
         if (
             byte_per_second >= one_kilobyte_in_bytes
             and byte_per_second < one_megabyte_in_bytes

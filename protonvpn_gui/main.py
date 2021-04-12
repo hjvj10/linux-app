@@ -18,7 +18,8 @@ from .view.dashboard import DashboardView
 from .view.login import LoginView
 from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
-from .view.dialog import DialogView
+from .model.server_list import ServerList
+from .model.country_item import CountryItem
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -97,8 +98,6 @@ class ProtonVPNGUI(Gtk.Application):
 
         Runs at window startup.
         """
-        # self.dialog_window = DialogView(application=self)
-        # self.dialog_window.display_upgrade()
         win = self.props.active_window
 
         if not win:
@@ -132,8 +131,11 @@ class ProtonVPNGUI(Gtk.Application):
         Returns:
             DashboardView
         """
+        server_list = ServerList(
+            country_item=CountryItem
+        )
         dashboard_view_model = DashboardViewModel(
-            Utilities, BackgroundProcess
+            Utilities, BackgroundProcess, server_list
         )
         return DashboardView(
             application=self,
