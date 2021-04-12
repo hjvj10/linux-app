@@ -378,8 +378,8 @@ class SecureCoreOff(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "secure_cure_off",
-            "Secure Cure Off"
+            "secure_core_off",
+            "Secure Core Off"
         )
         self.display_upgrade_label = False
         if self.settings.secure_core == SecureCoreStatusEnum.OFF:
@@ -407,8 +407,8 @@ class SecureCoreOn(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "secure_cure_on",
-            "Secure Cure On"
+            "secure_core_on",
+            "Secure Core On"
         )
         self.selected_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_ACTIVE] # noqa
         self.available_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DEFAULT] # noqa

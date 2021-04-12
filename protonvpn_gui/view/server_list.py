@@ -130,7 +130,7 @@ class CountryRowLeftGrid:
             self.country_flag = WidgetFactory.image("dummy_small_flag").widget
         self.grid.attach(self.country_flag)
 
-        self.sc_chevron = WidgetFactory.image("secure_cure_chevron")
+        self.sc_chevron = WidgetFactory.image("secure_core_chevron")
         self.grid.attach_right_next_to(
             self.sc_chevron.widget, self.country_flag
         )
@@ -381,7 +381,7 @@ class ServerRowLeftGrid:
         )
 
     def create_secure_core_chevron(self):
-        self.sc_chevron = WidgetFactory.image("secure_cure_chevron")
+        self.sc_chevron = WidgetFactory.image("secure_core_chevron")
         self.grid.attach_right_next_to(
             self.sc_chevron.widget,
             self.servername_label.widget,

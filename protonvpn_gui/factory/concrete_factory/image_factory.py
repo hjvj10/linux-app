@@ -384,7 +384,7 @@ class Load(ImageFactory):
 
 class SecureCoreChevron(ImageFactory):
     """SecureCoreOff icon class."""
-    image = "secure_cure_chevron"
+    image = "secure_core_chevron"
 
     def __init__(self, _):
         super().__init__()
@@ -400,7 +400,7 @@ class SecureCoreChevron(ImageFactory):
 
 class SecureCoreOff(ImageFactory):
     """SecureCoreOff icon class."""
-    image = "secure_cure_off"
+    image = "secure_core_off"
 
     def __init__(self, _):
         super().__init__()
@@ -415,7 +415,7 @@ class SecureCoreOff(ImageFactory):
 
 class SecureCoreOn(ImageFactory):
     """SecureCoreOn icon class."""
-    image = "secure_cure_on"
+    image = "secure_core_on"
 
     def __init__(self, _):
         super().__init__()
