@@ -21,6 +21,7 @@ BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 Requires: python3-protonvpn-nm-lib >= 0.5.0, python3-protonvpn-nm-lib < 0.6.0
 Requires: python3-gobject
+Requires: python3-psutil
 Requires: gtk3
 
 %{?python_disable_dependency_generator}
