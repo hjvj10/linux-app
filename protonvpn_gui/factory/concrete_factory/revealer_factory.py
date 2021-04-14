@@ -178,7 +178,7 @@ class ServerList(RevealerFactory):
     def __init__(self):
         super().__init__()
         self.expand_h = True
-        self.expand_v = True
+        self.expand_v = False
         self.align_v = Gtk.Align.FILL
         self.reveal = False
         self.transition_type = Gtk\
