@@ -617,12 +617,13 @@ class KillSwitchAlwaysOn(QuickSettingButton):
         super().__init__(
             popover_widget,
             "killswitch_always_on",
-            "Kill Switch Always-On"
+            "Kill Switch Permanent"
         )
         self.display_upgrade_label = False
         self.selected_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE] # noqa
         self.available_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_DEFAULT] # noqa
         self.unavailable_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_DISABLE] # noqa
+        self.set_char_width(30)
         if self.settings.killswitch == KillswitchStatusEnum.HARD:
             self.set_selected()
         else:
