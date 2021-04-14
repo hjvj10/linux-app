@@ -89,7 +89,7 @@ class ServerListView:
 
 class CountryRow:
     def __init__(self, country_item, dashboard_view, display_sc):
-        self.coutry_item = country_item
+        self.country_item = country_item
         self.dv = dashboard_view
         self.server_list_revealer = ServerListRevealer(
             self.dv,
@@ -97,9 +97,9 @@ class CountryRow:
             display_sc
         )
         self.row_grid = WidgetFactory.grid("country_row")
-        self.left_child = CountryRowLeftGrid(self.coutry_item, display_sc)
+        self.left_child = CountryRowLeftGrid(self.country_item, display_sc)
         self.right_child = CountryRowRightGrid(
-            self.coutry_item,
+            self.country_item,
             self.server_list_revealer.revealer,
             self.dv,
             display_sc
@@ -110,7 +110,7 @@ class CountryRow:
             self.right_child.grid.widget,
             self.left_child.grid.widget,
         )
-        if self.coutry_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
+        if self.country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.row_grid.tooltip = True
             self.row_grid.connect(
                 "query-tooltip", self.on_country_enter,
@@ -131,7 +131,7 @@ class CountryRow:
         self.event_box = Gtk.EventBox()
         self.event_box.set_visible_window(True)
         self.event_box.add(self.row_grid.widget)
-        if self.coutry_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
+        if self.country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.event_box.connect(
                 "leave-notify-event", self.on_country_leave,
                 self.right_child.connect_country_button
