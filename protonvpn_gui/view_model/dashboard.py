@@ -595,8 +595,9 @@ class DashboardViewModel:
 
         This method is and should be executed within a python thread.
         """
+        session = protonvpn.get_session()
         try:
-            protonvpn.session.refresh_servers()
+            session.update_servers_if_needed()
         except Exception as e:
             logger.exception(e)
 
