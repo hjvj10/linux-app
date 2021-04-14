@@ -266,14 +266,14 @@ class GridFactory(WidgetFactory):
         """
         self.__widget.remove_column(col_number)
 
-    def get_child_at(self, left_pos=0, top_pos=0):
+    def get_child_at(self, col=0, row=0):
         """Gets child widget from specified position.
 
         Args:
-            left_pos (int)
-            top_pos (int)
+            col (int)
+            row (int)
         """
-        return self.__widget.get_child_at(left_pos, top_pos)
+        return self.__widget.get_child_at(col, row)
 
 
 class Dummy(GridFactory):
