@@ -15,22 +15,26 @@ class DialogView(Gtk.ApplicationWindow):
     """
     Dialog view. GTK Composite object.
 
-    Dialog object is used to displays a dialog window which is context based.
+    Dialog object as composite to displays a dialog window which is context based.
     """
     __gtype_name__ = "DialogView"
 
     # Labels
     headerbar_label = Gtk.Template.Child()
-
     # Images/Icons
     headerbar_sign_icon = Gtk.Template.Child()
-
     # Containers
     dialog_container_grid = Gtk.Template.Child()
 
     def __init__(self, application):
         super().__init__(application=application)
         self.dummy_object = WidgetFactory.image("dummy")
+        self.content_label = WidgetFactory.label("dialog_main_text")
+
+        content_grid = self.__generate_content_grid()
+        bottom_grid = self.__generate_bottom_buttons_grid()
+        self.__attach_grids(content_grid, bottom_grid)
+
         protonvpn_headerbar_pixbuf = self.dummy_object\
             .create_icon_pixbuf_from_name(
                 "protonvpn-sign-green.svg",
@@ -41,6 +45,7 @@ class DialogView(Gtk.ApplicationWindow):
         )
         self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)
         self.set_icon(window_icon)
+
         self.provider = Gtk.CssProvider()
         self.provider.load_from_path(
             os.path.join(CSS_DIR_PATH, "dialog.css")
@@ -52,52 +57,18 @@ class DialogView(Gtk.ApplicationWindow):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def display_logout_confirmation(self, logout_callback):
-        """Display dialog with logout confirmation."""
-        self.headerbar_label.set_text("VPN Connection Active")
-        top_text = "Logging out of the application will disconnect " \
-            "the active VPN connection. Do you want to continue ?"
-
-        content_grid = self.__generate_upgrade_content_grid(top_text)
-        bottom_grid = self.__generate_bottom_buttons_grid()
-        self.main_button.connect("clicked", self.__logout, logout_callback)
-        self.main_button.label = "Continue"
-        self.__attach_grids(content_grid, bottom_grid)
+    def display_dialog(self):
+        """Displays the dialog to the user."""
         self.present()
 
-    def display_quit_confirmation(self, quit_callback):
-        """Display dialog with quit app confirmation."""
-        self.headerbar_label.set_text("VPN Connection Active")
-        top_text = "Quitting the application will disconnnect " \
-            "the active VPN connection. Do you want to continue ?"
+    def close_dialog(self, cancel_button=None):
+        """Closes and destroys the dialog."""
+        self.destroy()
 
-        content_grid = self.__generate_upgrade_content_grid(top_text)
-        bottom_grid = self.__generate_bottom_buttons_grid()
-        self.main_button.connect("clicked", self.__quit, quit_callback)
-        self.main_button.label = "Continue"
-        self.__attach_grids(content_grid, bottom_grid)
-        self.present()
-
-    def display_upgrade(self):
-        """Display dialog with upgrade request."""
-        self.headerbar_label.set_text("Upgrade required")
-        top_text = "You're trying to connect to a server which requires " \
-            "a ProtonVPN Plus Subscription or higher." \
-            "\n\nTo access more servers in all countries, please " \
-            "upgrade your subscription."
-
-        content_grid = self.__generate_upgrade_content_grid(top_text)
-        bottom_grid = self.__generate_bottom_buttons_grid()
-        self.main_button.connect("clicked", self.__upgrade_account)
-        self.main_button.label = "Upgrade"
-        self.__attach_grids(content_grid, bottom_grid)
-        self.present()
-
-    def __generate_upgrade_content_grid(self, top_text):
+    def __generate_content_grid(self):
         """Generate grid with contextual information."""
         content_grid = WidgetFactory.grid("dialog_content")
-        top_label = WidgetFactory.label("dialog_main_text", top_text)
-        content_grid.attach(top_label.widget, 0, 0, 1, 1)
+        content_grid.attach(self.content_label.widget, 0, 0, 1, 1)
         return content_grid
 
     def __generate_bottom_buttons_grid(self):
@@ -120,7 +91,7 @@ class DialogView(Gtk.ApplicationWindow):
             Gtk.PositionType.RIGHT, 1, 1
         )
         bottom_grid.attach(buttons_grid.widget, 0, 0, 1, 1)
-        self.cancel_button.connect("clicked", self.__close_dialog)
+        self.cancel_button.connect("clicked", self.close_dialog)
 
         return bottom_grid
 
@@ -132,22 +103,111 @@ class DialogView(Gtk.ApplicationWindow):
             Gtk.PositionType.BOTTOM, 1, 1
         )
 
-    def __close_dialog(self, cancel_button):
-        """Close dialog callback."""
-        self.destroy()
 
-    def __upgrade_account(self, main_button):
+class LoginKillSwitchDialog:
+    """Login Kill Switch Dialog.
+
+    Is displayed when the users clicks on disable button on login
+    screen. The button that displays this dialog will only appear
+    if the user is not logged in and the kill switch is detected as enabled.
+    """
+    def __init__(
+        self, application, login_view_model, callback_func=None
+    ):
+        self.login_view_model = login_view_model
+        self.dialog_view = DialogView(application)
+        self.dialog_view.headerbar_label.set_text("Disable Kill Switch")
+        self.dialog_view.content_label.content = "Permanent Kill Switch is " \
+            "blocking any outgoing connection and preventing " \
+            "your IP to be exposed.\n\n" \
+            "Do you want to disable Kill Switch ?"
+
+        self.dialog_view.main_button.connect(
+            "clicked", self._disable_killswitch,
+            callback_func, application
+        )
+        self.dialog_view.main_button.label = "Disable"
+        self.dialog_view.display_dialog()
+
+    def _disable_killswitch(self, continue_button, callback_func, application):
+        self.login_view_model.disable_killswitch()
+        callback_func()
+        self.dialog_view.close_dialog()
+
+
+class ConnectUpgradeDialog:
+    """Connect Upgrade Dialog.
+
+    Is displayed when the users clicks on upgrade button on server
+    objects. The button that displays this dialog will only appear
+    if the the server tier is higher when compared to users tier.
+    """
+    def __init__(self, application, callback_func=None):
+        self.dialog_view = DialogView(application)
+        self.dialog_view.headerbar_label.set_text("Upgrade required")
+        self.dialog_view.content_label.content = "You're trying to connect " \
+            "to a server which requires " \
+            "a ProtonVPN Plus Subscription or higher." \
+            "\n\nTo access more servers in all countries, please " \
+            "upgrade your subscription."
+
+        self.dialog_view.main_button.connect(
+            "clicked", self._upgrade_account, callback_func
+        )
+        self.dialog_view.main_button.label = "Upgrade"
+        self.dialog_view.display_dialog()
+
+    def _upgrade_account(self, main_button, callback_func):
         """Open window in browser with the specified URI to upgrade account."""
         Gtk.show_uri_on_window(
             None,
             "https://account.protonvpn.com/",
             Gdk.CURRENT_TIME
         )
+        self.dialog_view.close_dialog()
 
-    def __logout(self, main_button, logout_callback):
-        """Call logout callback."""
-        logout_callback()
 
-    def __quit(self, main_button, quit_callback):
+class LogoutDialog:
+    """Logout Dialog.
+
+    Is displayed when the users clicks on logout button.
+    """
+    def __init__(self, application, callback_func=None):
+        self.dialog_view = DialogView(application)
+        self.dialog_view.headerbar_label.set_text("VPN Connection Active")
+        self.dialog_view.content_label.content = "Logging out of the " \
+            "application will disconnect the active VPN connection.\n\n" \
+            "Do you want to continue ?"
+
+        self.dialog_view.main_button.connect(
+            "clicked", self._logout, callback_func
+        )
+        self.dialog_view.main_button.label = "Continue"
+        self.dialog_view.display_dialog()
+
+    def _logout(self, main_button, callback_func):
         """Call logout callback."""
-        quit_callback()
+        callback_func()
+
+
+class QuitDialog:
+    """Quit Dialog.
+
+    Is displayed when the users clicks on quit button.
+    """
+    def __init__(self, application, callback_func=None):
+        self.dialog_view = DialogView(application)
+        self.dialog_view.headerbar_label.set_text("VPN Connection Active")
+        self.dialog_view.content_label.content = "Quitting the application " \
+            "will disconnnect the active VPN connection.\n\n" \
+            "Do you want to continue ?"
+
+        self.dialog_view.main_button.connect(
+            "clicked", self._quit, callback_func
+        )
+        self.dialog_view.main_button.label = "Continue"
+        self.dialog_view.display_dialog()
+
+    def _quit(self, main_button, callback_func):
+        """Call logout callback."""
+        callback_func()

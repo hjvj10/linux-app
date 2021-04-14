@@ -9,6 +9,7 @@ from ..factory import WidgetFactory
 from ..enums import GLibEventSourceEnum
 from .dialog import DialogView
 from .server_load import ServerLoad
+from .dialog import ConnectUpgradeDialog
 
 
 class ServerListView:
@@ -512,5 +513,4 @@ class ServerRowRightGrid:
         self.dv.dashboard_view_model.on_servername_connect(servername)
 
     def display_upgrade(self, gtk_button_object):
-        dialog = DialogView(self.dv.application)
-        dialog.display_upgrade()
+        ConnectUpgradeDialog(self.dv.application)
