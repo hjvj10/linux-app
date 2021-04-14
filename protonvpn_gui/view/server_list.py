@@ -16,17 +16,23 @@ class ServerListView:
     Setup the server list.
     """
     def __init__(self, dashboard_view, state):
+        self.__country_rows = 0
         self.dv = dashboard_view
         self.__server_list = state.server_list
-        self.populate()
+        self.__country_widget_position_tracker = {}
+        self.__populate()
 
-    def populate(self):
+    @property
+    def total_of_existing_countries(self):
+        return self.__country_rows
+
+    def __populate(self):
         self.__update_country_name()
         self.__sort_countres_by_name()
         self.__attach_countries()
 
     def __update_country_name(self):
-        for country_item in self.__server_list.servers:
+        for country_item in self._yield_countries():
             country_item.country_name = country_codes.get(
                 country_item.entry_country_code,
                 country_item.entry_country_code
@@ -36,7 +42,6 @@ class ServerListView:
         self.__server_list.sort_countries_by_name()
 
     def __attach_countries(self):
-        row_counter = 0
         replaceable_child_grid = WidgetFactory.grid("dummy")
         replaceable_child_grid.show = True
 
@@ -46,33 +51,55 @@ class ServerListView:
             replaceable_child_grid.widget, 0, 0, 1, 1
         )
 
-        for country_item in self.__server_list.servers:
+        for country_item in self._yield_countries():
             if len(country_item) < 1:
                 continue
+
             country_grid_row = CountryRow(
                 country_item, self.dv,
                 display_sc=self.__server_list.display_secure_core
-            ).event_box
-            replaceable_child_grid.attach(
-                country_grid_row, col=0,
-                row=row_counter, width=1, height=1
             )
+            replaceable_child_grid.attach(
+                country_grid_row.event_box, col=0,
+                row=self.__country_rows, width=1, height=1
+            )
+            self.__country_widget_position_tracker[
+                country_item.country_name
+            ] = country_grid_row
 
-            row_counter += 1
+            self.__country_rows += 1
+
+    def _yield_countries(self):
+        for country_item in self.__server_list.servers:
+            yield country_item
+
+    def filter_server_list(self, user_input):
+        filtered_country_widgets = [
+            country_row
+            for country_name, country_row
+            in self.__country_widget_position_tracker.items()
+            if user_input.lower() in country_name.lower()
+        ]
+        for _, country_row in self.__country_widget_position_tracker.items():
+            if country_row not in filtered_country_widgets:
+                country_row.row_grid.show = False
+            else:
+                country_row.row_grid.show = True
 
 
 class CountryRow:
     def __init__(self, country_item, dashboard_view, display_sc):
+        self.coutry_item = country_item
         self.dv = dashboard_view
         self.server_list_revealer = ServerListRevealer(
             self.dv,
-            country_item.servers,
+            self.coutry_item.servers,
             display_sc
         )
         self.row_grid = WidgetFactory.grid("country_row")
-        self.left_child = CountryRowLeftGrid(country_item, display_sc)
+        self.left_child = CountryRowLeftGrid(self.coutry_item, display_sc)
         self.right_child = CountryRowRightGrid(
-            country_item,
+            self.coutry_item,
             self.server_list_revealer.revealer,
             self.dv,
             display_sc
@@ -83,7 +110,7 @@ class CountryRow:
             self.right_child.grid.widget,
             self.left_child.grid.widget,
         )
-        if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
+        if self.coutry_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.row_grid.tooltip = True
             self.row_grid.connect(
                 "query-tooltip", self.on_country_enter,
@@ -94,13 +121,17 @@ class CountryRow:
                 self.server_list_revealer.revealer.widget,
                 row=1, width=2
             )
-        self.create_event_box(country_item)
+        self.create_event_box()
 
-    def create_event_box(self, country_item):
+    @property
+    def total_of_existing_servers(self):
+        return len(self.coutry_item.servers)
+
+    def create_event_box(self):
         self.event_box = Gtk.EventBox()
         self.event_box.set_visible_window(True)
         self.event_box.add(self.row_grid.widget)
-        if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
+        if self.coutry_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.event_box.connect(
                 "leave-notify-event", self.on_country_leave,
                 self.right_child.connect_country_button
@@ -255,19 +286,19 @@ class CountryRowRightGrid:
 
 
 class ServerListRevealer:
-    _row_counter = 0
 
     def __init__(self, dasbhoard_view, servers, display_sc):
         self.dv = dasbhoard_view
         self.revealer = WidgetFactory.revealer("server_list")
         self.revealer_child_grid = WidgetFactory.grid("revealer_child")
 
+        self.__row_counter = 0
         for server in servers:
             self.revealer_child_grid.attach(
                 ServerRow(self.dv, server, display_sc).event_box,
-                row=self._row_counter
+                row=self.__row_counter
             )
-            self._row_counter += 1
+            self.__row_counter += 1
 
         self.revealer.add(self.revealer_child_grid.widget)
 

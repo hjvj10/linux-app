@@ -72,6 +72,7 @@ class DashboardView(Gtk.ApplicationWindow):
     dashboard_secure_core_button_menu = Gtk.Template.Child()
     dashboard_netshield_button = Gtk.Template.Child()
     dashboard_killswitch_button = Gtk.Template.Child()
+    server_search_entry = Gtk.Template.Child()
 
     # Labels
     country_servername_label = Gtk.Template.Child()
@@ -217,7 +218,7 @@ class DashboardView(Gtk.ApplicationWindow):
         elif isinstance(state, NetworkSpeed):
             UpdateNetworkSpeedView(self, state)
         elif isinstance(state, ServerListData):
-            ServerListView(self, state)
+            self.server_list_view = ServerListView(self, state)
         elif isinstance(state, QuickSettingsStatus):
             self.update_quick_settings(state)
 
@@ -475,6 +476,21 @@ class DashboardView(Gtk.ApplicationWindow):
         self.add_action(display_secure_core_popover)
         self.add_action(display_netshield_popover)
         self.add_action(display_killswitch_popover)
+
+        # connect server_search_entry
+        self.server_search_entry.connect(
+            "search-changed", self.filter_server_list
+        )
+
+    def filter_server_list(self, server_search_entry):
+        """Filter server list based on user input.
+
+        Args:
+            server_search_entry: Gtk.SearchEntry
+        """
+        self.server_list_view.filter_server_list(
+            server_search_entry.get_text()
+        )
 
     def gtk_property_setter(self, *args):
         """GTK property setter.
