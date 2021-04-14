@@ -51,6 +51,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.__remove_pressed_style(self.get_relative_to())
 
     def display_secure_core_settings(self, gio_action, _, button):
+        self.upgrade_button.show = True
         self.title_label.content = "Secure-Core"
         self.description_label.content = "Route your most sensitive data " \
             "through our safest servers in privacy-friendly countries. "
@@ -68,6 +69,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.popup()
 
     def display_netshield_settings(self, gio_action, _, button):
+        self.upgrade_button.show = True
         self.title_label.content = "Netshield"
         self.description_label.content = "Browse the Internet without ads " \
             "and malware."
@@ -376,8 +378,8 @@ class SecureCoreOff(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "secure_cure_off",
-            "Secure Cure Off"
+            "secure_core_off",
+            "Secure Core Off"
         )
         self.display_upgrade_label = False
         if self.settings.secure_core == SecureCoreStatusEnum.OFF:
@@ -405,8 +407,8 @@ class SecureCoreOn(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "secure_cure_on",
-            "Secure Cure On"
+            "secure_core_on",
+            "Secure Core On"
         )
         self.selected_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_ACTIVE] # noqa
         self.available_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DEFAULT] # noqa

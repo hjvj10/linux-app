@@ -258,7 +258,7 @@ class QuickSettingsButtonUpgrade(LabelFactory):
 
 class DialogUpgrade(LabelFactory):
     """DialogUpgrade class."""
-    label = "dialog_upgrade"
+    label = "dialog_main_text"
 
     def __init__(self, label_text):
         super().__init__(label_text)

@@ -20,6 +20,7 @@ from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
 from .model.server_list import ServerList
 from .model.country_item import CountryItem
+from .view.dialog import DialogView
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -73,20 +74,39 @@ class ProtonVPNGUI(Gtk.Application):
 
         Gtk.Application.do_startup(self)
 
-        quit_app = Gio.SimpleAction.new("quit", None)
-        display_preferences = Gio.SimpleAction.new("display_preferences", None)
-
-        quit_app.connect("activate", self.on_quit)
-        display_preferences.connect("activate", self.on_display_preferences)
-
-        self.add_action(quit_app)
-        self.add_action(display_preferences)
+        self.setup_actions()
         logger.info("Startup successful")
 
     def on_quit(self, *args):
         """On app quit event hanlder."""
         logger.info("Quit app")
+        if protonvpn.get_active_protonvpn_connection():
+            dialog = DialogView(self)
+            dialog.display_quit_confirmation(self.quit_)
+            return
+
+        self.quit_()
+
+    def quit_(self):
+        protonvpn.disconnect()
         self.quit()
+
+    def on_logout(self, *args):
+        if protonvpn.get_active_protonvpn_connection():
+            dialog = DialogView(self)
+            dialog.display_logout_confirmation(self.logout)
+            return
+
+        self.logout()
+
+    def logout(self):
+        active_windows = self.get_windows()
+        protonvpn.logout()
+        logger.info("Destroying all windows \"{}\"".format(active_windows))
+        for win in active_windows:
+            win.destroy()
+
+        self.do_activate()
 
     def on_display_preferences(self, *args):
         """On app display preferences event hanlder."""
@@ -96,19 +116,18 @@ class ProtonVPNGUI(Gtk.Application):
     def do_activate(self):
         """Default GTK method.
 
-        Runs at window startup.
+        Runs after app startup and before displaying any windows.
         """
         win = self.props.active_window
 
         if not win:
             if not protonvpn.check_session_exists():
-                win = self.get_login_window
+                win = self.get_login_window()
             else:
-                win = self.get_dashboard_window
+                win = self.get_dashboard_window()
 
-        logger.info("Default window: {}".format(win))
-
-        win().present()
+        logger.info("Window to display {}".format(win))
+        win.present()
 
     def get_login_window(self):
         """Get login window.
@@ -141,6 +160,20 @@ class ProtonVPNGUI(Gtk.Application):
             application=self,
             view_model=dashboard_view_model
         )
+
+    def setup_actions(self):
+        quit_app = Gio.SimpleAction.new("quit", None)
+        quit_app.connect("activate", self.on_quit)
+        self.add_action(quit_app)
+
+        logout = Gio.SimpleAction.new("logout", None)
+        logout.connect("activate", self.on_logout)
+        self.add_action(logout)
+
+        # TO-DO: Implement preferences
+        # display_preferences = Gio.SimpleAction.new("display_preferences", None)
+        # display_preferences.connect("activate", self.on_display_preferences)
+        # self.add_action(display_preferences)
 
 
 def main():

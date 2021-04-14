@@ -201,7 +201,6 @@
                   <!-- n-columns=2 n-rows=1 -->
                   <object class="GtkGrid" id="middle_grid">
                     <property name="name">middle_grid</property>
-                    <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="valign">start</property>
                     <property name="hexpand">True</property>

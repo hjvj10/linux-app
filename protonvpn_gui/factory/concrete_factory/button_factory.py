@@ -182,6 +182,19 @@ class QuickSetting(ButtonFactory):
         self.show = True
 
 
+class QuickSettingsUpgrade(ButtonFactory):
+    button = "quick_settings_upgrade"
+
+    def __init__(self):
+        super().__init__()
+        self.expand_h = True
+        self.align_h = Gtk.Align.CENTER
+        self.align_v = Gtk.Align.CENTER
+        self.label = "Upgrade"
+        self.show = True
+        self.add_class("quick-settings")
+
+
 class ConnectToCountry(ButtonFactory):
     button = "connect_country"
 
@@ -238,30 +251,16 @@ class Chevron(ButtonFactory):
         self.add_class("chevron-unfold")
 
 
-class DialogUpgrade(ButtonFactory):
-    button = "dialog_upgrade"
+class DialogMain(ButtonFactory):
+    button = "dialog_main"
 
     def __init__(self):
         super().__init__()
         self.expand_h = True
         self.align_h = Gtk.Align.END
         self.align_v = Gtk.Align.CENTER
-        self.label = "Upgrade"
         self.show = True
         self.add_class("enabled")
-
-
-class QuickSettingsUpgrade(ButtonFactory):
-    button = "quick_settings_upgrade"
-
-    def __init__(self):
-        super().__init__()
-        self.expand_h = True
-        self.align_h = Gtk.Align.CENTER
-        self.align_v = Gtk.Align.CENTER
-        self.label = "Upgrade"
-        self.show = True
-        self.add_class("quick-settings")
 
 
 class DialogClose(ButtonFactory):
