@@ -93,7 +93,7 @@ class CountryRow:
         self.dv = dashboard_view
         self.server_list_revealer = ServerListRevealer(
             self.dv,
-            self.coutry_item.servers,
+            self.country_item.servers,
             display_sc
         )
         self.row_grid = WidgetFactory.grid("country_row")
@@ -125,7 +125,7 @@ class CountryRow:
 
     @property
     def total_of_existing_servers(self):
-        return len(self.coutry_item.servers)
+        return len(self.country_item.servers)
 
     def create_event_box(self):
         self.event_box = Gtk.EventBox()
