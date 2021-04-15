@@ -8,6 +8,7 @@ from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum
 from ..factory import WidgetFactory
 from ..enums import GLibEventSourceEnum
 from .dialog import DialogView
+from .server_load import ServerLoad
 
 
 class ServerListView:
@@ -372,13 +373,9 @@ class ServerRowLeftGrid:
         self.create_is_plus_server_icon()
 
     def create_load_icon(self):
-        self.load_icon = WidgetFactory.image(
-            "load_icon_flag",
-            "{}% Load".format(
-                self.server.load
-            )
-        )
-        self.grid.attach(self.load_icon.widget)
+        self.load_icon = ServerLoad(self.server.load)
+        self.load_icon.show_all()
+        self.grid.attach(self.load_icon)
 
     def create_exit_flag(self):
         try:
@@ -390,7 +387,7 @@ class ServerRowLeftGrid:
 
         self.grid.attach_right_next_to(
             self.country_flag.widget,
-            self.load_icon.widget,
+            self.load_icon,
         )
 
         self.country_flag.show = True if self.display_sc else False
