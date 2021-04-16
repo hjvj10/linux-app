@@ -1,5 +1,5 @@
 %define unmangled_name protonvpn-gui
-%define version 0.2.0
+%define version 0.3.0
 %define release 1
 
 Prefix: %{_prefix}
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Fri Apr 16 2021 Proton Technologies AG <opensource@proton.me> 0.3.0-1
+- Adjust and displays server load colour
+
 * Wed Apr 14 2021 Proton Technologies AG <opensource@proton.me> 0.2.0-1
 - Implement logout and quit
 - Feature: filter countries

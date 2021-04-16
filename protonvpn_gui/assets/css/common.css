@@ -18,6 +18,12 @@ window{
   )
 }
 
+frame border {
+  border: none;
+  outline: none;
+  background-image: none;  
+}
+
 entry{
   border-image:none; 
   outline: none;

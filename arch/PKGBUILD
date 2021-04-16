@@ -1,6 +1,6 @@
 # Maintainer: Proton Technologies AG <opensource@proton.me>
 pkgname=protonvpn-gui
-pkgver=0.2.0
+pkgver=0.3.0
 pkgrel=1
 pkgdesc="Official ProtonVPN GUI."
 arch=("any")
