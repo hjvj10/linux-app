@@ -140,7 +140,7 @@ class LoginView(Gtk.ApplicationWindow):
         on users kill switch setting.
         """
         self.bottom_killswitch_revealer.set_reveal_child(
-            True if self.login_view_model.is_killswitch_enabled() else False
+            self.login_view_model.is_killswitch_enabled()
         )
 
     def setup_actions(self):

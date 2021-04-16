@@ -2,8 +2,9 @@ protonvpn-gui (0.3.0-1) unstable; urgency=medium
 
   * Adjust and displays server load colour
   * Implement server multi-features aka feature bitmap
+  * Disable permanent Kill Switch from login window if it is enabled
 
- -- Proton Technologies AG <opensource@proton.me>  Fri, 16 Apr 2021 16:00:00 +0100
+ -- Proton Technologies AG <opensource@proton.me>  Fri, 16 Apr 2021 16:30:00 +0100
  
  protonvpn-gui (0.2.0-1) unstable; urgency=medium
 

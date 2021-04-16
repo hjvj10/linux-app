@@ -7,7 +7,6 @@ from protonvpn_nm_lib.country_codes import country_codes
 from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum
 from ..factory import WidgetFactory
 from ..enums import GLibEventSourceEnum
-from .dialog import DialogView
 from .server_load import ServerLoad
 from .dialog import ConnectUpgradeDialog
 
