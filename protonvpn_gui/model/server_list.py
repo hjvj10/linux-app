@@ -40,28 +40,25 @@ class ServerList:
 
     @display_secure_core.setter
     def display_secure_core(self, newvalue):
-        if newvalue:
+        self.__display_secure_core_servers = newvalue
+        self.__copy_servers()
+
+    @property
+    def servers(self):
+        if not self.__default_list:
+            self.__copy_servers()
+
+        return self.__default_list
+
+    def __copy_servers(self):
+        if self.__display_secure_core_servers:
             self.__default_list = copy.deepcopy(
                 self.__secure_core_servers
             )
         else:
             self.__default_list = copy.deepcopy(
-                self.non_secure_core_servers
+                self.__non_secure_core_servers
             )
-
-        self.__display_secure_core_servers = newvalue
-
-    @property
-    def servers(self):
-        return self.__default_list
-
-    @property
-    def non_secure_core_servers(self):
-        return self.__non_secure_core_servers
-
-    @property
-    def secure_core_servers(self):
-        return self.__secure_core_servers
 
     def generate_list(self, user_tier):
         """Generate server list.
@@ -81,7 +78,7 @@ class ServerList:
             country_item.entry_country_code = country_code
 
             country_item.create(
-                self.__user_tier, servername_list, server_list
+                self.__user_tier, servername_list
             )
             self.__unfiltered_server_list.append(country_item)
 
@@ -122,7 +119,7 @@ class ServerList:
         for country_item in self.__unfiltered_server_list:
             copy_country_item = copy.deepcopy(country_item)
             copy_country_item.servers = list(filter(
-                lambda server: any(
+                lambda server: all(
                     feature != FeatureEnum.SECURE_CORE
                     for feature
                     in server.features

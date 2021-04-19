@@ -90,7 +90,7 @@ class CountryItem:
         return self.__can_connect
 
     def create(
-        self, user_tier, servername_list, server_list
+        self, user_tier, servername_list
     ):
         status_collector = set()
         tier_collector = set()
@@ -127,7 +127,8 @@ class CountryItem:
     def __add_feature_to_feature_collector(
         self, feature_collector, server_features
     ):
-        feature_collector.add(*server_features)
+        for feature in server_features:
+            feature_collector.add(feature)
 
     def __add_status_to_status_collector(self, status_collector, server_status):
         status_collector.add(server_status)

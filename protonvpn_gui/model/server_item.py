@@ -1,6 +1,5 @@
 from protonvpn_nm_lib.api import protonvpn
-from protonvpn_nm_lib.enums import (FeatureEnum, ServerStatusEnum,
-                                    ServerTierEnum)
+from protonvpn_nm_lib.enums import ServerStatusEnum, ServerTierEnum
 
 
 class ServerItem:
@@ -92,7 +91,7 @@ class ServerItem:
         self.__load = str(int(logical_server.load))
         self.__score = int(logical_server.score)
         self.__city = logical_server.city
-        self.__features = [FeatureEnum(logical_server.features)]
+        self.__features = logical_server.features
         self.__tier = ServerTierEnum(logical_server.tier)
         self.__is_plus = self.__check_server_is_plus()
         self.__status = ServerStatusEnum(logical_server.enabled)
