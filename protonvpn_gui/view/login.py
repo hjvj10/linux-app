@@ -9,14 +9,17 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 
 from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
 from ..factory import WidgetFactory
+from .dialog import LoginKillSwitchDialog
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
 class LoginView(Gtk.ApplicationWindow):
-    __gtype_name__ = 'LoginView'
+    __gtype_name__ = "LoginView"
 
     # Other objects
     top_banner_revealer = Gtk.Template.Child()
+    top_banner_revealer = Gtk.Template.Child()
+    bottom_killswitch_revealer = Gtk.Template.Child()
     overlay_spinner = Gtk.Template.Child()
 
     # Entry
@@ -28,17 +31,20 @@ class LoginView(Gtk.ApplicationWindow):
 
     # Buttons
     login_button = Gtk.Template.Child()
+    killswitch_disable_button = Gtk.Template.Child()
 
     # Labels
     username_label = Gtk.Template.Child()
     password_label = Gtk.Template.Child()
     banner_error_label = Gtk.Template.Child()
     overlay_bottom_label = Gtk.Template.Child()
+    killswitch_warning_label = Gtk.Template.Child()
 
     # Images/Icons
     headerbar_sign_icon = Gtk.Template.Child()
     img_protonvpn_logo = Gtk.Template.Child()
     overlay_logo_image = Gtk.Template.Child()
+    killswitch_warning_image = Gtk.Template.Child()
 
     # Grids
     top_banner_revealer_grid = Gtk.Template.Child()
@@ -69,6 +75,10 @@ class LoginView(Gtk.ApplicationWindow):
         self.proton_password_entry.connect("changed", self.on_entry_changed)
         self.overlay_spinner.set_property("width-request", 200)
         self.overlay_spinner.set_property("height-request", 200)
+        self.killswitch_warning_label.set_text(
+            "Kill Switch is blocking any outgoing connections."
+        )
+        self.set_killswitch_revealer_status()
 
     def on_entry_changed(self, gtk_entry_object):
         gtk_entry_objects = [
@@ -124,6 +134,33 @@ class LoginView(Gtk.ApplicationWindow):
             pixbuf
         )
 
+    def set_killswitch_revealer_status(self):
+        """
+        Sets the kill switch revealer status, based
+        on users kill switch setting.
+        """
+        self.bottom_killswitch_revealer.set_reveal_child(
+            self.login_view_model.is_killswitch_enabled()
+        )
+
+    def setup_actions(self):
+        # create action
+        need_help_action = Gio.SimpleAction.new("need_help", None)
+        login_action = Gio.SimpleAction.new("login", None)
+        disable_killswitch = Gio.SimpleAction.new("disable_killswitch", None)
+
+        # connect action to callback
+        need_help_action.connect("activate", self.on_display_popover)
+        login_action.connect("activate", self.on_clicked_login)
+        disable_killswitch.connect(
+            "activate", self.on_clicked_disable_killswitch
+        )
+
+        # add action
+        self.add_action(need_help_action)
+        self.add_action(login_action)
+        self.add_action(disable_killswitch)
+
     def on_display_popover(self, gio_simple_action, _):
         self.popover_login_menu.popup()
 
@@ -142,6 +179,17 @@ class LoginView(Gtk.ApplicationWindow):
         return (
             main_label_object, main_markup_text,
             second_label_object, second_markup_text
+        )
+
+    def on_clicked_disable_killswitch(self, *_):
+        """Disable kill switch callback.
+
+        Displays the dialog to confirm disable of killswitch.
+        """
+        LoginKillSwitchDialog(
+            self.application,
+            self.login_view_model,
+            callback_func=self.set_killswitch_revealer_status
         )
 
     def on_clicked_login(self, gio_simple_action, _):
@@ -219,19 +267,6 @@ class LoginView(Gtk.ApplicationWindow):
             provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
-
-    def setup_actions(self):
-        # create action
-        need_help_action = Gio.SimpleAction.new("need_help", None)
-        login_action = Gio.SimpleAction.new("login", None)
-
-        # connect action to callback
-        need_help_action.connect("activate", self.on_display_popover)
-        login_action.connect("activate", self.on_clicked_login)
-
-        # add action
-        self.add_action(need_help_action)
-        self.add_action(login_action)
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()

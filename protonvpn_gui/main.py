@@ -20,7 +20,7 @@ from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
 from .model.server_list import ServerList
 from .model.country_item import CountryItem
-from .view.dialog import DialogView
+from .view.dialog import QuitDialog, LogoutDialog
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -81,8 +81,7 @@ class ProtonVPNGUI(Gtk.Application):
         """On app quit event hanlder."""
         logger.info("Quit app")
         if protonvpn.get_active_protonvpn_connection():
-            dialog = DialogView(self)
-            dialog.display_quit_confirmation(self.quit_)
+            QuitDialog(self, self.quit_)
             return
 
         self.quit_()
@@ -93,8 +92,7 @@ class ProtonVPNGUI(Gtk.Application):
 
     def on_logout(self, *args):
         if protonvpn.get_active_protonvpn_connection():
-            dialog = DialogView(self)
-            dialog.display_logout_confirmation(self.logout)
+            LogoutDialog(self, self.logout)
             return
 
         self.logout()

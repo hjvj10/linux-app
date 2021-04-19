@@ -53,3 +53,24 @@ box#box_login_label_links > button:hover{
 box.login-main-box{
 	margin: 50px 25px 0px 25px;
 }
+
+#killswitch-warning-grid button.transparent{
+	padding: 0px 15px;
+	border-radius: 10px;
+}
+
+
+#killswitch-warning-grid button.transparent label{
+	font-size: small;
+	padding: 0px;
+	margin: 0px;
+}
+
+#killswitch-warning-grid{
+	padding: 15px 20px;
+	border-top: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+#killswitch-warning-grid label{
+	color: white;
+}

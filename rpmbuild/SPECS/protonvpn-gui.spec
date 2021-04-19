@@ -51,6 +51,7 @@ rm -rf $RPM_BUILD_ROOT
 * Fri Apr 16 2021 Proton Technologies AG <opensource@proton.me> 0.3.0-1
 - Adjust and displays server load colour
 - Implement server multi-features aka feature bitmap
+- Disable permanent Kill Switch from login window if it is enabled
 
 * Wed Apr 14 2021 Proton Technologies AG <opensource@proton.me> 0.2.0-1
 - Implement logout and quit
