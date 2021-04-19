@@ -19,7 +19,7 @@ BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-Requires: python3-protonvpn-nm-lib >= 0.5.0, python3-protonvpn-nm-lib < 0.6.0
+Requires: python3-protonvpn-nm-lib >= 3.0.0, python3-protonvpn-nm-lib < 3.1.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
@@ -50,6 +50,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Fri Apr 16 2021 Proton Technologies AG <opensource@proton.me> 0.3.0-1
 - Adjust and displays server load colour
+- Implement server multi-features aka feature bitmap
 
 * Wed Apr 14 2021 Proton Technologies AG <opensource@proton.me> 0.2.0-1
 - Implement logout and quit
