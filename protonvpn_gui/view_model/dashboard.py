@@ -207,11 +207,7 @@ class DashboardViewModel:
         )
 
     def on_load_servers_sync(self):
-        if (
-            self.server_list.display_secure_core is None
-            or self.server_list.display_secure_core is None
-            or self.server_list.servers is None
-        ):
+        if not self.server_list.servers:
             self.__generate_server_list()
 
         self.server_list.display_secure_core = \
@@ -313,13 +309,14 @@ class DashboardViewModel:
 
         server = None
         if secure_core_enum == SecureCoreStatusEnum.ON:
+            self.server_list.display_secure_core = True
             servers_list = list(map(
                 lambda country: list(filter(
                     lambda server:
                     server.exit_country_code.lower() == exit_country.lower(),
                     country.servers
                 )),
-                self.server_list.secure_core_servers
+                self.server_list.servers
             ))
             flattened_servers = [
                 server for sub in servers_list for server in sub
@@ -479,7 +476,7 @@ class DashboardViewModel:
             ConnectionStatusEnum.SERVER_INFORMATION
         ]
         countries = [server.exit_country]
-        if FeatureEnum.SECURE_CORE in [FeatureEnum(server.features)]:
+        if FeatureEnum.SECURE_CORE in server.features:
             countries.append(server.entry_country)
 
         result = ConnectedToVPNInfo(
