@@ -1,5 +1,5 @@
 %define unmangled_name protonvpn-gui
-%define version 0.3.0
+%define version 0.4.0
 %define release 1
 
 Prefix: %{_prefix}
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 21 2021 Proton Technologies AG <opensource@proton.me> 0.4.0-1
+- Add about dialog; display current version
+
 * Fri Apr 16 2021 Proton Technologies AG <opensource@proton.me> 0.3.0-1
 - Adjust and displays server load colour
 - Implement server multi-features aka feature bitmap
