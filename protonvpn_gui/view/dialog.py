@@ -8,6 +8,9 @@ from gi.repository import Gtk, Gdk
 
 from ..constants import CSS_DIR_PATH, UI_DIR_PATH
 from ..factory import WidgetFactory
+from ..constants import APP_VERSION
+from protonvpn_nm_lib.constants import APP_VERSION as lib_version
+from proton.constants import VERSION as api_version
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dialog.ui"))
@@ -31,9 +34,9 @@ class DialogView(Gtk.ApplicationWindow):
         self.dummy_object = WidgetFactory.image("dummy")
         self.content_label = WidgetFactory.label("dialog_main_text")
 
-        content_grid = self.__generate_content_grid()
-        bottom_grid = self.__generate_bottom_buttons_grid()
-        self.__attach_grids(content_grid, bottom_grid)
+        self.__generate_content_grid()
+        self.__generate_bottom_buttons_grid()
+        self.__attach_grids()
 
         protonvpn_headerbar_pixbuf = self.dummy_object\
             .create_icon_pixbuf_from_name(
@@ -67,13 +70,12 @@ class DialogView(Gtk.ApplicationWindow):
 
     def __generate_content_grid(self):
         """Generate grid with contextual information."""
-        content_grid = WidgetFactory.grid("dialog_content")
-        content_grid.attach(self.content_label.widget, 0, 0, 1, 1)
-        return content_grid
+        self.__content_grid = WidgetFactory.grid("dialog_content")
+        self.__content_grid.attach(self.content_label.widget, 0, 0, 1, 1)
 
     def __generate_bottom_buttons_grid(self):
         """Generate grid with buttons."""
-        bottom_grid = WidgetFactory.grid("dialog_buttons")
+        self.__bottom_grid = WidgetFactory.grid("dialog_buttons")
 
         buttons_grid = WidgetFactory.grid("dialog_buttons")
         buttons_grid.add_class("grid-button-spacing")
@@ -90,18 +92,24 @@ class DialogView(Gtk.ApplicationWindow):
             self.main_button.widget, self.cancel_button.widget,
             Gtk.PositionType.RIGHT, 1, 1
         )
-        bottom_grid.attach(buttons_grid.widget, 0, 0, 1, 1)
+        self.__bottom_grid.attach(buttons_grid.widget, 0, 0, 1, 1)
         self.cancel_button.connect("clicked", self.close_dialog)
 
-        return bottom_grid
-
-    def __attach_grids(self, top_content_grid, bottom_button_grid):
+    def __attach_grids(self):
         """Attach custom content to dialog content grid."""
-        self.dialog_container_grid.attach(top_content_grid.widget, 0, 0, 1, 1)
+        self.dialog_container_grid.attach(self.__content_grid.widget, 0, 0, 1, 1)
         self.dialog_container_grid.attach_next_to(
-            bottom_button_grid.widget, top_content_grid.widget,
+            self.__bottom_grid.widget, self.__content_grid.widget,
             Gtk.PositionType.BOTTOM, 1, 1
         )
+
+    @property
+    def buttons_visible(self):
+        return self.__bottom_grid.props.visible
+
+    @buttons_visible.setter
+    def buttons_visible(self, newvalue):
+        self.__bottom_grid.show = newvalue
 
 
 class LoginKillSwitchDialog:
@@ -211,3 +219,22 @@ class QuitDialog:
     def _quit(self, main_button, callback_func):
         """Call logout callback."""
         callback_func()
+
+
+class AboutDialog:
+    """About Dialog.
+
+    Is displayed when the users clicks on logout button.
+    """
+    def __init__(self, application, callback_func=None):
+        self.dialog_view = DialogView(application)
+        self.dialog_view.headerbar_label.set_text("About")
+        app_version = "Current version: \t{} (library {} / api-client: {})".format(
+            APP_VERSION, lib_version, api_version
+        )
+        self.dialog_view.content_label.align_h = Gtk.Align.START
+        self.dialog_view.content_label.ident_h = 0
+        self.dialog_view.content_label.content = app_version
+        self.dialog_view.buttons_visible = False
+
+        self.dialog_view.display_dialog()

@@ -51,9 +51,8 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="hexpand">True</property>
-            <property name="action-name">app.logout</property>
-            <property name="text" translatable="yes">Logout</property>
+            <property name="action-name">app.about</property>
+            <property name="text" translatable="yes">About</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -78,8 +77,34 @@
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="hexpand">True</property>
+            <property name="action-name">app.logout</property>
+            <property name="text" translatable="yes">Logout</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="hexpand">True</property>
             <property name="action-name">app.quit</property>
-            <property name="text" translatable="yes">Quit ProtonVPN</property>
+            <property name="text" translatable="yes">Quit</property>
             <accessibility>
               <relation type="node-child-of" target="box1"/>
               <action action_name="click" description="Quit ProtonVPN application."/>
@@ -96,7 +121,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">4</property>
+            <property name="position">6</property>
           </packing>
         </child>
       </object>
@@ -542,7 +567,7 @@
                     <property name="primary-icon-name">edit-find-symbolic</property>
                     <property name="primary-icon-activatable">False</property>
                     <property name="primary-icon-sensitive">False</property>
-                    <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
+                    <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
