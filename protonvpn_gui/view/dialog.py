@@ -105,7 +105,7 @@ class DialogView(Gtk.ApplicationWindow):
 
     @property
     def buttons_visible(self):
-        return self.__bottom_grid.props.visible
+        return self.__bottom_grid.show
 
     @buttons_visible.setter
     def buttons_visible(self, newvalue):
