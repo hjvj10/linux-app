@@ -1,5 +1,7 @@
 %define unmangled_name protonvpn-gui
-%define version 0.4.0
+%define logo_name protonvpn-logo.png
+%define desktop_name protonvpn.desktop
+%define version 0.3.0
 %define release 1
 
 Prefix: %{_prefix}
@@ -14,6 +16,8 @@ License: GPLv3
 Url: https://github.com/ProtonVPN
 Vendor: Proton Technologies AG <opensource@proton.me>
 Source0: %{unmangled_name}-%{version}.tar.gz
+Source3: %{desktop_name}
+Source4: %{logo_name}
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
@@ -37,6 +41,10 @@ Official ProtonVPN Graphical User Interface.
 python3 setup.py build
 
 %install
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications %{SOURCE3}
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{desktop_name}
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
+cp %{SOURCE4} %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{logo_name}
 python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 
 %clean
@@ -45,6 +53,8 @@ rm -rf $RPM_BUILD_ROOT
 %files -f INSTALLED_FILES
 %{python3_sitelib}/protonvpn_gui/
 %{python3_sitelib}/protonvpn_gui-%{version}*.egg-info/
+%{_datadir}/applications/%{desktop_name}
+%{_datadir}/icons/hicolor/scalable/apps/%{logo_name}
 %defattr(-,root,root)
 
 %changelog
