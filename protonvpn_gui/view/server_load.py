@@ -30,7 +30,10 @@ class ServerLoad(Gtk.Frame):
 
     __BASE_ARC__POSITION = (4, 6)
     __BASE_ICON_POSITION = (2, 0)
-    __pos_modifier = 9
+    __pos_modifier = 10
+
+    __ARC_SIZE = 10
+    __INFO_ICON_SIZE = 12
 
     def __init__(self, server_load):
         super().__init__()
@@ -89,7 +92,7 @@ class ServerLoad(Gtk.Frame):
         dummy = WidgetFactory.image("dummy")
         info_pixbuf = dummy.create_icon_pixbuf_from_name(
             "info-icon.svg",
-            width=12, height=12
+            width=self.__INFO_ICON_SIZE, height=self.__INFO_ICON_SIZE
         )
 
         Gdk.cairo_set_source_pixbuf(
@@ -113,7 +116,7 @@ class ServerLoad(Gtk.Frame):
         ctx.arc(
             self.__BASE_ARC__POSITION[0] + self.__pos_modifier,
             self.__BASE_ARC__POSITION[1] + self.__pos_modifier,
-            12,
+            self.__ARC_SIZE,
             0,
             2 * pi
         )

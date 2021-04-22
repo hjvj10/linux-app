@@ -153,7 +153,7 @@ class CountryRow:
 class CountryRowLeftGrid:
     def __init__(self, country_item, display_sc):
         self.grid = WidgetFactory.grid("left_child_in_country_row")
-
+        self.grid.add_class("server-list-country-margin-left")
         try:
             self.country_flag = WidgetFactory.image(
                 "small_flag", country_item.entry_country_code
@@ -186,6 +186,7 @@ class CountryRowRightGrid:
         self.feature_icon_list = []
         self.revealer = revealer
         self.grid = WidgetFactory.grid("right_child_in_country_row")
+        self.grid.add_class("server-list-country-margin-right")
 
         self.maintenance_icon = WidgetFactory.image("maintenance_icon")
         self.connect_country_button = WidgetFactory.button("connect_country")
@@ -308,6 +309,7 @@ class ServerRow:
     def __init__(self, dasbhoard_view, server, display_sc):
         self.dv = dasbhoard_view
         self.grid = WidgetFactory.grid("server_row")
+        self.grid.add_class("server-row")
         self.left_child = ServerRowLeftGrid(server, display_sc)
         self.right_child = ServerRowRightGrid(self.dv, server)
         self.grid.attach(self.left_child.grid.widget)

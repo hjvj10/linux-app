@@ -87,7 +87,7 @@ grid.connecting_overlay_grid label{
 }
 
 #dashboard-button-box-grid, #dashboard-search-entry-grid{
-	margin: 10px 30px 10px 30px
+	margin: 10px 20px 10px 20px
 }
 
 #dashboard-button-box-grid{
@@ -133,7 +133,7 @@ grid.connecting_overlay_grid label{
 }
 
 #server-list-grid{
-	margin: 0px 30px;
+	margin: 0px;
 }
 
 #server-list-grid image.server-icon{
@@ -150,6 +150,17 @@ grid.connecting_overlay_grid label{
 	background-color: transparent;
 	background-image: none;
 	box-shadow: none;
+}
+
+grid.server-list-country-margin-left{
+	margin-left: 21px;
+}
+grid.server-list-country-margin-right{
+	margin-right: 15px;
+}
+grid.server-row{
+	margin-left: 15px;
+	margin-right: 20px;
 }
 
 .test-class{
