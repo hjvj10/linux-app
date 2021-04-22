@@ -20,7 +20,7 @@ from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
 from .model.server_list import ServerList
 from .model.country_item import CountryItem
-from .view.dialog import QuitDialog, LogoutDialog
+from .view.dialog import QuitDialog, LogoutDialog, AboutDialog
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -106,6 +106,9 @@ class ProtonVPNGUI(Gtk.Application):
 
         self.do_activate()
 
+    def on_click_about(self, simple_action, _):
+        AboutDialog(self)
+
     def on_display_preferences(self, *args):
         """On app display preferences event hanlder."""
         logger.info("Display preferences")
@@ -167,6 +170,10 @@ class ProtonVPNGUI(Gtk.Application):
         logout = Gio.SimpleAction.new("logout", None)
         logout.connect("activate", self.on_logout)
         self.add_action(logout)
+
+        about_dialog = Gio.SimpleAction.new("about", None)
+        about_dialog.connect("activate", self.on_click_about)
+        self.add_action(about_dialog)
 
         # TO-DO: Implement preferences
         # display_preferences = Gio.SimpleAction.new("display_preferences", None)
