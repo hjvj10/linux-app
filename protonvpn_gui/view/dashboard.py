@@ -10,7 +10,7 @@ from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 
 from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
-                         SECURE_CORE_ICON_SET, UI_DIR_PATH)
+                         SECURE_CORE_ICON_SET, UI_DIR_PATH, protonvpn_logo)
 from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
                      DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
                      GLibEventSourceEnum)
@@ -354,7 +354,7 @@ class DashboardView(Gtk.ApplicationWindow):
             width=325, height=250
         )
         window_icon = dummy_object.create_icon_pixbuf_from_name(
-            "protonvpn_logo.png",
+            protonvpn_logo
         )
         upload_pixbuff = dummy_object.create_icon_pixbuf_from_name(
             "up-icon.svg",

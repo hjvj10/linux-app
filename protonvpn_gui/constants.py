@@ -15,6 +15,8 @@ FLAGS_DIR_PATH = os.path.join(IMG_DIR_PATH, "flags")
 
 LOGGER_NAME = "protonvpn-gui"
 
+
+protonvpn_logo = "protonvpn-logo.png"
 KILLSWITCH_ICON_SET = {
     DashboardKillSwitchIconEnum.OFF:
         os.path.join(
