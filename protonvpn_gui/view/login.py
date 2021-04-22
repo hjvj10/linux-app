@@ -1,4 +1,5 @@
 import os
+
 import gi
 
 from ..view_model.login import LoginError, LoginState
@@ -7,7 +8,8 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gdk, Gio, GLib, Gtk
 
-from ..constants import CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH, UI_DIR_PATH
+from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
+                         UI_DIR_PATH, protonvpn_logo)
 from ..factory import WidgetFactory
 from .dialog import LoginKillSwitchDialog
 
@@ -221,7 +223,7 @@ class LoginView(Gtk.ApplicationWindow):
             width=50, height=50,
         )
         window_icon = dummy_object.create_icon_pixbuf_from_name(
-            "protonvpn_logo.png",
+            protonvpn_logo
         )
         self.password_show_entry_pixbuf = dummy_object.create_icon_pixbuf_from_name( # noqa
             os.path.join(

@@ -6,7 +6,7 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, Gdk
 
-from ..constants import CSS_DIR_PATH, UI_DIR_PATH
+from ..constants import CSS_DIR_PATH, UI_DIR_PATH, protonvpn_logo
 from ..factory import WidgetFactory
 from ..constants import APP_VERSION
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
@@ -44,7 +44,7 @@ class DialogView(Gtk.ApplicationWindow):
                 width=50, height=50,
             )
         window_icon = self.dummy_object.create_icon_pixbuf_from_name(
-            "protonvpn_logo.png",
+            protonvpn_logo
         )
         self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)
         self.set_icon(window_icon)
