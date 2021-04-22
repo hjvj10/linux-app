@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.4.0
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
@@ -58,8 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Wed Apr 21 2021 Proton Technologies AG <opensource@proton.me> 0.4.0-1
+* Wed Apr 21 2021 Proton Technologies AG <opensource@proton.me> 0.4.0-2
 - Add about dialog; display current version
+- Add .desktop file
 
 * Fri Apr 16 2021 Proton Technologies AG <opensource@proton.me> 0.3.0-1
 - Adjust and displays server load colour
