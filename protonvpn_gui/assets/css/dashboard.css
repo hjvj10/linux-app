@@ -86,6 +86,35 @@ grid.connecting_overlay_grid label{
     margin: 0 5px;
 }
 
+#top-sever-locations-grid{
+	padding: 5px 20px;
+
+}
+#top-sever-locations-grid label{
+	color: rgba(255,255,255,0.4);
+
+}
+
+#servers-info-icon-button{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+}
+#servers-info-icon-button:active{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+}
+#servers-info-icon-button image{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+	-gtk-icon-shadow: none;
+}
+
 #dashboard-button-box-grid, #dashboard-search-entry-grid{
 	margin: 10px 20px 10px 20px
 }

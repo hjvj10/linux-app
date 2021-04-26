@@ -1,0 +1,11 @@
+#ServerFeaturesView{
+    background: linear-gradient(
+        180deg,
+        @background-gradient-first-color 0%,
+        @background-gradient-second-color 100%
+    )
+}
+
+#server-features-container-grid{
+	margin: 25px;
+}
