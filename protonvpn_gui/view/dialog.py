@@ -229,7 +229,7 @@ class AboutDialog:
     def __init__(self, application, callback_func=None):
         self.dialog_view = DialogView(application)
         self.dialog_view.headerbar_label.set_text("About")
-        app_version = "Current version: \t{} (library {} / api-client: {})".format(
+        app_version = "Current version: \tv{} (library: v{} / api-client: v{})".format(
             APP_VERSION, lib_version, api_version
         )
         self.dialog_view.content_label.align_h = Gtk.Align.START
