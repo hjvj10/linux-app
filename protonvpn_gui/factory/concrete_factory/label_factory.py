@@ -2,7 +2,7 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk
+from gi.repository import Gtk, Pango
 from ..abstract_widget_factory import WidgetFactory
 
 
@@ -117,6 +117,8 @@ class LabelFactory(WidgetFactory):
 
     @width_in_chars.setter
     def width_in_chars(self, newvalue):
+        if not self.line_wrap:
+            self.line_wrap = True
         self.__widget.set_width_chars(newvalue)
 
     @property
@@ -125,6 +127,8 @@ class LabelFactory(WidgetFactory):
 
     @max_width_in_chars.setter
     def max_width_in_chars(self, newvalue):
+        if not self.line_wrap:
+            self.line_wrap = True
         self.__widget.set_max_width_chars(newvalue)
 
     @property
@@ -134,6 +138,16 @@ class LabelFactory(WidgetFactory):
     @line_wrap.setter
     def line_wrap(self, newvalue):
         self.__widget.set_line_wrap(newvalue)
+
+    @property
+    def char_wrap_mode(self):
+        return self.__widget.get_line_wrap_mode()
+
+    @char_wrap_mode.setter
+    def char_wrap_mode(self, newvalue):
+        if not self.line_wrap:
+            self.line_wrap = True
+        return self.__widget.set_line_wrap_mode(newvalue)
 
     def add_class(self, css_class):
         """Add CSS class."""
@@ -178,6 +192,44 @@ class LabelFactory(WidgetFactory):
     def has_class(self, css_class):
         """Check if has CSS class."""
         return True if self.__widget_context.has_class(css_class) else False
+
+
+class PremiumFeaturesPopoverTitle(LabelFactory):
+    """PremiumFeaturesPopoverTitle class."""
+    label = "premium_features_popover_title"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("default-text-color")
+        self.add_class("quick-settings-title")
+        self.add_class("margin-left-10px")
+
+
+class PremiumFeaturesPopoverDescription(LabelFactory):
+    """PremiumFeaturesPopoverTitle class."""
+    label = "premium_features_popover_description"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("default-text-color")
+        self.add_class("quick-settings-title")
+        self.add_class("margin-left-10px")
+        self.line_wrap = True
+        self.ident_h = 0
+        self.width_in_chars = 40
+        self.max_width_in_chars = 40
+        # Word
+        # Char
+        # WordChar
+        self.char_wrap_mode = Pango.WrapMode.WORD_CHAR
 
 
 class QuickSettingsTitle(LabelFactory):

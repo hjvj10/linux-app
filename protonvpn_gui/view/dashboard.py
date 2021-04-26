@@ -1,7 +1,6 @@
 import os
 
 import gi
-
 gi.require_version('Gtk', '3.0')
 
 from protonvpn_nm_lib.api import protonvpn
@@ -23,6 +22,8 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
 from .server_list import ServerListView
 from ..factory import WidgetFactory
 from .quick_settings_popover import QuickSettingsPopoverView
+# from .custom_tooltip import CustomToolTip
+from .server_features import PremiumCountries, ServerFeaturesView
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -73,6 +74,7 @@ class DashboardView(Gtk.ApplicationWindow):
     dashboard_netshield_button = Gtk.Template.Child()
     dashboard_killswitch_button = Gtk.Template.Child()
     server_search_entry = Gtk.Template.Child()
+    servers_info_icon_button = Gtk.Template.Child()
 
     # Labels
     country_servername_label = Gtk.Template.Child()
@@ -81,6 +83,7 @@ class DashboardView(Gtk.ApplicationWindow):
     download_speed_label = Gtk.Template.Child()
     connected_protocol_label = Gtk.Template.Child()
     upload_speed_label = Gtk.Template.Child()
+    locations_label = Gtk.Template.Child()
     overlay_bottom_label = Gtk.Template.Child()
     connecting_to_label = Gtk.Template.Child()
     connecting_to_country_servername_label = Gtk.Template.Child()
@@ -91,6 +94,7 @@ class DashboardView(Gtk.ApplicationWindow):
     server_load_image = Gtk.Template.Child()
     download_speed_image = Gtk.Template.Child()
     upload_speed_image = Gtk.Template.Child()
+    servers_info_icon = Gtk.Template.Child()
     sidebar_country_image = Gtk.Template.Child()
     dashboard_secure_core_button_image = Gtk.Template.Child()
     dashboard_netshield_button_image = Gtk.Template.Child()
@@ -102,6 +106,7 @@ class DashboardView(Gtk.ApplicationWindow):
     ip_server_load_labels_grid = Gtk.Template.Child()
     connection_information_grid = Gtk.Template.Child()
     connection_speed_label_grid = Gtk.Template.Child()
+    top_sever_locations_grid = Gtk.Template.Child()
     server_list_grid = Gtk.Template.Child()
 
     # Boxes
@@ -364,6 +369,10 @@ class DashboardView(Gtk.ApplicationWindow):
             "down-icon.svg",
             width=15, height=15
         )
+        server_locations_pixbuff = dummy_object.create_icon_pixbuf_from_name(
+            "info-circle-filled.svg",
+            width=15, height=15
+        )
         feature_button_secure_core_pixbuf = dummy_object \
             .create_icon_pixbuf_from_name(
                 self.features_icon_set_dict[
@@ -394,8 +403,9 @@ class DashboardView(Gtk.ApplicationWindow):
 
         self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)
         self.overlay_logo_image.set_from_pixbuf(logo_pixbuf)
-        self.download_speed_image.set_from_pixbuf(download_pixbuff)
         self.upload_speed_image.set_from_pixbuf(upload_pixbuff)
+        self.download_speed_image.set_from_pixbuf(download_pixbuff)
+        self.servers_info_icon.set_from_pixbuf(server_locations_pixbuff)
         self.dashboard_secure_core_button_image.set_from_pixbuf(
             feature_button_secure_core_pixbuf
         )
@@ -481,6 +491,14 @@ class DashboardView(Gtk.ApplicationWindow):
         self.server_search_entry.connect(
             "search-changed", self.filter_server_list
         )
+
+        # setup events
+        self.servers_info_icon_button.connect("enter", self.on_display_premium_features)
+
+    def on_display_premium_features(self, gtk_button):
+        active_windows = self.application.get_windows()
+        if not any(type(window) == ServerFeaturesView for window in active_windows):
+            PremiumCountries(self.application)
 
     def filter_server_list(self, server_search_entry):
         """Filter server list based on user input.

@@ -4,7 +4,7 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import GdkPixbuf, Gtk
 from protonvpn_nm_lib.country_codes import country_codes
-from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum
+from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum, ServerTierEnum
 from ..factory import WidgetFactory
 from ..enums import GLibEventSourceEnum
 from .server_load import ServerLoad
@@ -28,9 +28,17 @@ class ServerListView:
         return self.__country_rows
 
     def __populate(self):
+        if self.__server_list.user_tier.value >= ServerTierEnum.PLUS_VISIONARY.value:
+            self.__setup_locations_info()
         self.__update_country_name()
         self.__sort_countres_by_name()
         self.__attach_countries()
+
+    def __setup_locations_info(self):
+        self.dv.top_sever_locations_grid.props.visible = True
+        self.dv.locations_label.props.label = "Locations ({})".format(
+            len(self.__server_list.servers)
+        )
 
     def __update_country_name(self):
         for country_item in self._yield_countries():

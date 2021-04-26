@@ -50,6 +50,10 @@ class ServerList:
 
         return self.__default_list
 
+    @property
+    def user_tier(self):
+        return self.__user_tier
+
     def __copy_servers(self):
         if self.__display_secure_core_servers:
             self.__default_list = copy.deepcopy(
