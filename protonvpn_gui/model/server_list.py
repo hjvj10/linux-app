@@ -33,6 +33,9 @@ class ServerList:
         self.__user_tier = None
         self.__display_secure_core_servers = False
         self.__default_list = None
+        self.__num_free_countries = None
+        self.__num_basic_countries = None
+        self.__num_plus_countries = None
 
     @property
     def display_secure_core(self):
@@ -53,6 +56,40 @@ class ServerList:
     @property
     def user_tier(self):
         return self.__user_tier
+
+    @property
+    def ammount_of_free_countries(self):
+        if self.__num_free_countries is None:
+            self.__num_free_countries = 0
+            for server in self.servers:
+                if ServerTierEnum.FREE in server.tiers:
+                    self.__num_free_countries += 1
+
+        return self.__num_free_countries
+
+    @property
+    def ammount_of_basic_countries(self):
+        if self.__num_basic_countries is None:
+            self.__num_basic_countries = 0
+            for server in self.servers:
+                if ServerTierEnum.BASIC in server.tiers:
+                    self.__num_basic_countries += 1
+
+        return self.__num_basic_countries
+
+    @property
+    def ammount_of_plus_countries(self):
+        if self.__num_plus_countries is None:
+            self.__num_plus_countries = 0
+            for server in self.servers:
+                if ServerTierEnum.PLUS_VISIONARY in server.tiers:
+                    self.__num_plus_countries += 1
+
+        return self.__num_plus_countries
+
+    @property
+    def total_ammount_of_countries(self):
+        return len(self.servers)
 
     def __copy_servers(self):
         if self.__display_secure_core_servers:
@@ -88,6 +125,9 @@ class ServerList:
 
         self.__generate_secure_core_list()
         self.__generate_non_secure_core_list()
+        self.__num_free_countries = None
+        self.__num_basic_countries = None
+        self.__num_plus_countries = None
 
     def __get_country_code_with_matching_servers(self, server_list):
         country = protonvpn.get_country()
