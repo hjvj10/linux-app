@@ -493,7 +493,7 @@ class DashboardView(Gtk.ApplicationWindow):
         )
 
         # setup events
-        self.servers_info_icon_button.connect("enter", self.on_display_premium_features)
+        self.servers_info_icon_button.connect("clicked", self.on_display_premium_features)
 
     def on_display_premium_features(self, gtk_button):
         active_windows = self.application.get_windows()
