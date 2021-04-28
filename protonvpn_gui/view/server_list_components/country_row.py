@@ -17,7 +17,7 @@ class CountryRow:
         self.dv = dashboard_view
         self.server_list_revealer = ServerListRevealer(
             self.dv,
-            self.country_item.servers,
+            self.country_item,
             display_sc
         )
         self.row_grid = WidgetFactory.grid("country_row")

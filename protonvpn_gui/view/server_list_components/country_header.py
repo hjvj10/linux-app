@@ -14,7 +14,7 @@ class CountryHeader:
     """
     def __init__(self, application):
         self.app = application
-        self.__header_tracker = {}
+        self.__header_tracker = []
 
     def create(self, current_country, server_list):
         """Create country header/separator for respective user tier:
@@ -44,7 +44,7 @@ class CountryHeader:
             and current_country.minimum_country_tier.value < ServerTierEnum.BASIC.value
         ):
             free_header = self.__setup_free_header(server_list.ammount_of_free_countries)
-            self.__header_tracker[ServerTierEnum.FREE] = free_header
+            self.__header_tracker.append(ServerTierEnum.FREE)
             return free_header
         elif (
             ServerTierEnum.BASIC not in self.__header_tracker
@@ -53,7 +53,7 @@ class CountryHeader:
             basic_and_plus = self.__setup_basic_and_plus_header(
                 server_list.ammount_of_basic_countries + server_list.ammount_of_plus_countries
             )
-            self.__header_tracker[ServerTierEnum.BASIC] = basic_and_plus
+            self.__header_tracker.append(ServerTierEnum.BASIC)
             return basic_and_plus
 
         return None
@@ -66,14 +66,14 @@ class CountryHeader:
             basic_header = self.__setup_basic_header(
                 server_list.ammount_of_free_countries + server_list.ammount_of_basic_countries
             )
-            self.__header_tracker[ServerTierEnum.BASIC] = basic_header
+            self.__header_tracker.append(ServerTierEnum.BASIC)
             return basic_header
         elif (
             ServerTierEnum.PLUS_VISIONARY not in self.__header_tracker
             and current_country.minimum_country_tier.value >= ServerTierEnum.PLUS_VISIONARY.value # noqa
         ):
             plus_header = self.__setup_plus_header(server_list.ammount_of_plus_countries)
-            self.__header_tracker[ServerTierEnum.PLUS_VISIONARY] = plus_header
+            self.__header_tracker.append(ServerTierEnum.PLUS_VISIONARY)
             return plus_header
 
         return None
@@ -86,7 +86,7 @@ class CountryHeader:
             all_locations_header = self.__setup_all_locations_header(
                 server_list.total_ammount_of_countries
             )
-            self.__header_tracker[ServerTierEnum.PLUS_VISIONARY] = all_locations_header
+            self.__header_tracker.append(ServerTierEnum.PLUS_VISIONARY)
             return all_locations_header
         elif (
             ServerTierEnum.PM not in self.__header_tracker
@@ -95,7 +95,7 @@ class CountryHeader:
             internal_header = self.__setup_internal_header(
                 server_list.ammount_of_internal_countries
             )
-            self.__header_tracker[ServerTierEnum.PM] = internal_header
+            self.__header_tracker.append(ServerTierEnum.PM)
             return internal_header
 
         return None
