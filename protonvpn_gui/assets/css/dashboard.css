@@ -95,20 +95,27 @@ grid.connecting_overlay_grid label{
 
 }
 
-#servers-info-icon-button{
+grid.country-header{
+	margin-top: 15px;
+	margin-left: 20px;
+	margin-right: 15px;
+	/* Unsure if it fits better with bold or not */
+	/* font-weight: bolder; */
+}
+#servers-info-icon-button, grid.country-header button{
 	background-image: none;
 	border: none;
 	outline: none;
 	box-shadow: none;
 	background-color: transparent;
 }
-#servers-info-icon-button:active{
+#servers-info-icon-button:active, grid.country-header button:active{
 	background-image: none;
 	border: none;
 	outline: none;
 	box-shadow: none;
 }
-#servers-info-icon-button image{
+#servers-info-icon-button image, grid.country-header image{
 	background-image: none;
 	border: none;
 	outline: none;
