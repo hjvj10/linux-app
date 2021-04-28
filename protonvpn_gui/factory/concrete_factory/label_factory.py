@@ -194,6 +194,18 @@ class LabelFactory(WidgetFactory):
         return True if self.__widget_context.has_class(css_class) else False
 
 
+class Default(LabelFactory):
+    """Default class."""
+    label = "default"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+
+
 class PremiumFeaturesPopoverTitle(LabelFactory):
     """PremiumFeaturesPopoverTitle class."""
     label = "premium_features_popover_title"

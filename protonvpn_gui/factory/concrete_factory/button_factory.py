@@ -174,6 +174,14 @@ class Default(ButtonFactory):
         super().__init__()
 
 
+class HeaderInfo(ButtonFactory):
+    button = "header_info"
+
+    def __init__(self):
+        super().__init__()
+        self.show = True
+
+
 class QuickSetting(ButtonFactory):
     button = "quick_setting"
 
