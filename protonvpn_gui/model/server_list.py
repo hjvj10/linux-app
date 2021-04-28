@@ -15,13 +15,9 @@ class ServerList:
             contains a list of CountryItem
 
     Methods:
-        generate_server_list()
+        generate_list()
             generates the neccesary elements for server listing and
             stores them in server_list
-        sort_countries_by_tier()
-            sorts the provided country list by the provided user tier
-        sort_countries_by_name()
-            sorts the provided country list by a countrys name
     """
     __server_list: list = None
 
@@ -36,6 +32,7 @@ class ServerList:
         self.__num_free_countries = None
         self.__num_basic_countries = None
         self.__num_plus_countries = None
+        self.__num_internal_countries = None
 
     @property
     def display_secure_core(self):
@@ -62,7 +59,7 @@ class ServerList:
         if self.__num_free_countries is None:
             self.__num_free_countries = 0
             for server in self.servers:
-                if ServerTierEnum.FREE in server.tiers:
+                if ServerTierEnum.FREE == server.minimum_country_tier:
                     self.__num_free_countries += 1
 
         return self.__num_free_countries
@@ -72,7 +69,7 @@ class ServerList:
         if self.__num_basic_countries is None:
             self.__num_basic_countries = 0
             for server in self.servers:
-                if ServerTierEnum.BASIC in server.tiers:
+                if ServerTierEnum.BASIC == server.minimum_country_tier:
                     self.__num_basic_countries += 1
 
         return self.__num_basic_countries
@@ -82,14 +79,24 @@ class ServerList:
         if self.__num_plus_countries is None:
             self.__num_plus_countries = 0
             for server in self.servers:
-                if ServerTierEnum.PLUS_VISIONARY in server.tiers:
+                if ServerTierEnum.PLUS_VISIONARY == server.minimum_country_tier:
                     self.__num_plus_countries += 1
 
         return self.__num_plus_countries
 
     @property
+    def ammount_of_internal_countries(self):
+        if self.__num_internal_countries is None:
+            self.__num_internal_countries = 0
+            for server in self.servers:
+                if ServerTierEnum.PM == server.minimum_country_tier:
+                    self.__num_internal_countries += 1
+
+        return self.__num_internal_countries
+
+    @property
     def total_ammount_of_countries(self):
-        return len(self.servers)
+        return len(self.servers) - self.ammount_of_internal_countries
 
     def __copy_servers(self):
         if self.__display_secure_core_servers:
@@ -106,7 +113,6 @@ class ServerList:
 
         Args:
             user_tier (ServerTierEnum)
-            only_secure_core (bool)
         """
         self.__unfiltered_server_list = []
         self.__user_tier = user_tier
@@ -121,6 +127,7 @@ class ServerList:
             country_item.create(
                 self.__user_tier, servername_list
             )
+
             self.__unfiltered_server_list.append(country_item)
 
         self.__generate_secure_core_list()
@@ -128,6 +135,7 @@ class ServerList:
         self.__num_free_countries = None
         self.__num_basic_countries = None
         self.__num_plus_countries = None
+        self.__num_internal_countries = None
 
     def __get_country_code_with_matching_servers(self, server_list):
         country = protonvpn.get_country()
@@ -179,18 +187,63 @@ class ServerList:
             )
             self.__non_secure_core_servers.append(copy_country_item)
 
-        self.__sort_countries_by_tier()
+        sort_methods_by_tier = {
+            ServerTierEnum.FREE: self.__sort_for_free_user,
+            ServerTierEnum.BASIC: self.__sort_for_basic_user,
+            ServerTierEnum.PLUS_VISIONARY: self.__sort_for_plus_user,
+            ServerTierEnum.PM: self.__sort_for_internal_user,
+        }
+        try:
+            sort_methods_by_tier[self.__user_tier]()
+        except KeyError:
+            self.__sort_for_free_users()
 
-    def __sort_countries_by_tier(self):
-        if self.__user_tier == ServerTierEnum.FREE:
-            self.__non_secure_core_servers.sort(
-                key=lambda country: any(
-                    tier == ServerTierEnum.FREE
-                    for tier
-                    in country.tiers
-                ),
-                reverse=True
-            )
+    def __sort_for_free_user(self):
+        free_countries = list(filter(
+            lambda country: country.minimum_country_tier == ServerTierEnum.FREE,
+            self.__non_secure_core_servers
+        ))
+        upgrade_countries = list(filter(
+            lambda country: country.minimum_country_tier != ServerTierEnum.FREE,
+            self.__non_secure_core_servers
+        ))
+        free_countries.sort(key=lambda country: country.country_name)
+        upgrade_countries.sort(key=lambda country: country.country_name)
+        free_countries.extend(upgrade_countries)
+        self.__non_secure_core_servers = free_countries
+
+    def __sort_for_basic_user(self):
+        free_and_basic_countries = list(filter(
+            lambda country: country.minimum_country_tier.value <= ServerTierEnum.BASIC.value,
+            self.__non_secure_core_servers
+        ))
+        upgrade_countries = list(filter(
+            lambda country: country.minimum_country_tier.value > ServerTierEnum.BASIC.value,
+            self.__non_secure_core_servers
+        ))
+        free_and_basic_countries.sort(key=lambda country: country.country_name)
+        upgrade_countries.sort(key=lambda country: country.country_name)
+        free_and_basic_countries.extend(upgrade_countries)
+        self.__non_secure_core_servers = free_and_basic_countries
+
+    def __sort_for_plus_user(self):
+        self.__non_secure_core_servers.sort(
+            key=lambda country: country.country_name
+        )
+
+    def __sort_for_internal_user(self):
+        internal_servers = list(filter(
+            lambda country: country.minimum_country_tier == ServerTierEnum.PM,
+            self.__non_secure_core_servers
+        ))
+        other_servers = list(filter(
+            lambda country: country.minimum_country_tier != ServerTierEnum.PM,
+            self.__non_secure_core_servers
+        ))
+        internal_servers.sort(key=lambda country: country.country_name)
+        other_servers.sort(key=lambda country: country.country_name)
+        internal_servers.extend(other_servers)
+        self.__non_secure_core_servers = internal_servers
 
     def __sort_non_secure_servers(self, country_item):
         matching_server = list(filter(
@@ -215,12 +268,3 @@ class ServerList:
         )
 
         return matching_server
-
-    def sort_countries_by_name(self):
-        if self.__user_tier != ServerTierEnum.FREE:
-            try:
-                self.__default_list.sort(
-                    key=lambda country: country.country_name
-                )
-            except TypeError:
-                pass

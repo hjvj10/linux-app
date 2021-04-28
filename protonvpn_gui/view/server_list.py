@@ -3,12 +3,14 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import GdkPixbuf, Gtk
-from protonvpn_nm_lib.country_codes import country_codes
-from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum, ServerTierEnum
-from ..factory import WidgetFactory
+from protonvpn_nm_lib.enums import (FeatureEnum, ServerStatusEnum,
+                                    ServerTierEnum)
+
 from ..enums import GLibEventSourceEnum
-from .server_load import ServerLoad
+from ..factory import WidgetFactory
 from .dialog import ConnectUpgradeDialog
+from .server_load import ServerLoad
+from .server_features import PremiumCountries, ServerFeaturesView
 
 
 class ServerListView:
@@ -21,6 +23,7 @@ class ServerListView:
         self.dv = dashboard_view
         self.__server_list = state.server_list
         self.__country_widget_position_tracker = {}
+        self.__header_tracker = []
         self.__populate()
 
     @property
@@ -28,27 +31,7 @@ class ServerListView:
         return self.__country_rows
 
     def __populate(self):
-        if self.__server_list.user_tier.value >= ServerTierEnum.PLUS_VISIONARY.value:
-            self.__setup_locations_info()
-        self.__update_country_name()
-        self.__sort_countres_by_name()
         self.__attach_countries()
-
-    def __setup_locations_info(self):
-        self.dv.top_sever_locations_grid.props.visible = True
-        self.dv.locations_label.props.label = "Locations ({})".format(
-            len(self.__server_list.servers)
-        )
-
-    def __update_country_name(self):
-        for country_item in self._yield_countries():
-            country_item.country_name = country_codes.get(
-                country_item.entry_country_code,
-                country_item.entry_country_code
-            )
-
-    def __sort_countres_by_name(self):
-        self.__server_list.sort_countries_by_name()
 
     def __attach_countries(self):
         replaceable_child_grid = WidgetFactory.grid("dummy")
@@ -60,23 +43,40 @@ class ServerListView:
             replaceable_child_grid.widget, 0, 0, 1, 1
         )
 
-        for country_item in self._yield_countries():
+        country_header = CountryHeader(self.dv.application)
+        row_counter = 0
+        for country_item in self.__server_list.servers:
             if len(country_item) < 1:
                 continue
+
+            add_header = False
+            header = country_header.create(
+                country_item,
+                self.__server_list
+            )
+            if header and not self.__server_list.display_secure_core:
+                add_header = True
+                replaceable_child_grid.attach(
+                    header.widget, col=0,
+                    row=row_counter + 1, width=1, height=1
+                )
+                self.__header_tracker.append(header)
 
             country_grid_row = CountryRow(
                 country_item, self.dv,
                 display_sc=self.__server_list.display_secure_core
             )
+            row_counter += 1 + (1 if add_header else 0)
+
             replaceable_child_grid.attach(
                 country_grid_row.event_box, col=0,
-                row=self.__country_rows, width=1, height=1
+                row=row_counter, width=1, height=1
             )
             self.__country_widget_position_tracker[
                 country_item.country_name
             ] = country_grid_row
 
-            self.__country_rows += 1
+        self.__country_rows = self.__server_list.total_ammount_of_countries
 
     def _yield_countries(self):
         for country_item in self.__server_list.servers:
@@ -89,11 +89,211 @@ class ServerListView:
             in self.__country_widget_position_tracker.items()
             if user_input.lower() in country_name.lower()
         ]
+
+        self.__set_headers_visilbility(False)
+        if len(user_input) < 1:
+            self.__set_headers_visilbility(True)
+
         for _, country_row in self.__country_widget_position_tracker.items():
-            if country_row not in filtered_country_widgets:
-                country_row.row_grid.show = False
-            else:
+            country_row.row_grid.show = False
+            if country_row in filtered_country_widgets:
                 country_row.row_grid.show = True
+
+    def __set_headers_visilbility(self, bool_val):
+        """Sets header visibility.
+
+        Ideally the headers should be hidden when a user is performing a search,
+        otherwise they should be displayed.
+        """
+        for header in self.__header_tracker:
+            header.show = bool_val
+
+
+class Header:
+    def __init__(self, app):
+        self.app = app
+        self.__grid = WidgetFactory.grid("default")
+        self.__grid.add_class("server-list-country-margin-left")
+        self.__grid.add_class("server-list-country-margin-right")
+        self.__grid.add_class("country-header")
+        self.__grid.add_class("header-background-color")
+        self.__header_title = WidgetFactory.label("default")
+        self.__button = WidgetFactory.button("header_info")
+        self.__button.show = False
+        self.__info_icon = WidgetFactory.image("server_feature_info")
+        self.__button.custom_content(self.__info_icon.widget)
+        self.__attach_widgets()
+        self.__button.connect("clicked", self.on_display_premium_features)
+
+    @property
+    def widget(self):
+        return self.__grid.widget
+
+    def __attach_widgets(self):
+        self.__grid.attach(self.__header_title.widget)
+        self.__grid.attach_right_next_to(self.__button.widget, self.__header_title.widget)
+
+    @property
+    def show(self):
+        return self.__grid.show
+
+    @show.setter
+    def show(self, newboolval):
+        self.__grid.show = newboolval
+
+    @property
+    def info_icon_visibility(self):
+        return self.__button.show
+
+    @info_icon_visibility.setter
+    def info_icon_visibility(self, newboolval):
+        self.__button.show = newboolval
+
+    @property
+    def title(self):
+        return self.__header_title.content
+
+    @title.setter
+    def title(self, newvalue):
+        self.__header_title.content = newvalue
+
+    def on_display_premium_features(self, gtk_button):
+        """Display features for specific tier"""
+        active_windows = self.app.get_windows()
+        if not any(type(window) == ServerFeaturesView for window in active_windows):
+            PremiumCountries(self.app)
+
+
+class CountryHeader:
+    """CountryHeader class.
+
+    Creates country headers mainly based on user tier. Has to be instantiated
+    before being used.
+
+    Methods:
+        - create(current_country, server_list): will automatically figure out
+            if the header should be added or not.
+    """
+    def __init__(self, application):
+        self.app = application
+        self.__header_tracker = {}
+
+    def create(self, current_country, server_list):
+        """Create country header/separator for respective user tier:
+
+        Args:
+            server_list: object that can access the ammount of servers
+                for each tier and the actual user tier.
+            current_country: country_item object
+        """
+        create_header_for_matching_tier = {
+            ServerTierEnum.FREE: self.__solve_for_free_user,
+            ServerTierEnum.BASIC: self.__solve_for_basic_user,
+            ServerTierEnum.PLUS_VISIONARY: self.__solve_for_top_tier,
+            ServerTierEnum.PM: self.__solve_for_top_tier,
+        }
+
+        try:
+            return create_header_for_matching_tier[server_list.user_tier](
+                current_country, server_list
+            )
+        except KeyError:
+            return None
+
+    def __solve_for_free_user(self, current_country, server_list):
+        if (
+            ServerTierEnum.FREE not in self.__header_tracker
+            and current_country.minimum_country_tier.value < ServerTierEnum.BASIC.value
+        ):
+            free_header = self.__setup_free_header(server_list.ammount_of_free_countries)
+            self.__header_tracker[ServerTierEnum.FREE] = free_header
+            return free_header
+        elif (
+            ServerTierEnum.BASIC not in self.__header_tracker
+            and current_country.minimum_country_tier.value >= ServerTierEnum.BASIC.value
+        ):
+            basic_and_plus = self.__setup_basic_and_plus_header(
+                server_list.ammount_of_basic_countries + server_list.ammount_of_plus_countries
+            )
+            self.__header_tracker[ServerTierEnum.BASIC] = basic_and_plus
+            return basic_and_plus
+
+        return None
+
+    def __solve_for_basic_user(self, current_country, server_list):
+        if (
+            ServerTierEnum.BASIC not in self.__header_tracker
+            and current_country.minimum_country_tier.value < ServerTierEnum.PLUS_VISIONARY.value
+        ):
+            basic_header = self.__setup_basic_header(
+                server_list.ammount_of_free_countries + server_list.ammount_of_basic_countries
+            )
+            self.__header_tracker[ServerTierEnum.BASIC] = basic_header
+            return basic_header
+        elif (
+            ServerTierEnum.PLUS_VISIONARY not in self.__header_tracker
+            and current_country.minimum_country_tier.value >= ServerTierEnum.PLUS_VISIONARY.value # noqa
+        ):
+            plus_header = self.__setup_plus_header(server_list.ammount_of_plus_countries)
+            self.__header_tracker[ServerTierEnum.PLUS_VISIONARY] = plus_header
+            return plus_header
+
+        return None
+
+    def __solve_for_top_tier(self, current_country, server_list):
+        if (
+            ServerTierEnum.PLUS_VISIONARY not in self.__header_tracker
+            and current_country.minimum_country_tier.value <= ServerTierEnum.PLUS_VISIONARY.value # noqa
+        ):
+            all_locations_header = self.__setup_all_locations_header(
+                server_list.total_ammount_of_countries
+            )
+            self.__header_tracker[ServerTierEnum.PLUS_VISIONARY] = all_locations_header
+            return all_locations_header
+        elif (
+            ServerTierEnum.PM not in self.__header_tracker
+            and current_country.minimum_country_tier == ServerTierEnum.PM
+        ):
+            internal_header = self.__setup_internal_header(
+                server_list.ammount_of_internal_countries
+            )
+            self.__header_tracker[ServerTierEnum.PM] = internal_header
+            return internal_header
+
+        return None
+
+    def __setup_free_header(self, server_count):
+        h = Header(self.app)
+        h.title = "FREE Locations ({})".format(server_count)
+        return h
+
+    def __setup_basic_and_plus_header(self, server_count):
+        h = Header(self.app)
+        h.title = "BASIC&PLUS Locations ({})".format(server_count)
+        h.info_icon_visibility = True
+        return h
+
+    def __setup_basic_header(self, server_count):
+        h = Header(self.app)
+        h.title = "BASIC Locations ({})".format(server_count)
+        return h
+
+    def __setup_plus_header(self, server_count):
+        h = Header(self.app)
+        h.title = "PLUS Locations ({})".format(server_count)
+        h.info_icon_visibility = True
+        return h
+
+    def __setup_internal_header(self, server_count):
+        h = Header(self.app)
+        h.title = "Internal ({})".format(server_count)
+        return h
+
+    def __setup_all_locations_header(self, server_count):
+        h = Header(self.app)
+        h.title = "Locations ({})".format(server_count)
+        h.info_icon_visibility = True
+        return h
 
 
 class CountryRow:
@@ -178,8 +378,6 @@ class CountryRowLeftGrid:
         self.country_name = WidgetFactory.label(
             "country", country_item.country_name
         )
-        if not country_item.can_connect:
-            self.country_name.add_class("disabled-label")
 
         self.grid.attach_right_next_to(
             self.country_name.widget, self.sc_chevron.widget,
@@ -198,15 +396,15 @@ class CountryRowRightGrid:
 
         self.maintenance_icon = WidgetFactory.image("maintenance_icon")
         self.connect_country_button = WidgetFactory.button("connect_country")
+        if all(server.has_to_upgrade for server in country_item.servers):
+            self.connect_country_button.label = "UPGRADE"
         self.chevron_button = WidgetFactory.button("chevron")
         self.chevron_icon = WidgetFactory.image("chevron_icon")
         self.chevron_button.image = self.chevron_icon.widget
         self.grid.attach(self.chevron_button.widget)
         self.grid.attach(self.maintenance_icon.widget)
 
-        if not country_item.can_connect:
-            return
-        elif country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
+        if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.connect_callback(country_item)
             self.attach_connect_button()
             self.set_country_features(country_item.features)
@@ -253,10 +451,16 @@ class CountryRowRightGrid:
         )
 
     def connect_callback(self, country_item):
-        self.connect_country_button.connect(
-            "clicked", self.connect_to_country,
-            country_item.entry_country_code
-        )
+        if not all(server.has_to_upgrade for server in country_item.servers):
+            self.connect_country_button.connect(
+                "clicked", self.connect_to_country,
+                country_item.entry_country_code
+            )
+        else:
+            self.connect_country_button.connect(
+                "clicked", self.display_upgrade,
+            )
+
         self.chevron_button.connect(
             "clicked", self.on_click_chevron,
             self.chevron_icon.widget, self.chevron_button.context,
@@ -293,6 +497,9 @@ class CountryRowRightGrid:
             ).rotate_simple(GdkPixbuf.PixbufRotation.NONE)
 
         gtk_chevron_img.set_from_pixbuf(chevron_pixbuf)
+
+    def display_upgrade(self, gtk_button):
+        ConnectUpgradeDialog(self.dv.application)
 
 
 class ServerListRevealer:
@@ -380,7 +587,6 @@ class ServerRowLeftGrid:
         self.set_server_features()
         if self.display_sc:
             return
-        self.create_is_plus_server_icon()
 
     def create_load_icon(self):
         self.load_icon = ServerLoad(self.server.load)
@@ -426,40 +632,27 @@ class ServerRowLeftGrid:
         )
         self.sc_chevron.show = True if self.display_sc else False
 
-    def create_is_plus_server_icon(self):
-        if not self.server.is_plus:
-            return
-        plus_server_icon = WidgetFactory.image("plus_icon")
-        plus_server_icon.tooltip = True
-        plus_server_icon.tooltip_text = "Plus Server"
-        if len(self.feature_icon_list) < 1:
-            self.grid.attach_right_next_to(
-                plus_server_icon.widget,
-                self.servername_label.widget,
-            )
-            return
-
-        self.grid.attach_right_next_to(
-            plus_server_icon.widget,
-            self.feature_icon_list[-1],
-        )
-
     def set_server_features(self):
         feature_to_img_dict = {
             FeatureEnum.TOR: ["tor_icon", "TOR Server"],
             FeatureEnum.P2P: ["p2p_icon", "P2P Server"],
+            FeatureEnum.STREAMING: ["streaming_icon", "Streaming"],
         }
-        features = list(set(
-            [FeatureEnum.TOR, FeatureEnum.P2P]
-        ) & set(self.server.features))
 
-        if len(features) < 1:
+        features = self.server.features
+        if len(features) < 1 or len(features) == 1 and (
+            FeatureEnum.NORMAL not in features
+            or FeatureEnum.SECURE_CORE not in features
+        ):
             return
 
         for feature in features:
-            pixbuf_feature_icon = WidgetFactory.image(
-                feature_to_img_dict[feature][0]
-            )
+            try:
+                pixbuf_feature_icon = WidgetFactory.image(
+                    feature_to_img_dict[feature][0]
+                )
+            except KeyError:
+                continue
             pixbuf_feature_icon.tooltip = True
             pixbuf_feature_icon.tooltip_text = feature_to_img_dict[feature][1]
             self.attach_feature_icon(pixbuf_feature_icon.widget)

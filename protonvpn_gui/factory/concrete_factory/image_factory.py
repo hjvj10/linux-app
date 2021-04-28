@@ -240,6 +240,21 @@ class Dummy(ImageFactory):
         super().__init__()
 
 
+class ServerFeatureInfo(ImageFactory):
+    """Server Feature Info icon class."""
+    image = "server_feature_info"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "info-circle-filled.svg",
+                width=15, height=15
+            )
+        )
+        self.show = True
+
+
 class PremiumPopoverSmartRouting(ImageFactory):
     """Premium Popover Smart Routing icon class."""
     image = "premium_popover_smart_routing"
@@ -363,15 +378,15 @@ class FeatureTOR(ImageFactory):
         self.show = True
 
 
-class FeaturePlus(ImageFactory):
-    """FeaturePlus icon class."""
-    image = "plus_icon"
+class FeatureStreaming(ImageFactory):
+    """FeatureStreaming icon class."""
+    image = "streaming_icon"
 
     def __init__(self, _):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "plus-server.png",
+                "streaming.svg",
                 width=20, height=20
             )
         )

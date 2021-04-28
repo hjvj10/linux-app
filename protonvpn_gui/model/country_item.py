@@ -1,6 +1,6 @@
 from protonvpn_nm_lib.api import protonvpn
-from protonvpn_nm_lib.enums import ServerStatusEnum, ServerTierEnum
-
+from protonvpn_nm_lib.enums import ServerStatusEnum, ServerTierEnum, FeatureEnum
+from protonvpn_nm_lib.country_codes import country_codes
 from .server_item import ServerItem
 
 
@@ -42,8 +42,8 @@ class CountryItem:
         self.__features: list = set()
         self.__servers: list = list()
         self.__can_connect: bool = False
-
-        # This is set on the view.
+        self.__minimum_required_tier = None
+        self.__host_country = None
         self.__country_name = None
 
     def __len__(self):
@@ -89,12 +89,29 @@ class CountryItem:
     def can_connect(self):
         return self.__can_connect
 
+    @property
+    def country_tier(self):
+        return self.__minimum_required_tier
+
+    @country_tier.setter
+    def minimum_country_tier(self, _value):
+        self.__minimum_required_tier = _value
+
+    @property
+    def is_virtual(self):
+        return self.__host_country
+        # if self.__host_country:
+        #     return True
+        # return False
+
     def create(
         self, user_tier, servername_list
     ):
         status_collector = set()
         tier_collector = set()
         feature_collector = set()
+        # country_host_collector = set()
+        self.__host_country = set()
 
         for servername in servername_list:
             logical_server = protonvpn.get_session().servers.filter(
@@ -109,10 +126,18 @@ class CountryItem:
                 status_collector, server_item.status
             )
             self.__add_tier_to_tier_collector(tier_collector, server_item.tier)
+            if FeatureEnum.SECURE_CORE in logical_server.features:
+                continue
+            self.__host_country.add(logical_server.host_country)
 
         self.__set_features(feature_collector)
         self.__set_status(status_collector)
         self.__set_tiers(tier_collector)
+        self.__set_minimum_required_tier(tier_collector)
+        self.__country_name = country_codes.get(
+            self.__entry_country_code,
+            self.__entry_country_code
+        )
         self.__can_connect = True\
             if (
                 (
@@ -146,6 +171,14 @@ class CountryItem:
 
     def __set_tiers(self, tier_collector):
         self.__tiers = list(tier_collector)
+
+    def __set_minimum_required_tier(self, tier_collector):
+        for tier in tier_collector:
+            if not self.__minimum_required_tier:
+                self.__minimum_required_tier = tier
+                continue
+            elif self.__minimum_required_tier.value > tier.value:
+                self.__minimum_required_tier = tier
 
     def __get_country_status(self, status_collector):
         if len(status_collector) == 2:
