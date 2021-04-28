@@ -5,7 +5,7 @@ from math import pi
 gi.require_version('Gtk', '3.0')
 import cairo
 from gi.repository import Gtk, Gdk
-from ..factory import WidgetFactory
+from ...factory import WidgetFactory
 
 
 class ServerLoad(Gtk.Frame):
