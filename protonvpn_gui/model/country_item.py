@@ -43,8 +43,12 @@ class CountryItem:
         self.__servers: list = list()
         self.__can_connect: bool = False
         self.__minimum_required_tier = None
-        self.__host_country = None
-        self.__country_name = None
+        self.__host_country: str = None
+        self.__country_name: str = None
+        self.__num_free_countries: int = None
+        self.__num_basic_countries: int = None
+        self.__num_plus_countries: int = None
+        self.__num_internal_countries: int = None
 
     def __len__(self):
         return len(self.__servers)
@@ -103,6 +107,46 @@ class CountryItem:
         # if self.__host_country:
         #     return True
         # return False
+
+    @property
+    def ammount_of_free_servers(self):
+        if self.__num_free_countries is None:
+            self.__num_free_countries = 0
+            for server in self.servers:
+                if server.tier == ServerTierEnum.FREE:
+                    self.__num_free_countries += 1
+
+        return self.__num_free_countries
+
+    @property
+    def ammount_of_basic_servers(self):
+        if self.__num_basic_countries is None:
+            self.__num_basic_countries = 0
+            for server in self.servers:
+                if server.tier == ServerTierEnum.BASIC:
+                    self.__num_basic_countries += 1
+
+        return self.__num_basic_countries
+
+    @property
+    def ammount_of_plus_servers(self):
+        if self.__num_plus_countries is None:
+            self.__num_plus_countries = 0
+            for server in self.servers:
+                if server.tier == ServerTierEnum.PLUS_VISIONARY:
+                    self.__num_plus_countries += 1
+
+        return self.__num_plus_countries
+
+    @property
+    def ammount_of_internal_servers(self):
+        if self.__num_internal_countries is None:
+            self.__num_internal_countries = 0
+            for server in self.servers:
+                if server.tier.value >= ServerTierEnum.PM.value:
+                    self.__num_internal_countries += 1
+
+        return self.__num_internal_countries
 
     def create(
         self, user_tier, servername_list

@@ -34,7 +34,7 @@ class ServerItem:
         self.__score: int = None
         self.__city: str = None
         self.__features: list = []
-        self.__tier: int = None
+        self.__tier: ServerTierEnum = None
         self.__is_plus: bool = None
         self.__status: int = None
         self.__exit_country_code: str = None
