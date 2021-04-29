@@ -15,14 +15,15 @@
     <property name="gravity">center</property>
     <property name="show-menubar">False</property>
     <child>
-      <object class="GtkScrolledWindow">
+      <object class="GtkScrolledWindow" id="scrolled_window">
         <property name="visible">True</property>
         <property name="can-focus">True</property>
         <property name="shadow-type">in</property>
         <property name="min-content-width">410</property>
-        <property name="min-content-height">525</property>
+        <property name="min-content-height">300</property>
         <property name="max-content-width">410</property>
         <property name="max-content-height">525</property>
+        <property name="propagate-natural-height">True</property>
         <child>
           <object class="GtkViewport">
             <property name="visible">True</property>

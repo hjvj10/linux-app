@@ -245,6 +245,47 @@ class PremiumFeaturesPopoverDescription(LabelFactory):
         self.char_wrap_mode = Pango.WrapMode.WORD_CHAR
 
 
+class StreamingDescription(LabelFactory):
+    """PremiumFeaturesPopoverTitle class."""
+    label = "streaming_description"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.justify = Gtk.Justification.FILL
+        self.align_h = Gtk.Align.FILL
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("text-color")
+        self.add_class("quick-settings-title")
+        self.add_class("margin-left-10px")
+        self.line_wrap = True
+        self.ident_h = 0
+        self.width_in_chars = 40
+        self.max_width_in_chars = 40
+        # Word
+        # Char
+        # WordChar
+        self.char_wrap_mode = Pango.WrapMode.WORD_CHAR
+
+
+class StreamingTitle(LabelFactory):
+    """StreamingTitle class."""
+    label = "streaming_title"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.CENTER
+        self.justify = Gtk.Justification.CENTER
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.width_in_chars = 10
+        self.max_width_in_chars = 10
+        self.add_class("bold")
+        self.add_class("default-text-color")
+
+
 class QuickSettingsTitle(LabelFactory):
     """QuickSettingsTitle class."""
     label = "quick_settings_title"

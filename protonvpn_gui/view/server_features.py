@@ -17,6 +17,7 @@ class ServerFeaturesView(Gtk.ApplicationWindow):
     __gtype_name__ = "ServerFeaturesView"
 
     server_features_container_grid = Gtk.Template.Child()
+    scrolled_window = Gtk.Template.Child()
 
     def __init__(self, application):
         super().__init__(application=application)
@@ -211,17 +212,13 @@ class PlusFeatures:
         self.streaming = WidgetFactory.grid("default")
         feature_logo = WidgetFactory.image("premium_popover_streaming")
         title = WidgetFactory.label("premium_features_popover_title")
-        description = WidgetFactory.label("premium_features_popover_description")
-        description.justify = Gtk.Justification.FILL
-        description.align_h = Gtk.Align.FILL
-        view_more_link = WidgetFactory.button("learn_more")
-        view_more_link.add_class("padding-x-none")
-        view_more_link.add_class("margin-left-10px")
+        description = WidgetFactory.label("streaming_description")
 
         title.content = "Streaming - {}".format(country.country_name)
         description.content = "Connect to a Plus server in this country to start streaming." \
-            "\nNote: User a new browser tab and/or clear the cache to ensure new content appears."
+            "\n\nNote: User a new browser tab and/or clear the cache to ensure new content appears."
 
+        supported_services = self.__add_supported_services(country)
         self.streaming.attach(feature_logo.widget)
         self.streaming.attach_right_next_to(
             title.widget, feature_logo.widget
@@ -229,8 +226,14 @@ class PlusFeatures:
         self.streaming.attach_bottom_next_to(
             description.widget, title.widget
         )
+        self.streaming.attach_bottom_next_to(
+            supported_services.widget, description.widget
+        )
+        description = WidgetFactory.label("streaming_description", "and more")
+        self.streaming.attach_bottom_next_to(
+            description.widget, supported_services.widget
+        )
         self.__widget_list.append(self.streaming)
-        self.__add_supported_services(country)
 
     def __add_supported_services(self, country):
         streaming_services = protonvpn.get_session().streaming
@@ -252,13 +255,9 @@ class PlusFeatures:
                 # TO-DO: create icons for streaming services
                 continue
             else:
-                service_widget = WidgetFactory.label("default", service["Name"])
-                service_widget.add_class("default-text-color")
-                service_widget.add_class("bold")
-                service_widget.width_in_chars = 10
-                service_widget.max_width_in_chars = 10
-                service_widget.align_h = Gtk.Align.CENTER
-                service_widget.justify = Gtk.Justification.CENTER
+                service_widget = WidgetFactory.label(
+                    "streaming_title", service["Name"]
+                )
 
             services_grid.attach(service_widget.widget, x_pos, y_pos)
 
@@ -268,4 +267,4 @@ class PlusFeatures:
             else:
                 x_pos += 1
 
-        self.__widget_list.append(services_grid)
+        return services_grid
