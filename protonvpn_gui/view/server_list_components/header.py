@@ -1,4 +1,3 @@
-from ..server_features import PremiumCountries, ServerFeaturesView
 from ...factory import WidgetFactory
 
 
@@ -16,7 +15,6 @@ class Header:
         self.__info_icon = WidgetFactory.image("server_feature_info")
         self.__button.custom_content(self.__info_icon.widget)
         self.__attach_widgets()
-        self.__button.connect("clicked", self.on_display_premium_features)
 
     @property
     def widget(self):
@@ -50,8 +48,5 @@ class Header:
     def title(self, newvalue):
         self.__header_title.content = newvalue
 
-    def on_display_premium_features(self, gtk_button):
-        """Display features for specific tier"""
-        active_windows = self.app.get_windows()
-        if not any(type(window) == ServerFeaturesView for window in active_windows):
-            PremiumCountries(self.app)
+    def connect_button(self, func):
+        self.__button.connect("clicked", func)

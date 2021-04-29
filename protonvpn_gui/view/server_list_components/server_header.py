@@ -39,6 +39,7 @@ class ServerHeader:
             h = Header(self.app)
             h.title = "PLUS Servers ({})".format(country_item.ammount_of_plus_servers)
             self.__header_tracker.append(ServerTierEnum.PLUS_VISIONARY)
+            h.info_icon_visibility = True
             return h
         elif (
             current_server.tier == ServerTierEnum.PM

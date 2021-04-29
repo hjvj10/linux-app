@@ -1,4 +1,5 @@
 from .header import Header
+from ..server_features import PremiumCountries, ServerFeaturesView
 from protonvpn_nm_lib.enums import ServerTierEnum
 
 
@@ -15,6 +16,12 @@ class CountryHeader:
     def __init__(self, application):
         self.app = application
         self.__header_tracker = []
+
+    def on_display_premium_features(self, gtk_button):
+        """Display features for specific tier"""
+        active_windows = self.app.get_windows()
+        if not any(type(window) == ServerFeaturesView for window in active_windows):
+            PremiumCountries(self.app)
 
     def create(self, current_country, server_list):
         """Create country header/separator for respective user tier:
@@ -109,6 +116,7 @@ class CountryHeader:
         h = Header(self.app)
         h.title = "BASIC&PLUS Locations ({})".format(server_count)
         h.info_icon_visibility = True
+        h.connect_button(self.on_display_premium_features)
         return h
 
     def __setup_basic_header(self, server_count):
@@ -120,6 +128,7 @@ class CountryHeader:
         h = Header(self.app)
         h.title = "PLUS Locations ({})".format(server_count)
         h.info_icon_visibility = True
+        h.connect_button(self.on_display_premium_features)
         return h
 
     def __setup_internal_header(self, server_count):
@@ -131,4 +140,5 @@ class CountryHeader:
         h = Header(self.app)
         h.title = "Locations ({})".format(server_count)
         h.info_icon_visibility = True
+        h.connect_button(self.on_display_premium_features)
         return h
