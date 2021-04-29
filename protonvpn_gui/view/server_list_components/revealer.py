@@ -16,7 +16,7 @@ class ServerListRevealer:
 
             add_header = False
             header = server_header.create(server, country_item)
-            if header:
+            if header and not display_sc:
                 add_header = True
                 self.revealer_child_grid.attach(
                     header.widget, col=0,

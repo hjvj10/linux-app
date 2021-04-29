@@ -165,6 +165,7 @@ class ServerList:
                         pass
 
             self.__secure_core_servers.append(copy_country_item)
+        self.__secure_core_servers.sort(key=lambda c: c.country_name)
 
     def __generate_non_secure_core_list(self):
         self.__non_secure_core_servers = []
