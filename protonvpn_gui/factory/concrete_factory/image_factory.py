@@ -346,6 +346,21 @@ class Maintenance(ImageFactory):
         self.show = False
 
 
+class FeatureSmartRouting(ImageFactory):
+    """Premium Popover Smart Routing icon class."""
+    image = "smart_routing_icon"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "smart-routing.svg",
+                width=20, height=20
+            )
+        )
+        self.show = True
+
+
 class FeatureP2P(ImageFactory):
     """FeatureP2P icon class."""
     image = "p2p_icon"

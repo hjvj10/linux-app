@@ -124,20 +124,24 @@ class CountryRowRightGrid:
         if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
             self.connect_callback(country_item)
             self.attach_connect_button()
-            self.set_country_features(country_item.features)
+            self.set_country_features(country_item)
         else:
             self.connect_country_button.show = False
             self.chevron_button.show = False
             self.maintenance_icon.show = True
 
-    def set_country_features(self, country_features):
+    def set_country_features(self, country_item):
         feature_to_img_dict = {
             FeatureEnum.TOR: "tor_icon",
             FeatureEnum.P2P: "p2p_icon",
         }
         features = list(set(
             [FeatureEnum.TOR, FeatureEnum.P2P]
-        ) & set(country_features))
+        ) & set(country_item.features))
+
+        if country_item.is_virtual:
+            feature_icon = WidgetFactory.image("smart_routing_icon")
+            self.attach_feature_icon(feature_icon.widget)
 
         if len(features) < 1:
             return

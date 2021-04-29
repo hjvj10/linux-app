@@ -44,6 +44,7 @@ class CountryItem:
         self.__can_connect: bool = False
         self.__minimum_required_tier = None
         self.__host_country: str = None
+        self.__is_virtual_country: bool = None
         self.__country_name: str = None
         self.__num_free_countries: int = None
         self.__num_basic_countries: int = None
@@ -103,10 +104,7 @@ class CountryItem:
 
     @property
     def is_virtual(self):
-        return self.__host_country
-        # if self.__host_country:
-        #     return True
-        # return False
+        return self.__is_virtual_country
 
     @property
     def ammount_of_free_servers(self):
@@ -154,7 +152,7 @@ class CountryItem:
         status_collector = set()
         tier_collector = set()
         feature_collector = set()
-        # country_host_collector = set()
+        country_host_collection = list()
         self.__host_country = set()
 
         for servername in servername_list:
@@ -172,7 +170,7 @@ class CountryItem:
             self.__add_tier_to_tier_collector(tier_collector, server_item.tier)
             if FeatureEnum.SECURE_CORE in logical_server.features:
                 continue
-            self.__host_country.add(logical_server.host_country)
+            country_host_collection.append(logical_server.host_country)
 
         self.__set_features(feature_collector)
         self.__set_status(status_collector)
@@ -192,6 +190,7 @@ class CountryItem:
                 )
 
             ) else False
+        self.__is_virtual_country = all(host_country for host_country in country_host_collection)
 
     def __add_feature_to_feature_collector(
         self, feature_collector, server_features
