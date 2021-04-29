@@ -48,5 +48,5 @@ class Header:
     def title(self, newvalue):
         self.__header_title.content = newvalue
 
-    def connect_button(self, func):
-        self.__button.connect("clicked", func)
+    def connect_button(self, func, *args):
+        self.__button.connect("clicked", func, *args)

@@ -232,7 +232,7 @@ class PremiumFeaturesPopoverDescription(LabelFactory):
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        self.add_class("default-text-color")
+        self.add_class("text-color")
         self.add_class("quick-settings-title")
         self.add_class("margin-left-10px")
         self.line_wrap = True

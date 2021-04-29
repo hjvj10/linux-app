@@ -1,5 +1,7 @@
 from protonvpn_nm_lib.enums import ServerTierEnum
 from .header import Header
+from ..server_features import PlusFeatures, ServerFeaturesView
+from protonvpn_nm_lib.api import protonvpn
 
 
 class ServerHeader:
@@ -39,7 +41,13 @@ class ServerHeader:
             h = Header(self.app)
             h.title = "PLUS Servers ({})".format(country_item.ammount_of_plus_servers)
             self.__header_tracker.append(ServerTierEnum.PLUS_VISIONARY)
-            h.info_icon_visibility = True
+            try:
+                protonvpn.get_session().streaming[country_item.entry_country_code]
+                h.info_icon_visibility = True
+                h.connect_button(self.on_display_plus_features, country_item)
+            except KeyError:
+                pass
+
             return h
         elif (
             current_server.tier == ServerTierEnum.PM
@@ -51,3 +59,12 @@ class ServerHeader:
             return h
 
         return None
+
+    def on_display_plus_features(self, gtk_button, country_item=None):
+        """Display features for specific tier"""
+        active_windows = self.app.get_windows()
+        if not any(type(window) == ServerFeaturesView for window in active_windows):
+            if not country_item:
+                return
+
+            PlusFeatures(self.app, country_item)
