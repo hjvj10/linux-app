@@ -75,8 +75,6 @@ class ServerLoad(Gtk.Frame):
         if self.surface is not None:
             context.set_source_surface(self.surface, 0.0, 0.0)
             self.draw_radial_gradient_rect(context)
-        else:
-            print('Invalid surface')
         return False
 
     def do_drawing(self, ctx):

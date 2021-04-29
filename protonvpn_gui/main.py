@@ -9,6 +9,7 @@ from gi.repository import Gio, Gtk
 from proton.constants import VERSION as proton_version
 from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
+from protonvpn_nm_lib import exceptions
 
 from .constants import APP_VERSION
 from .logger import logger
@@ -87,8 +88,10 @@ class ProtonVPNGUI(Gtk.Application):
         self.quit_()
 
     def quit_(self):
-        protonvpn.disconnect()
-        self.quit()
+        try:
+            protonvpn.disconnect()
+        except exceptions.ConnectionNotFound:
+            self.quit()
 
     def on_logout(self, *args):
         if protonvpn.get_active_protonvpn_connection():
