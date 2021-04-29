@@ -26,3 +26,12 @@ grid.plus-features label{
     margin: 16px 0px;
     font-size: large;
 }
+
+label.chip-tier{
+    background-color: rgb(73, 77, 85);
+    padding: 4px 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: small;
+    color: white;
+}

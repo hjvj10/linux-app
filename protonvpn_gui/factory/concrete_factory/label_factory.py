@@ -245,6 +245,16 @@ class PremiumFeaturesPopoverDescription(LabelFactory):
         self.char_wrap_mode = Pango.WrapMode.WORD_CHAR
 
 
+class PremiumFeaturesPopoverChip(LabelFactory):
+    """PremiumFeaturesPopoverChip class."""
+    label = "premium_features_popover_chip"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.add_class("chip-tier")
+        self.show = True
+
+
 class StreamingDescription(LabelFactory):
     """PremiumFeaturesPopoverTitle class."""
     label = "streaming_description"

@@ -66,9 +66,9 @@ class PremiumCountries():
         self.__widget.display()
 
     def __create_widgets(self):
-        self.__create_smart_routing_widget()
-        self.__create_streaming_widget()
         self.__create_p2p_widget()
+        self.__create_streaming_widget()
+        self.__create_smart_routing_widget()
         self.__create_tor_widget()
 
     def __attach_widgets(self):
@@ -83,6 +83,7 @@ class PremiumCountries():
         self.smart_routing = WidgetFactory.grid("default")
         feature_logo = WidgetFactory.image("premium_popover_smart_routing")
         title = WidgetFactory.label("premium_features_popover_title")
+        tier_chip = WidgetFactory.label("premium_features_popover_chip", "PLUS")
         description = WidgetFactory.label("premium_features_popover_description")
         view_more_link = WidgetFactory.button("learn_more")
         view_more_link.add_class("padding-x-none")
@@ -98,11 +99,14 @@ class PremiumCountries():
         self.smart_routing.attach_right_next_to(
             title.widget, feature_logo.widget
         )
-        self.smart_routing.attach_bottom_next_to(
-            description.widget, title.widget
+        self.smart_routing.attach_right_next_to(
+            tier_chip.widget, title.widget
         )
         self.smart_routing.attach_bottom_next_to(
-            view_more_link.widget, description.widget
+            description.widget, title.widget, width=2
+        )
+        self.smart_routing.attach_bottom_next_to(
+            view_more_link.widget, description.widget, width=2
         )
         self.__widget_list.append(self.smart_routing)
 
@@ -110,6 +114,7 @@ class PremiumCountries():
         self.streaming = WidgetFactory.grid("default")
         feature_logo = WidgetFactory.image("premium_popover_streaming")
         title = WidgetFactory.label("premium_features_popover_title")
+        tier_chip = WidgetFactory.label("premium_features_popover_chip", "PLUS")
         description = WidgetFactory.label("premium_features_popover_description")
         view_more_link = WidgetFactory.button("learn_more")
         view_more_link.add_class("padding-x-none")
@@ -121,15 +126,18 @@ class PremiumCountries():
         view_more_link.label = "Learn more"
         view_more_link.url = "https://protonvpn.com/support/streaming-guide/"
 
-        self.streaming.attach(feature_logo.widget)
+        self.streaming.attach(feature_logo.widget,)
         self.streaming.attach_right_next_to(
             title.widget, feature_logo.widget
         )
-        self.streaming.attach_bottom_next_to(
-            description.widget, title.widget
+        self.streaming.attach_right_next_to(
+            tier_chip.widget, title.widget
         )
         self.streaming.attach_bottom_next_to(
-            view_more_link.widget, description.widget
+            description.widget, title.widget, width=2
+        )
+        self.streaming.attach_bottom_next_to(
+            view_more_link.widget, description.widget, width=2
         )
         self.__widget_list.append(self.streaming)
 
@@ -137,6 +145,7 @@ class PremiumCountries():
         self.peer2peer = WidgetFactory.grid("default")
         feature_logo = WidgetFactory.image("premium_popover_p2p")
         title = WidgetFactory.label("premium_features_popover_title")
+        tier_chip = WidgetFactory.label("premium_features_popover_chip", "BASIC & PLUS")
         description = WidgetFactory.label("premium_features_popover_description")
         view_more_link = WidgetFactory.button("learn_more")
 
@@ -152,11 +161,14 @@ class PremiumCountries():
         self.peer2peer.attach_right_next_to(
             title.widget, feature_logo.widget
         )
-        self.peer2peer.attach_bottom_next_to(
-            description.widget, title.widget
+        self.peer2peer.attach_right_next_to(
+            tier_chip.widget, title.widget
         )
         self.peer2peer.attach_bottom_next_to(
-            view_more_link.widget, description.widget
+            description.widget, title.widget, width=2
+        )
+        self.peer2peer.attach_bottom_next_to(
+            view_more_link.widget, description.widget, width=2
         )
         self.__widget_list.append(self.peer2peer)
 
@@ -164,6 +176,7 @@ class PremiumCountries():
         self.tor = WidgetFactory.grid("default")
         feature_logo = WidgetFactory.image("premium_popover_tor")
         title = WidgetFactory.label("premium_features_popover_title")
+        tier_chip = WidgetFactory.label("premium_features_popover_chip", "PLUS")
         description = WidgetFactory.label("premium_features_popover_description")
         view_more_link = WidgetFactory.button("learn_more")
 
@@ -179,11 +192,14 @@ class PremiumCountries():
         self.tor.attach_right_next_to(
             title.widget, feature_logo.widget
         )
-        self.tor.attach_bottom_next_to(
-            description.widget, title.widget
+        self.tor.attach_right_next_to(
+            tier_chip.widget, title.widget
         )
         self.tor.attach_bottom_next_to(
-            view_more_link.widget, description.widget
+            description.widget, title.widget, width=2
+        )
+        self.tor.attach_bottom_next_to(
+            view_more_link.widget, description.widget, width=2
         )
         self.__widget_list.append(self.tor)
 

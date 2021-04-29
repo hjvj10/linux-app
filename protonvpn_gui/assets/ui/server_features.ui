@@ -22,7 +22,7 @@
         <property name="min-content-width">410</property>
         <property name="min-content-height">300</property>
         <property name="max-content-width">410</property>
-        <property name="max-content-height">525</property>
+        <property name="max-content-height">700</property>
         <property name="propagate-natural-height">True</property>
         <child>
           <object class="GtkViewport">
