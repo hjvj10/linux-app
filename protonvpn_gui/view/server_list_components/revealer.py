@@ -8,6 +8,7 @@ class ServerListRevealer:
         self.dv = dasbhoard_view
         self.revealer = WidgetFactory.revealer("server_list")
         self.revealer_child_grid = WidgetFactory.grid("revealer_child")
+        self.revealer_child_grid.add_class("server-names-grid")
         server_header = ServerHeader(self.dv.application)
 
         row_counter = 0

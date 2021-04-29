@@ -96,8 +96,8 @@ grid.connecting_overlay_grid label{
 }
 
 grid.country-header{
-	margin-top: 15px;
-	margin-left: 20px;
+	margin-top: 16px;
+	margin-bottom: 8px;
 	margin-right: 15px;
 	/* Unsure if it fits better with bold or not */
 	/* font-weight: bolder; */
@@ -238,8 +238,14 @@ grid.server-row{
 }
 
 #server-list-grid grid.country-row{
-	padding: 8px 0px;
+	/* padding: 8px 0px; */
+	padding: 0px;
+	margin: 0px;
 }
+#server-list-grid grid.country-elements{
+	padding: 10px 0px;
+}
+
 #server-list-grid widget:not(:last-child) grid.country-row{
 	border-bottom: 0.2px solid rgba(255,255,255, 0.4)
 }
@@ -262,4 +268,8 @@ grid.server-row{
 	border: none;
 	margin: 0;
 	-gtk-icon-shadow: none;
+}
+.server-names-grid{
+	background-color: rgb(37, 39, 44);
+	padding-bottom:  5px;
 }

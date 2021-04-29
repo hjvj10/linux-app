@@ -77,6 +77,7 @@ class CountryRowLeftGrid:
     def __init__(self, country_item, display_sc):
         self.grid = WidgetFactory.grid("left_child_in_country_row")
         self.grid.add_class("server-list-country-margin-left")
+        self.grid.add_class("country-elements")
         try:
             self.country_flag = WidgetFactory.image(
                 "small_flag", country_item.entry_country_code
@@ -108,6 +109,7 @@ class CountryRowRightGrid:
         self.revealer = revealer
         self.grid = WidgetFactory.grid("right_child_in_country_row")
         self.grid.add_class("server-list-country-margin-right")
+        self.grid.add_class("country-elements")
 
         self.maintenance_icon = WidgetFactory.image("maintenance_icon")
         self.connect_country_button = WidgetFactory.button("connect_country")
