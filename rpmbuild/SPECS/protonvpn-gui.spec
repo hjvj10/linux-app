@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.4.0
-%define release 2
+%define version 0.5.0
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -58,6 +58,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 21 2021 Proton Technologies AG <opensource@proton.me> 0.5.0-1
+- Add new server list headers
+- Feature: Add streaming information for servers that provide streaming services
+- Update server list styling
+
 * Wed Apr 21 2021 Proton Technologies AG <opensource@proton.me> 0.4.0-2
 - Add about dialog; display current version
 - Add .desktop file

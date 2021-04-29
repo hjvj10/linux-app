@@ -1,4 +1,12 @@
-protonvpn-gui (0.4.0-2) unstable; urgency=medium
+protonvpn-gui (0.5.0-1) unstable; urgency=medium
+
+  * Add new server list headers
+  * Feature: Add streaming information for servers that provide streaming services
+  * Update server list styling
+
+ -- Proton Technologies AG <opensource@proton.me>  Wed, 21 Apr 2021 11:30:00 +0100
+ 
+ protonvpn-gui (0.4.0-2) unstable; urgency=medium
 
   * Add about dialog; display current version
   * Add .desktop file
