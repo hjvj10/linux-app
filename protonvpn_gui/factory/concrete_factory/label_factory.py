@@ -219,6 +219,7 @@ class PremiumFeaturesPopoverTitle(LabelFactory):
         self.add_class("default-text-color")
         self.add_class("quick-settings-title")
         self.add_class("margin-left-10px")
+        self.add_class("bold")
 
 
 class PremiumFeaturesPopoverDescription(LabelFactory):

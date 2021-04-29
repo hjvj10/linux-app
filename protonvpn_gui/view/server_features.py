@@ -59,6 +59,7 @@ class PremiumCountries():
     def __init__(self, application):
         self.__widget = ServerFeaturesView(application)
         self.__widget.title = "Features"
+        self.__widget_list = []
         self.__create_widgets()
         self.__attach_widgets()
         self.__widget.display()
@@ -70,18 +71,12 @@ class PremiumCountries():
         self.__create_tor_widget()
 
     def __attach_widgets(self):
-        self.__widget.server_features_container_grid.attach(
-            self.smart_routing.widget, 0, 0, 1, 1
-        )
-        self.__widget.server_features_container_grid.attach(
-            self.streaming.widget, 0, 1, 1, 1
-        )
-        self.__widget.server_features_container_grid.attach(
-            self.peer2peer.widget, 0, 2, 1, 1
-        )
-        self.__widget.server_features_container_grid.attach(
-            self.tor.widget, 0, 3, 1, 1
-        )
+        counter = 0
+        for wiget in self.__widget_list:
+            self.__widget.server_features_container_grid.attach(
+                wiget.widget, 0, counter, 1, 1
+            )
+            counter += 1
 
     def __create_smart_routing_widget(self):
         self.smart_routing = WidgetFactory.grid("default")
@@ -108,6 +103,7 @@ class PremiumCountries():
         self.smart_routing.attach_bottom_next_to(
             view_more_link.widget, description.widget
         )
+        self.__widget_list.append(self.smart_routing)
 
     def __create_streaming_widget(self):
         self.streaming = WidgetFactory.grid("default")
@@ -134,6 +130,7 @@ class PremiumCountries():
         self.streaming.attach_bottom_next_to(
             view_more_link.widget, description.widget
         )
+        self.__widget_list.append(self.streaming)
 
     def __create_p2p_widget(self):
         self.peer2peer = WidgetFactory.grid("default")
@@ -160,6 +157,7 @@ class PremiumCountries():
         self.peer2peer.attach_bottom_next_to(
             view_more_link.widget, description.widget
         )
+        self.__widget_list.append(self.peer2peer)
 
     def __create_tor_widget(self):
         self.tor = WidgetFactory.grid("default")
@@ -186,3 +184,4 @@ class PremiumCountries():
         self.tor.attach_bottom_next_to(
             view_more_link.widget, description.widget
         )
+        self.__widget_list.append(self.tor)
