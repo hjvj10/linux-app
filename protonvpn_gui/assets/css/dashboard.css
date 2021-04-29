@@ -6,7 +6,7 @@ viewport{
 	background-color: transparent;
 }
 
-grid.dashboard_grid label:not(.warning-color) {
+grid.dashboard_grid label:not(.warning-color):not(.dark-text-color){
     color: rgb(255,255,255)
 }
 

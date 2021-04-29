@@ -10,6 +10,7 @@ class Header:
         self.__grid.add_class("country-header")
         self.__grid.add_class("header-background-color")
         self.__header_title = WidgetFactory.label("default")
+        self.__header_title.add_class("dark-text-color")
         self.__button = WidgetFactory.button("header_info")
         self.__button.show = False
         self.__info_icon = WidgetFactory.image("server_feature_info")
