@@ -1,29 +1,29 @@
 import os
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 
-from protonvpn_nm_lib.api import protonvpn
 from gi.repository import Gdk, Gio, GLib, Gtk
-from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
-from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 
 from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
                          SECURE_CORE_ICON_SET, UI_DIR_PATH, protonvpn_logo)
 from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
                      DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
                      GLibEventSourceEnum)
+from ..factory import WidgetFactory
 from ..logger import logger
 from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
                                     ConnectPreparingInfo, Loading,
                                     NetworkSpeed, NotConnectedToVPNInfo,
-                                    ServerListData, QuickSettingsStatus)
-from .server_list import ServerListView
-from ..factory import WidgetFactory
+                                    QuickSettingsStatus, ServerListData)
+from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
+                               ConnectVPNInProgressView,
+                               ConnectVPNPreparingView, InitLoadView,
+                               NotConnectedVPNView, UpdateNetworkSpeedView)
 from .quick_settings_popover import QuickSettingsPopoverView
-# from .custom_tooltip import CustomToolTip
-from .server_features import PremiumCountries, ServerFeaturesView
+from .server_list import ServerListView
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -228,6 +228,16 @@ class DashboardView(Gtk.ApplicationWindow):
             self.update_quick_settings(state)
 
     def update_quick_settings(self, state):
+        """Updates quick settings icons based on state.
+
+        Args:
+            state (QuickSettingsStatus)
+
+        QuickSettingsStatus of three different properties:
+            secure_core (DashboardSecureCoreIconEnum)
+            netshield (DashboardNetshieldIconEnum)
+            killswitch (DashboardKillSwitchIconEnum)
+        """
         dummy_object = WidgetFactory.image("dummy")
         feature_button_secure_core_pixbuf = dummy_object \
             .create_icon_pixbuf_from_name(
@@ -492,13 +502,15 @@ class DashboardView(Gtk.ApplicationWindow):
             "search-changed", self.filter_server_list
         )
 
-        # setup events
-        self.servers_info_icon_button.connect("clicked", self.on_display_premium_features)
+        # Add tooltip to quick settings buttons
+        self.dashboard_secure_core_button_menu.set_property("has-tooltip", True)
+        self.dashboard_netshield_button.set_property("has-tooltip", True)
+        self.dashboard_killswitch_button.set_property("has-tooltip", True)
 
-    def on_display_premium_features(self, gtk_button):
-        active_windows = self.application.get_windows()
-        if not any(type(window) == ServerFeaturesView for window in active_windows):
-            PremiumCountries(self.application)
+        # Set tooltip text
+        self.dashboard_secure_core_button_menu.set_tooltip_text("Secure Core")
+        self.dashboard_netshield_button.set_tooltip_text("Netshield")
+        self.dashboard_killswitch_button.set_tooltip_text("Kill Switch")
 
     def filter_server_list(self, server_search_entry):
         """Filter server list based on user input.
@@ -579,181 +591,3 @@ class DashboardView(Gtk.ApplicationWindow):
             self.glib_source_tracker[
                 glib_source_type
             ] = None
-
-
-class InitLoadView:
-    """UI class.
-
-    Setup the UI to an initial loading state (app start).
-    """
-    def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        dv.overlay_bottom_label.props.label = ""\
-            "Secure Internet Anywhere"
-        dv.overlay_spinner.start()
-        dv.overlay_box.props.visible = True
-
-
-class UpdateNetworkSpeedView:
-    """UI class.
-
-    Updates network speeds labels.
-    """
-    def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        dv.upload_speed_label.props.label = state.upload
-        dv.download_speed_label.props.label = state.download
-
-
-class NotConnectedVPNView:
-    """UI class.
-
-    Setup the UI to not connected state.
-    """
-    def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        label = "You are not connected"
-        ip = state.ip
-
-        if all(
-            attr is None
-            for attr
-            in [state.ip, state.isp, state.country]
-        ):
-            label = "Network issues detected."
-            ip = "None"
-
-        dv.country_servername_label.props.label = \
-            label
-        dv.ip_label.props.label = ip
-        label_ctx = dv.country_servername_label.get_style_context()
-        button_ctx = dv.main_dashboard_button.get_style_context()
-        if not label_ctx.has_class("warning-color"):
-            label_ctx.add_class("warning-color")
-        if button_ctx.has_class("transparent-white"):
-            button_ctx.remove_class("transparent-white")
-        if not button_ctx.has_class("transparent"):
-            button_ctx.add_class("transparent")
-
-        try:
-            dv.main_dashboard_button.disconnect_by_func(
-                dv.on_click_disconnect
-            )
-        except TypeError:
-            pass
-
-        dv.main_dashboard_button.connect(
-            "clicked", dv.on_click_quick_connect
-        )
-        dv.main_dashboard_button.props.label = "Quick Connect"
-        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
-        dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
-        dv.gtk_property_setter(
-            dv.SET_UI_NOT_CONNECTED
-        )
-
-
-class ConnectedVPNView:
-    """UI class.
-
-    Setup the UI to connected state.
-    """
-    def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        country = protonvpn.get_country()
-        country_string = "{}".format(
-            country.get_country_name(state.countries[0])
-        )
-        if len(state.countries) > 1:
-            country_string = "{}".format(country.get_country_name(
-                state.countries[0]
-            ))
-            country_string = country_string + " >> {}".format(
-                country.get_country_name(state.countries[1])
-            )
-        dv.on_connect_load_sidebar_flag(state.exit_country_code)
-        country_servername = country_string + " {}".format(state.servername)
-        dv.country_servername_label.props.label = country_servername
-        dv.ip_label.props.label = state.ip
-        dv.serverload_label.props.label = state.load + "% " + "Load"
-        protocol = state.protocol
-        if state.protocol in SUPPORTED_PROTOCOLS[
-            ProtocolImplementationEnum.OPENVPN
-        ]:
-            protocol = "OpenVPN ({})".format(
-                state.protocol.value.upper()
-            )
-        dv.connected_protocol_label.props.label = protocol
-        label_ctx = dv.country_servername_label.get_style_context()
-        button_ctx = dv.main_dashboard_button.get_style_context()
-
-        if label_ctx.has_class("warning-color"):
-            label_ctx.remove_class("warning-color")
-        if button_ctx.has_class("transparent"):
-            button_ctx.remove_class("transparent")
-        if not button_ctx.has_class("transparent-white"):
-            button_ctx.add_class("transparent-white")
-
-        try:
-            dv.main_dashboard_button.disconnect_by_func(
-                dv.on_click_quick_connect
-            )
-        except TypeError:
-            pass
-        dv.main_dashboard_button.connect(
-            "clicked", dv.on_click_disconnect
-        )
-        dv.main_dashboard_button.props.label = "Disconnect"
-        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED)
-        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
-        dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
-        dv.gtk_property_setter(dv.SET_UI_CONNECTED)
-
-
-class ConnectVPNPreparingView:
-    """UI class.
-
-    Setup the UI during VPN prepare state.
-    """
-    def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        dv.connecting_overlay_spinner.props.visible = True
-        dv.connecting_progress_bar.props.visible = True
-        dv.connecting_progress_bar.set_fraction(0.2)
-        dv.connecting_to_label.props.label = "Preparing ProtonVPN Connection"
-        dv.connecting_to_country_servername_label.props.label = ""
-        dv.cancel_connect_overlay_button.props.visible = False
-        dv.connecting_overlay_box.props.visible = True
-
-
-class ConnectVPNInProgressView:
-    """UI class.
-
-    Setup the UI during VPN connection in progress state.
-    """
-    def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        new_value = dv.connecting_progress_bar.get_fraction() + 0.5
-        dv.connecting_progress_bar.set_fraction(new_value)
-        dv.connecting_to_label.props.label = "Connecting to "
-        dv.connecting_to_country_servername_label.props.label = "{} >> "\
-            "{}".format(
-                state.country, state.servername,
-            )
-
-
-class ConnectVPNErrorView:
-    """UI class.
-
-    Setup the UI state when an error occurs
-    during attempt to connect.
-    """
-    def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        dv.connecting_to_label.set_text(
-            state.message
-        )
-        dv.cancel_connect_overlay_button.props.visible = True
-        dv.cancel_connect_overlay_button.set_label("Close")
-        dv.connecting_overlay_spinner.props.visible = False
-        dv.connecting_progress_bar.props.visible = False

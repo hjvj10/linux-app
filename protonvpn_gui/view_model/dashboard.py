@@ -34,10 +34,12 @@ class ConnectPreparingInfo:
 
 @dataclass
 class ConnectInProgressInfo:
-    country: str
+    entry_country: str
+    exit_country: str
     city: str
     servername: str
     protocol: str
+    is_secure_core: bool
 
 
 @dataclass
@@ -438,12 +440,16 @@ class DashboardViewModel:
         connection_metadata = protonvpn.get_connection_metadata()
         protocol = connection_metadata[ConnectionMetadataEnum.PROTOCOL.value]
         result = ConnectInProgressInfo(
-            country=protonvpn.country.get_country_name(
+            entry_country=protonvpn.country.get_country_name(
+                server.entry_country
+            ),
+            exit_country=protonvpn.country.get_country_name(
                 server.exit_country
             ),
             city=server.city,
             servername=server.name,
-            protocol=protocol.upper()
+            protocol=protocol.upper(),
+            is_secure_core=FeatureEnum.SECURE_CORE in server.features
         )
 
         logger.info("Displaying connection information")
