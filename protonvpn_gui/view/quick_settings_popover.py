@@ -52,7 +52,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
 
     def display_secure_core_settings(self, gio_action, _, button):
         self.upgrade_button.show = True
-        self.title_label.content = "Secure-Core"
+        self.title_label.content = "Secure Core"
         self.description_label.content = "Route your most sensitive data " \
             "through our safest servers in privacy-friendly countries. "
         self.view_more_link.label = "Learn more."

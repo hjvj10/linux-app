@@ -43,12 +43,12 @@
 }
 #quick_settings_popover_container_grid button:not(.view-more){
     border-radius: 2px;
-    box-shadow: 2px 2px 3px -3px black;
+    box-shadow: 2px 2px 3px -3px rgb(0, 0, 0);
 }
 
 #quick_settings_popover_container_grid button.selected{
-    background-color: #303540;
-	box-shadow: inset 1px 1px 5px -5px black;
+    background-color: rgb(32,32,38);	
+	box-shadow: inset 1px 1px 5px -5px rgb(0, 0, 0);
 }
 #quick_settings_popover_container_grid label.selected{
     color: rgb(255,255,255);
@@ -56,7 +56,7 @@
 }
 
 #quick_settings_popover_container_grid button.available{
-    background-color: #3C414E;
+    background-color: rgb(60, 65, 78);
 }
 
 #quick_settings_popover_container_grid label.available{
@@ -65,7 +65,7 @@
 }
 
 #quick_settings_popover_container_grid button.unavailable{
-    background-color: #3C414E;
+    background-color: rgb(60, 65, 78);
 }
 
 #quick_settings_popover_container_grid label.unavailable{
