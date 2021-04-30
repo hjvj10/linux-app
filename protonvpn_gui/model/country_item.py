@@ -95,12 +95,8 @@ class CountryItem:
         return self.__can_connect
 
     @property
-    def country_tier(self):
+    def minimum_country_tier(self):
         return self.__minimum_required_tier
-
-    @country_tier.setter
-    def minimum_country_tier(self, _value):
-        self.__minimum_required_tier = _value
 
     @property
     def is_virtual(self):
@@ -149,9 +145,9 @@ class CountryItem:
     def create(
         self, user_tier, servername_list
     ):
-        status_collector = set()
-        tier_collector = set()
-        feature_collector = set()
+        status_collection = set()
+        tier_collection = set()
+        feature_collection = set()
         country_host_collection = list()
         self.__host_country = set()
 
@@ -161,21 +157,21 @@ class CountryItem:
             )[0]
             server_item = ServerItem(logical_server)
             self.__servers.append(server_item)
-            self.__add_feature_to_feature_collector(
-                feature_collector, server_item.features
+            self.__add_feature_to_collection(
+                feature_collection, server_item.features
             )
-            self.__add_status_to_status_collector(
-                status_collector, server_item.status
+            self.__add_status_to_collection(
+                status_collection, server_item.status
             )
-            self.__add_tier_to_tier_collector(tier_collector, server_item.tier)
+            self.__add_tier_to_collection(tier_collection, server_item.tier)
             if FeatureEnum.SECURE_CORE in logical_server.features:
                 continue
             country_host_collection.append(logical_server.host_country)
 
-        self.__set_features(feature_collector)
-        self.__set_status(status_collector)
-        self.__set_tiers(tier_collector)
-        self.__set_minimum_required_tier(tier_collector)
+        self.__set_features(feature_collection)
+        self.__set_status(status_collection)
+        self.__set_tiers(tier_collection)
+        self.__set_minimum_required_tier(tier_collection)
         self.__country_name = country_codes.get(
             self.__entry_country_code,
             self.__entry_country_code
@@ -192,43 +188,43 @@ class CountryItem:
             ) else False
         self.__is_virtual_country = all(host_country for host_country in country_host_collection)
 
-    def __add_feature_to_feature_collector(
-        self, feature_collector, server_features
+    def __add_feature_to_collection(
+        self, feature_collection, server_features
     ):
         for feature in server_features:
-            feature_collector.add(feature)
+            feature_collection.add(feature)
 
-    def __add_status_to_status_collector(self, status_collector, server_status):
-        status_collector.add(server_status)
+    def __add_status_to_collection(self, status_collection, server_status):
+        status_collection.add(server_status)
 
-    def __add_tier_to_tier_collector(self, tier_collector, server_tier):
-        tier_collector.add(server_tier)
+    def __add_tier_to_collection(self, tier_collection, server_tier):
+        tier_collection.add(server_tier)
 
     def __set_features(self, features_collector):
         self.__features = list(features_collector)
 
-    def __set_status(self, status_collector):
+    def __set_status(self, status_collection):
         self.__status = self.__get_country_status(
-            list(status_collector)
+            list(status_collection)
         )
 
-    def __set_tiers(self, tier_collector):
-        self.__tiers = list(tier_collector)
+    def __set_tiers(self, tier_collection):
+        self.__tiers = list(tier_collection)
 
-    def __set_minimum_required_tier(self, tier_collector):
-        for tier in tier_collector:
+    def __set_minimum_required_tier(self, tier_collection):
+        for tier in tier_collection:
             if not self.__minimum_required_tier:
                 self.__minimum_required_tier = tier
                 continue
             elif self.__minimum_required_tier.value > tier.value:
                 self.__minimum_required_tier = tier
 
-    def __get_country_status(self, status_collector):
-        if len(status_collector) == 2:
+    def __get_country_status(self, status_collection):
+        if len(status_collection) == 2:
             return ServerStatusEnum.ACTIVE
         elif (
-            status_collector
-            and status_collector.pop() == ServerStatusEnum.ACTIVE
+            status_collection
+            and status_collection.pop() == ServerStatusEnum.ACTIVE
         ):
             return ServerStatusEnum.ACTIVE
         else:
