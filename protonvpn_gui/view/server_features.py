@@ -232,7 +232,7 @@ class PlusFeatures:
 
         title.content = "Streaming - {}".format(country.country_name)
         description.content = "Connect to a Plus server in this country to start streaming." \
-            "\n\nNote: User a new browser tab and/or clear the cache to ensure new content appears."
+            "\n\nNote: Use a new browser tab and/or clear the cache to ensure new content appears."
 
         supported_services = self.__add_supported_services(country)
         self.streaming.attach(feature_logo.widget)
