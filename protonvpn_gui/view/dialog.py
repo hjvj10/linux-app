@@ -68,6 +68,17 @@ class DialogView(Gtk.ApplicationWindow):
         """Closes and destroys the dialog."""
         self.destroy()
 
+    def add_extra_content(self, widget):
+        """Add extra content to window.
+
+        Args:
+            widget: should be a container (GTK.Grid or Gtk.Box)
+        """
+        self.__content_grid.attach_bottom_next_to(
+            widget,
+            self.content_label.widget
+        )
+
     def __generate_content_grid(self):
         """Generate grid with contextual information."""
         self.__content_grid = WidgetFactory.grid("dialog_content")
@@ -229,12 +240,27 @@ class AboutDialog:
     def __init__(self, application, callback_func=None):
         self.dialog_view = DialogView(application)
         self.dialog_view.headerbar_label.set_text("About")
-        app_version = "Current version: \tv{} (library: v{} / api-client: v{})".format(
+        app_version = "ProtonVPN: \tv{} (library: v{} / api-client: v{})".format(
             APP_VERSION, lib_version, api_version
         )
         self.dialog_view.content_label.align_h = Gtk.Align.START
         self.dialog_view.content_label.ident_h = 0
         self.dialog_view.content_label.content = app_version
         self.dialog_view.buttons_visible = False
+        additional_context = WidgetFactory.grid("default")
+        import datetime
+        currentDateTime = datetime.datetime.now()
+        date = currentDateTime.date()
+        copyright_label = WidgetFactory.label(
+            "default", "Copyright Proton Technologies AG {}".format(date.strftime("%Y"))
+        )
+        copyright_label.add_class("dark-text-color")
+        copyright_label.add_class("font-small")
+        additional_context.attach(copyright_label.widget)
+        additional_context.ident_h = 0
+        additional_context.ident_v = 0
+        copyright_label.ident_h = 0
+        copyright_label.ident_v = 0
+        self.dialog_view.add_extra_content(additional_context.widget)
 
         self.dialog_view.display_dialog()

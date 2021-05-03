@@ -4,10 +4,6 @@
     margin: 50px 30px;
 }
 
-#dialog_container_grid grid.grid-spacing label{
-    font-size: large;
-}
-
 #dialog_container_grid grid.grid-button-spacing{
     margin: 20px 30px;
 }

@@ -384,6 +384,7 @@ class DialogUpgrade(LabelFactory):
         self.line_wrap = True
         self.show = True
         self.add_class("default-text-color")
+        self.add_class("font-large")
 
 
 class Country(LabelFactory):
