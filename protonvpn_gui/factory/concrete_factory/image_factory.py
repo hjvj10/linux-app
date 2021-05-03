@@ -240,6 +240,81 @@ class Dummy(ImageFactory):
         super().__init__()
 
 
+class ServerFeatureInfo(ImageFactory):
+    """Server Feature Info icon class."""
+    image = "server_feature_info"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "info-circle-filled.svg",
+                width=15, height=15
+            )
+        )
+        self.show = True
+
+
+class PremiumPopoverSmartRouting(ImageFactory):
+    """Premium Popover Smart Routing icon class."""
+    image = "premium_popover_smart_routing"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "smart-routing.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class PremiumPopoverStreaming(ImageFactory):
+    """Premium Popover Streaming icon class."""
+    image = "premium_popover_streaming"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "streaming.svg",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class PremiumPopoverPeer2Peer(ImageFactory):
+    """Premium Popover Peer2Peer icon class."""
+    image = "premium_popover_p2p"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "p2p-arrows.png",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class PremiumPopoverTor(ImageFactory):
+    """Premium Popover Tor icon class."""
+    image = "premium_popover_tor"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "tor-onion.png",
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
 class Chevron(ImageFactory):
     """Chevron icon class."""
     image = "chevron_icon"
@@ -269,6 +344,21 @@ class Maintenance(ImageFactory):
         )
         self.add_class("server-icon")
         self.show = False
+
+
+class FeatureSmartRouting(ImageFactory):
+    """Premium Popover Smart Routing icon class."""
+    image = "smart_routing_icon"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "smart-routing.svg",
+                width=20, height=20
+            )
+        )
+        self.show = True
 
 
 class FeatureP2P(ImageFactory):
@@ -303,15 +393,15 @@ class FeatureTOR(ImageFactory):
         self.show = True
 
 
-class FeaturePlus(ImageFactory):
-    """FeaturePlus icon class."""
-    image = "plus_icon"
+class FeatureStreaming(ImageFactory):
+    """FeatureStreaming icon class."""
+    image = "streaming_icon"
 
     def __init__(self, _):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "plus-server.png",
+                "streaming.svg",
                 width=20, height=20
             )
         )

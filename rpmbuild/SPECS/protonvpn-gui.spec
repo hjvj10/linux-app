@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.4.0
-%define release 2
+%define version 0.5.0
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -23,7 +23,7 @@ BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-Requires: python3-protonvpn-nm-lib >= 3.0.0, python3-protonvpn-nm-lib < 3.1.0
+Requires: python3-protonvpn-nm-lib >= 3.1.0, python3-protonvpn-nm-lib < 3.2.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
@@ -58,6 +58,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 21 2021 Proton Technologies AG <opensource@proton.me> 0.5.0-1
+- Add new server list headers
+- Feature: Add streaming information for servers that provide streaming services
+- Update server list styling
+
 * Wed Apr 21 2021 Proton Technologies AG <opensource@proton.me> 0.4.0-2
 - Add about dialog; display current version
 - Add .desktop file

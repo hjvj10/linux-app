@@ -1,3 +1,17 @@
+.padding-all-none{
+  padding: 0px;
+}
+
+.padding-x-none{
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.padding-y-none{
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 /*___padding 5px___*/
 .padding-all-5px{
   padding: 5px;

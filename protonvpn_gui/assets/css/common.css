@@ -54,6 +54,11 @@ label.default-text-color{
   color: rgb(255,255,255)
 }
 
+
+label.dark-text-color{
+  color: rgb(156, 160, 170)
+}
+
 button {
   -gtk-icon-effect: none;
   -gtk-icon-source: none;

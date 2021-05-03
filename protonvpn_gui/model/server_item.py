@@ -34,12 +34,13 @@ class ServerItem:
         self.__score: int = None
         self.__city: str = None
         self.__features: list = []
-        self.__tier: int = None
+        self.__tier: ServerTierEnum = None
         self.__is_plus: bool = None
         self.__status: int = None
         self.__exit_country_code: str = None
         self.__entry_country_code: str = None
         self.__has_to_upgrade: bool = None
+        self.__host_country: str = None
         self.create(logical_server)
 
     @property
@@ -86,6 +87,10 @@ class ServerItem:
     def has_to_upgrade(self):
         return self.__has_to_upgrade
 
+    @property
+    def host_country(self):
+        return self.__host_country
+
     def create(self, logical_server):
         self.__name = logical_server.name
         self.__load = str(int(logical_server.load))
@@ -97,6 +102,7 @@ class ServerItem:
         self.__status = ServerStatusEnum(logical_server.enabled)
         self.__exit_country_code = logical_server.exit_country
         self.__entry_country_code = logical_server.entry_country
+        self.__host_country = logical_server.host_country
         self.__has_to_upgrade = (
             True if self.__tier.value > ServerTierEnum(
                 protonvpn.get_session().vpn_tier

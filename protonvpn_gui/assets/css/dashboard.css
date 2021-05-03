@@ -6,7 +6,7 @@ viewport{
 	background-color: transparent;
 }
 
-grid.dashboard_grid label:not(.warning-color) {
+grid.dashboard_grid label:not(.warning-color):not(.dark-text-color){
     color: rgb(255,255,255)
 }
 
@@ -86,8 +86,45 @@ grid.connecting_overlay_grid label{
     margin: 0 5px;
 }
 
+#top-sever-locations-grid{
+	padding: 5px 20px;
+
+}
+#top-sever-locations-grid label{
+	color: rgba(255,255,255,0.4);
+
+}
+
+grid.country-header{
+	margin-top: 16px;
+	margin-bottom: 8px;
+	margin-right: 15px;
+	/* Unsure if it fits better with bold or not */
+	/* font-weight: bolder; */
+}
+#servers-info-icon-button, grid.country-header button{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+	background-color: transparent;
+}
+#servers-info-icon-button:active, grid.country-header button:active{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+}
+#servers-info-icon-button image, grid.country-header image{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+	-gtk-icon-shadow: none;
+}
+
 #dashboard-button-box-grid, #dashboard-search-entry-grid{
-	margin: 10px 30px 10px 30px
+	margin: 10px 20px 10px 20px
 }
 
 #dashboard-button-box-grid{
@@ -133,7 +170,7 @@ grid.connecting_overlay_grid label{
 }
 
 #server-list-grid{
-	margin: 0px 30px;
+	margin: 0px;
 }
 
 #server-list-grid image.server-icon{
@@ -150,6 +187,17 @@ grid.connecting_overlay_grid label{
 	background-color: transparent;
 	background-image: none;
 	box-shadow: none;
+}
+
+grid.server-list-country-margin-left{
+	margin-left: 21px;
+}
+grid.server-list-country-margin-right{
+	margin-right: 15px;
+}
+grid.server-row{
+	margin-left: 15px;
+	margin-right: 20px;
 }
 
 .test-class{
@@ -190,8 +238,14 @@ grid.connecting_overlay_grid label{
 }
 
 #server-list-grid grid.country-row{
-	padding: 8px 0px;
+	/* padding: 8px 0px; */
+	padding: 0px;
+	margin: 0px;
 }
+#server-list-grid grid.country-elements{
+	padding: 10px 0px;
+}
+
 #server-list-grid widget:not(:last-child) grid.country-row{
 	border-bottom: 0.2px solid rgba(255,255,255, 0.4)
 }
@@ -214,4 +268,8 @@ grid.connecting_overlay_grid label{
 	border: none;
 	margin: 0;
 	-gtk-icon-shadow: none;
+}
+.server-names-grid{
+	background-color: rgb(37, 39, 44);
+	padding-bottom:  5px;
 }
