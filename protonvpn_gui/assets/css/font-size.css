@@ -1,0 +1,28 @@
+
+label.font-xx-small{
+    font-size: xx-small;
+}
+label.font-x-small{
+    font-size: x-small;
+}
+label.font-small{
+    font-size: small;
+}
+label.font-medium{
+    font-size: medium;
+}
+label.font-large{
+    font-size: large;
+}
+label.font-x-large{
+    font-size: x-large;
+}
+label.font-xx-large{
+    font-size: xx-large;
+}
+label.font-smaller{
+    font-size: smaller;
+}
+label.font-larger{
+    font-size: larger;
+}
