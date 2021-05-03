@@ -144,7 +144,6 @@ class ConnectVPNPreparingView:
         dv.connecting_progress_bar.props.visible = True
         dv.connecting_progress_bar.set_fraction(0.2)
         dv.connecting_to_label.props.label = "Preparing ProtonVPN Connection"
-        dv.connecting_to_country_servername_label.props.label = ""
         dv.cancel_connect_overlay_button.props.visible = False
         dv.connecting_overlay_box.props.visible = True
 
@@ -158,17 +157,17 @@ class ConnectVPNInProgressView:
         dv = dashboard_view
         new_value = dv.connecting_progress_bar.get_fraction() + 0.5
         dv.connecting_progress_bar.set_fraction(new_value)
-        dv.connecting_to_label.props.label = "Connecting to "
+        var_1 = state.exit_country
+        var_2 = state.servername
         if state.is_secure_core:
-            dv.connecting_to_country_servername_label.props.label = "{} >> "\
-                "{}".format(
-                    state.entry_country, state.exit_country,
-                )
-        else:
-            dv.connecting_to_country_servername_label.props.label = "{} >> "\
-                "{}".format(
-                    state.exit_country, state.servername,
-                )
+            var_1 = state.entry_country
+            var_2 = state.exit_country
+
+        dv.connecting_to_label.set_markup(
+            "Connecting <span weight='bold'>{} >> {}</span>".format(
+                var_1, var_2,
+            )
+        )
 
 
 class ConnectVPNErrorView:
@@ -182,6 +181,7 @@ class ConnectVPNErrorView:
         dv.connecting_to_label.set_text(
             state.message
         )
+        dv.connecting_to_label.props.visible = False
         dv.cancel_connect_overlay_button.props.visible = True
         dv.cancel_connect_overlay_button.set_label("Close")
         dv.connecting_overlay_spinner.props.visible = False

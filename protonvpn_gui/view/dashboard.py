@@ -86,7 +86,6 @@ class DashboardView(Gtk.ApplicationWindow):
     locations_label = Gtk.Template.Child()
     overlay_bottom_label = Gtk.Template.Child()
     connecting_to_label = Gtk.Template.Child()
-    connecting_to_country_servername_label = Gtk.Template.Child()
 
     # Images/Icons
     headerbar_sign_icon = Gtk.Template.Child()
