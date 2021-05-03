@@ -43,7 +43,6 @@ class CountryItem:
         self.__servers: list = list()
         self.__can_connect: bool = False
         self.__minimum_required_tier = None
-        self.__host_country: str = None
         self.__is_virtual_country: bool = None
         self.__country_name: str = None
         self.__num_free_countries: int = None
@@ -149,7 +148,6 @@ class CountryItem:
         tier_collection = set()
         feature_collection = set()
         country_host_collection = list()
-        self.__host_country = set()
 
         for servername in servername_list:
             logical_server = protonvpn.get_session().servers.filter(
@@ -164,9 +162,8 @@ class CountryItem:
                 status_collection, server_item.status
             )
             self.__add_tier_to_collection(tier_collection, server_item.tier)
-            if FeatureEnum.SECURE_CORE in logical_server.features:
-                continue
-            country_host_collection.append(logical_server.host_country)
+            if FeatureEnum.SECURE_CORE not in logical_server.features:
+                country_host_collection.append(logical_server.host_country)
 
         self.__set_features(feature_collection)
         self.__set_status(status_collection)
@@ -186,7 +183,7 @@ class CountryItem:
                 )
 
             ) else False
-        self.__is_virtual_country = all(host_country for host_country in country_host_collection)
+        self.__is_virtual_country = all(country_host_collection)
 
     def __add_feature_to_collection(
         self, feature_collection, server_features
@@ -220,12 +217,7 @@ class CountryItem:
                 self.__minimum_required_tier = tier
 
     def __get_country_status(self, status_collection):
-        if len(status_collection) == 2:
-            return ServerStatusEnum.ACTIVE
-        elif (
-            status_collection
-            and status_collection.pop() == ServerStatusEnum.ACTIVE
-        ):
+        if ServerStatusEnum.ACTIVE in status_collection:
             return ServerStatusEnum.ACTIVE
         else:
             return ServerStatusEnum.UNDER_MAINTENANCE

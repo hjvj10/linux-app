@@ -55,7 +55,7 @@ class ServerList:
         return self.__user_tier
 
     @property
-    def ammount_of_free_countries(self):
+    def free_countries_count(self):
         if self.__num_free_countries is None:
             self.__num_free_countries = 0
             for server in self.servers:
@@ -65,7 +65,7 @@ class ServerList:
         return self.__num_free_countries
 
     @property
-    def ammount_of_basic_countries(self):
+    def basic_countries_count(self):
         if self.__num_basic_countries is None:
             self.__num_basic_countries = 0
             for server in self.servers:
@@ -75,7 +75,7 @@ class ServerList:
         return self.__num_basic_countries
 
     @property
-    def ammount_of_plus_countries(self):
+    def plus_countries_count(self):
         if self.__num_plus_countries is None:
             self.__num_plus_countries = 0
             for server in self.servers:
@@ -85,7 +85,7 @@ class ServerList:
         return self.__num_plus_countries
 
     @property
-    def ammount_of_internal_countries(self):
+    def internal_countries_count(self):
         if self.__num_internal_countries is None:
             self.__num_internal_countries = 0
             for server in self.servers:
@@ -95,8 +95,8 @@ class ServerList:
         return self.__num_internal_countries
 
     @property
-    def total_ammount_of_countries(self):
-        return len(self.servers) - self.ammount_of_internal_countries
+    def total_countries_count(self):
+        return len(self.servers) - self.internal_countries_count
 
     def __copy_servers(self):
         if self.__display_secure_core_servers:

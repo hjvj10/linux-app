@@ -66,7 +66,7 @@ class ServerListView:
                 country_item.country_name
             ] = country_grid_row
 
-        self.__country_rows = self.__server_list.total_ammount_of_countries
+        self.__country_rows = self.__server_list.total_countries_count
 
     def _yield_countries(self):
         for country_item in self.__server_list.servers:

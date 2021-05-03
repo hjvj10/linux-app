@@ -50,7 +50,7 @@ class CountryHeader:
             ServerTierEnum.FREE not in self.__header_tracker
             and current_country.minimum_country_tier.value < ServerTierEnum.BASIC.value
         ):
-            free_header = self.__setup_free_header(server_list.ammount_of_free_countries)
+            free_header = self.__setup_free_header(server_list.free_countries_count)
             self.__header_tracker.append(ServerTierEnum.FREE)
             return free_header
         elif (
@@ -58,7 +58,7 @@ class CountryHeader:
             and current_country.minimum_country_tier.value >= ServerTierEnum.BASIC.value
         ):
             basic_and_plus = self.__setup_basic_and_plus_header(
-                server_list.ammount_of_basic_countries + server_list.ammount_of_plus_countries
+                server_list.basic_countries_count + server_list.plus_countries_count
             )
             self.__header_tracker.append(ServerTierEnum.BASIC)
             return basic_and_plus
@@ -71,7 +71,7 @@ class CountryHeader:
             and current_country.minimum_country_tier.value < ServerTierEnum.PLUS_VISIONARY.value
         ):
             basic_header = self.__setup_basic_header(
-                server_list.ammount_of_free_countries + server_list.ammount_of_basic_countries
+                server_list.free_countries_count + server_list.basic_countries_count
             )
             self.__header_tracker.append(ServerTierEnum.BASIC)
             return basic_header
@@ -79,7 +79,7 @@ class CountryHeader:
             ServerTierEnum.PLUS_VISIONARY not in self.__header_tracker
             and current_country.minimum_country_tier.value >= ServerTierEnum.PLUS_VISIONARY.value # noqa
         ):
-            plus_header = self.__setup_plus_header(server_list.ammount_of_plus_countries)
+            plus_header = self.__setup_plus_header(server_list.plus_countries_count)
             self.__header_tracker.append(ServerTierEnum.PLUS_VISIONARY)
             return plus_header
 
@@ -91,7 +91,7 @@ class CountryHeader:
             and current_country.minimum_country_tier.value <= ServerTierEnum.PLUS_VISIONARY.value # noqa
         ):
             all_locations_header = self.__setup_all_locations_header(
-                server_list.total_ammount_of_countries
+                server_list.total_countries_count
             )
             self.__header_tracker.append(ServerTierEnum.PLUS_VISIONARY)
             return all_locations_header
@@ -100,7 +100,7 @@ class CountryHeader:
             and current_country.minimum_country_tier == ServerTierEnum.PM
         ):
             internal_header = self.__setup_internal_header(
-                server_list.ammount_of_internal_countries
+                server_list.internal_countries_count
             )
             self.__header_tracker.append(ServerTierEnum.PM)
             return internal_header
