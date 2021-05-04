@@ -1,7 +1,7 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.5.0
+%define version 0.6.0
 %define release 1
 
 Prefix: %{_prefix}
@@ -58,6 +58,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Apr 04 2021 Proton Technologies AG <opensource@proton.me> 0.6.0-1
+- Fix quick connect loop
+- Add possibility to login upon pressing Enter after filling in credentials on login window
+- Make possibile to add extra content to dialog via a method
+- Modify connecting overlay message display
+- Display an appropriate error on failed login
+- Other color and styling changes 
+
 * Wed Apr 21 2021 Proton Technologies AG <opensource@proton.me> 0.5.0-1
 - Add new server list headers
 - Feature: Add streaming information for servers that provide streaming services
