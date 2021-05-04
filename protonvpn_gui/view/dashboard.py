@@ -193,6 +193,7 @@ class DashboardView(Gtk.ApplicationWindow):
             GLibEventSourceEnum.ON_SERVER_LOAD:
                 self.dashboard_view_model.on_update_server_load,
         }
+        self.main_button_pressed = False
         self.setup_icons_images()
         self.setup_css()
         self.setup_actions()
@@ -282,7 +283,10 @@ class DashboardView(Gtk.ApplicationWindow):
             gtk_button_object (Gtk.Button)
 
         """
-        logger.info("Clicked on disconnect")
+        logger.info("Clicked on disconnect. State: \"{}\"".format(self.main_button_pressed))
+        if self.main_button_pressed:
+            return
+        self.main_button_pressed = True
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.remove_background_glib(
             GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
@@ -297,7 +301,10 @@ class DashboardView(Gtk.ApplicationWindow):
         Args:
             gtk_button_object (Gtk.Button)
         """
-        logger.info("Clicked on quick connect")
+        logger.info("Clicked on quick connect. State: \"{}\"".format(self.main_button_pressed))
+        if self.main_button_pressed:
+            return
+        self.main_button_pressed = True
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.dashboard_view_model.on_quick_connect()
 

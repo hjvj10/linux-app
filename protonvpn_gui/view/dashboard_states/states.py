@@ -11,6 +11,7 @@ class InitLoadView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
+        dv.main_button_pressed = False
         dv.overlay_bottom_label.props.label = ""\
             "Secure Internet Anywhere"
         dv.overlay_spinner.start()
@@ -35,6 +36,7 @@ class NotConnectedVPNView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
+        dv.main_button_pressed = False
         label = "You are not connected"
         ip = state.ip
 
@@ -83,6 +85,7 @@ class ConnectedVPNView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
+        dv.main_button_pressed = False
         country = protonvpn.get_country()
         country_string = "{}".format(
             country.get_country_name(state.countries[0])
@@ -178,6 +181,7 @@ class ConnectVPNErrorView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
+        dv.main_button_pressed = False
         dv.connecting_to_label.set_text(
             state.message
         )
