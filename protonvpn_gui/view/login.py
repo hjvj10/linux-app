@@ -81,6 +81,10 @@ class LoginView(Gtk.ApplicationWindow):
             "Kill Switch is blocking any outgoing connections."
         )
         self.set_killswitch_revealer_status()
+        self.login_button.set_property("can-default", True)
+        self.login_button.set_property("has-default", True)
+        self.proton_password_entry.set_property("activates-default", True)
+        self.proton_username_entry.set_property("activates-default", True)
 
     def on_entry_changed(self, gtk_entry_object):
         gtk_entry_objects = [

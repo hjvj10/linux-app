@@ -1,5 +1,6 @@
 @import "margin.css";
 @import "padding.css";
+@import "font-size.css";
 
 
 @define-color red-color #EC5858;
@@ -18,12 +19,24 @@ window{
   )
 }
 
+window decoration{
+	border: none;
+	outline: none;
+	background: none;
+}
+
+window headerbar{
+	border: none;
+	outline: none;
+}
+
 frame border {
   border: none;
   outline: none;
   background-image: none;  
 }
 
+/* ENTRIES */
 entry{
   border-image:none; 
   outline: none;
@@ -39,6 +52,7 @@ entry{
   border-bottom: 1px solid rgba(255,255,255, 0.3);
   font-size: 17px;
   padding-bottom: 5px;
+  border-radius: 0px;
 }
 entry image:first-child{
   color: rgba(255,255,255, 0.6)
@@ -50,15 +64,28 @@ entry:focus{
   border-bottom: 1px solid @green-color;
 }
 
+/* LABELS */
+label{
+  text-shadow: none;
+}
 label.default-text-color{
   color: rgb(255,255,255)
 }
-
-
+label.overlay_bottom_label{
+  font-size: 24px;
+  margin-bottom: 80px;
+  font-style: italic;
+  color: rgb(255,255,255);
+}
+label.warning-color{
+  color: @red-color;
+  font-weight: bold;
+}
 label.dark-text-color{
   color: rgb(156, 160, 170)
 }
 
+/* BUTTONS */
 button {
   -gtk-icon-effect: none;
   -gtk-icon-source: none;
@@ -140,6 +167,7 @@ button.enabled:active, button.transparent:active {
   border-color: @dark-green-color;
 }
 
+/* OTHERS */
 .banner-default, .banner-error{
   padding: 10px 0px 10px 0px;
   font-size: 14px;
@@ -160,16 +188,4 @@ spinner {
 
 box.overlay, box.connecting_overlay{
   background: linear-gradient(180deg, #262A33 0%, #303540 100%)
-}
-
-label.overlay_bottom_label{
-  font-size: 24px;
-  margin-bottom: 80px;
-  font-style: italic;
-  color: rgb(255,255,255);
-}
-
-label.warning-color{
-  color: @red-color;
-  font-weight: bold;
 }

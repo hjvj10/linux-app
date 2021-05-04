@@ -53,6 +53,10 @@ grid.ip_label_grid {
     font-size: 16px;
 }
 
+#connecting_overlay_grid {
+	margin: 0px 15px;
+}
+
 grid#connecting_overlay_grid > *{
     margin: 20px 0px
 }
