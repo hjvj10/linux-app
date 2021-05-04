@@ -440,10 +440,10 @@ class DashboardViewModel:
         connection_metadata = protonvpn.get_connection_metadata()
         protocol = connection_metadata[ConnectionMetadataEnum.PROTOCOL.value]
         result = ConnectInProgressInfo(
-            entry_country=protonvpn.country.get_country_name(
+            entry_country=protonvpn.get_country().get_country_name(
                 server.entry_country
             ),
-            exit_country=protonvpn.country.get_country_name(
+            exit_country=protonvpn.get_country().get_country_name(
                 server.exit_country
             ),
             city=server.city,
