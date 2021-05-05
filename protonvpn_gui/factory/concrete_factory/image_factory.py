@@ -252,6 +252,25 @@ class ServerFeatureInfo(ImageFactory):
                 width=15, height=15
             )
         )
+        self.align_h = Gtk.Align.END
+        self.expand_h = True
+        self.show = True
+
+
+class ServerFeatureInfoHover(ImageFactory):
+    """Server Feature Info icon class."""
+    image = "server_feature_info_hover"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                "info-circle-filled-hover.svg",
+                width=15, height=15
+            )
+        )
+        self.align_h = Gtk.Align.END
+        self.expand_h = True
         self.show = True
 
 
@@ -358,6 +377,7 @@ class FeatureSmartRouting(ImageFactory):
                 width=20, height=20
             )
         )
+        self.add_class("server-icon")
         self.show = True
 
 

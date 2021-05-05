@@ -179,6 +179,7 @@ class HeaderInfo(ButtonFactory):
 
     def __init__(self):
         super().__init__()
+        self.expand_h = False
         self.show = True
 
 
@@ -213,6 +214,7 @@ class ConnectToCountry(ButtonFactory):
         self.align_v = Gtk.Align.CENTER
         self.add_class("transparent")
         self.label = "CONNECT"
+        self.show = False
 
 
 class ConnectToServer(ButtonFactory):
@@ -225,6 +227,7 @@ class ConnectToServer(ButtonFactory):
         self.align_v = Gtk.Align.CENTER
         self.add_class("transparent")
         self.label = "CONNECT"
+        self.show = False
 
 
 class DisconnectFromServer(ButtonFactory):

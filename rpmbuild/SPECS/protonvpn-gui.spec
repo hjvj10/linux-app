@@ -1,7 +1,7 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.6.0
+%define version 0.6.1
 %define release 1
 
 Prefix: %{_prefix}
@@ -58,6 +58,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 05 2021 Proton Technologies AG <opensource@proton.me> 0.6.1-1
+- Fix connect button glitch
+- Add info icon hover effect
+
 * Tue Apr 04 2021 Proton Technologies AG <opensource@proton.me> 0.6.0-1
 - Fix quick connect loop
 - Add possibility to login upon pressing Enter after filling in credentials on login window
