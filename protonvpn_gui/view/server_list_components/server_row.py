@@ -7,7 +7,7 @@ from ..dialog import ConnectUpgradeDialog
 from .server_load import ServerLoad
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 
 
 class ServerRow:
@@ -22,40 +22,23 @@ class ServerRow:
             self.right_child.grid.widget,
             self.left_child.grid.widget,
         )
-        if server.status != ServerStatusEnum.UNDER_MAINTENANCE:
-            self.grid.tooltip = True
-            self.grid.connect(
-                "query-tooltip", self.on_server_enter,
-                self.right_child.connect_server_button,
-                self.right_child.city_label
-            )
         self.create_event_box(server)
 
     def create_event_box(self, server):
         self.event_box = Gtk.EventBox()
         self.event_box.set_visible_window(True)
         self.event_box.add(self.grid.widget)
-        if server.status != ServerStatusEnum.UNDER_MAINTENANCE:
-            self.event_box.connect(
-                "leave-notify-event", self.on_server_leave,
-                self.right_child.connect_server_button,
-                self.right_child.city_label,
-            )
         self.event_box.props.visible = True
 
-    def on_server_enter(
-        self, widget, x, y, keyboard_mode, tooltip, connect_button, city_label
-    ):
-        """Show connect button on enter country row."""
-        city_label.show = False
-        connect_button.show = True
+        if server.status == ServerStatusEnum.UNDER_MAINTENANCE:
+            return
 
-    def on_server_leave(
-        self, gtk_event_box, gtk_event_crossing, connect_button, city_label
-    ):
-        """Hide connect button on leave country row."""
-        connect_button.show = False
-        city_label.show = True
+        self.event_box.connect(
+            "enter-notify-event", self.right_child.on_server_enter
+        )
+        self.event_box.connect(
+            "leave-notify-event", self.right_child.on_server_leave
+        )
 
 
 class ServerRowLeftGrid:
@@ -212,3 +195,19 @@ class ServerRowRightGrid:
 
     def display_upgrade(self, gtk_button_object):
         ConnectUpgradeDialog(self.dv.application)
+
+    def on_server_enter(self, gtk_widget, event_crossing):
+        """Show connect button on enter country row."""
+        self.city_label.show = False
+        self.connect_server_button.show = True
+
+    def on_server_leave(self, gtk_widget, event_crossing):
+        """Hide connect button on leave country row."""
+        if event_crossing.detail in [
+            Gdk.NotifyType.NONLINEAR,
+            Gdk.NotifyType.NONLINEAR_VIRTUAL,
+            Gdk.NotifyType.ANCESTOR,
+            Gdk.NotifyType.VIRTUAL
+        ]:
+            self.connect_server_button.show = False
+            self.city_label.show = True

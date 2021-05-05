@@ -8,7 +8,7 @@ from .revealer import ServerListRevealer
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import GdkPixbuf, Gtk
+from gi.repository import GdkPixbuf, Gtk, Gdk
 
 
 class CountryRow:
@@ -34,18 +34,15 @@ class CountryRow:
             self.right_child.grid.widget,
             self.left_child.grid.widget,
         )
-        if self.country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
-            self.row_grid.tooltip = True
-            self.row_grid.connect(
-                "query-tooltip", self.on_country_enter,
-                self.right_child.connect_country_button
-            )
-
-            self.row_grid.attach(
-                self.server_list_revealer.revealer.widget,
-                row=1, width=2
-            )
         self.create_event_box()
+
+        if self.country_item.status == ServerStatusEnum.UNDER_MAINTENANCE:
+            return
+
+        self.row_grid.attach(
+            self.server_list_revealer.revealer.widget,
+            row=1, width=2
+        )
 
     @property
     def total_of_existing_servers(self):
@@ -55,22 +52,17 @@ class CountryRow:
         self.event_box = Gtk.EventBox()
         self.event_box.set_visible_window(True)
         self.event_box.add(self.row_grid.widget)
-        if self.country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
-            self.event_box.connect(
-                "leave-notify-event", self.on_country_leave,
-                self.right_child.connect_country_button
-            )
         self.event_box.props.visible = True
 
-    def on_country_enter(
-        self, widget, x, y, keyboard_mode, tooltip, gtk_button
-    ):
-        """Show connect button on enter country row."""
-        gtk_button.show = True
+        if self.country_item.status == ServerStatusEnum.UNDER_MAINTENANCE:
+            return
 
-    def on_country_leave(self, gtk_event_box, gtk_even_crossing, gtk_button):
-        """Hide connect button on leave country row."""
-        gtk_button.show = False
+        self.event_box.connect(
+            "enter-notify-event", self.right_child.on_enter_connect_button
+        )
+        self.event_box.connect(
+            "leave-notify-event", self.right_child.on_leave_connect_button,
+        )
 
 
 class CountryRowLeftGrid:
@@ -107,37 +99,41 @@ class CountryRowRightGrid:
         self.display_sc = display_sc
         self.feature_icon_list = []
         self.revealer = revealer
+        country_under_maintenance = country_item.status == ServerStatusEnum.UNDER_MAINTENANCE
         self.grid = WidgetFactory.grid("right_child_in_country_row")
         self.grid.add_class("server-list-country-margin-right")
         self.grid.add_class("country-elements")
 
         self.maintenance_icon = WidgetFactory.image("maintenance_icon")
         self.connect_country_button = WidgetFactory.button("connect_country")
-        if all(server.has_to_upgrade for server in country_item.servers):
-            self.connect_country_button.label = "UPGRADE"
         self.chevron_button = WidgetFactory.button("chevron")
         self.chevron_icon = WidgetFactory.image("chevron_icon")
         self.chevron_button.image = self.chevron_icon.widget
         self.grid.attach(self.chevron_button.widget)
         self.grid.attach(self.maintenance_icon.widget)
 
-        if country_item.status != ServerStatusEnum.UNDER_MAINTENANCE:
-            self.connect_callback(country_item)
-            self.attach_connect_button()
-            self.set_country_features(country_item)
-        else:
-            self.connect_country_button.show = False
-            self.chevron_button.show = False
-            self.maintenance_icon.show = True
+        self.chevron_button.show = not country_under_maintenance
+        self.maintenance_icon.show = country_under_maintenance
+
+        if country_under_maintenance:
+            return
+
+        self.connect_callback(country_item)
+        self.attach_connect_button()
+        self.set_country_features(country_item)
 
     def set_country_features(self, country_item):
         feature_to_img_dict = {
             FeatureEnum.TOR: "tor_icon",
             FeatureEnum.P2P: "p2p_icon",
         }
-        features = list(set(
-            [FeatureEnum.TOR, FeatureEnum.P2P]
-        ) & set(country_item.features))
+        features = list(
+            set(
+                [FeatureEnum.TOR, FeatureEnum.P2P]
+            ) & set(
+                country_item.features
+            )
+        )
 
         if country_item.is_virtual:
             feature_icon = WidgetFactory.image("smart_routing_icon")
@@ -181,12 +177,25 @@ class CountryRowRightGrid:
             self.connect_country_button.connect(
                 "clicked", self.display_upgrade,
             )
+            self.connect_country_button.label = "UPGRADE"
 
         self.chevron_button.connect(
             "clicked", self.on_click_chevron,
             self.chevron_icon.widget, self.chevron_button.context,
             self.revealer.widget
         )
+
+    def on_enter_connect_button(self, gtk_widget, event_crossing):
+        self.connect_country_button.show = True
+
+    def on_leave_connect_button(self, gtk_widget, event_crossing):
+        if event_crossing.detail in [
+            Gdk.NotifyType.NONLINEAR,
+            Gdk.NotifyType.NONLINEAR_VIRTUAL,
+            Gdk.NotifyType.ANCESTOR,
+            Gdk.NotifyType.VIRTUAL
+        ]:
+            self.connect_country_button.show = False
 
     def connect_to_country(self, gtk_button_object, country_code):
         self.dv.remove_background_glib(
