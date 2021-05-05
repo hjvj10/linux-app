@@ -1,3 +1,10 @@
+protonvpn-gui (0.6.1-1) unstable; urgency=medium
+
+  * Fix connect button glitch
+  * Add info icon hover effect
+
+ -- Proton Technologies AG <opensource@proton.me>  Wed, 05 May 2021 15:00:00 +0100
+
 protonvpn-gui (0.6.0-1) unstable; urgency=medium
 
   * Fix quick connect loop
@@ -7,7 +14,7 @@ protonvpn-gui (0.6.0-1) unstable; urgency=medium
   * Display an appropriate error on failed login
   * Other color and styling changes 
 
- -- Proton Technologies AG <opensource@proton.me>  Wed, 21 Apr 2021 11:30:00 +0100
+ -- Proton Technologies AG <opensource@proton.me>  Tue, 04 May 2021 11:30:00 +0100
 
  protonvpn-gui (0.5.0-1) unstable; urgency=medium
 
