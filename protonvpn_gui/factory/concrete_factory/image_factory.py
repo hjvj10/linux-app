@@ -358,6 +358,7 @@ class FeatureSmartRouting(ImageFactory):
                 width=20, height=20
             )
         )
+        self.add_class("server-icon")
         self.show = True
 
 
