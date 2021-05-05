@@ -170,34 +170,39 @@ class ServerRowRightGrid:
         self.city_label = WidgetFactory.label("city", server.city)
         self.maintenance_icon.tooltip = True
         self.maintenance_icon.tooltip_text = "Under maintenance"
+        server_under_maintenance = server.status == ServerStatusEnum.UNDER_MAINTENANCE
 
-        if server.status == ServerStatusEnum.UNDER_MAINTENANCE:
-            self.maintenance_icon.show = True
-            self.connect_server_button.show = False
-            self.city_label.show = False
-            object_to_attach = self.maintenance_icon
-        else:
-            object_to_attach = self.connect_server_button
-
-            if server.has_to_upgrade:
-                self.connect_server_button.label = "UPGRADE"
-                self.city_label = WidgetFactory.label(
-                    "city", "Upgrade"
-                )
-                self.connect_server_button.connect(
-                    "clicked", self.display_upgrade
-                )
-            else:
-                self.connect_server_button.connect(
-                    "clicked", self.connect_to_server,
-                    server.name
-                )
+        self.maintenance_icon.show = server_under_maintenance
+        self.city_label.show = not server_under_maintenance
+        object_to_attach = (
+            self.maintenance_icon
+            if server_under_maintenance
+            else self.connect_server_button
+        )
 
         # Both widgets are attached to the same position
         # as they are mutually exclusive. Only one at the
         # time can be displayed.
         self.grid.attach(self.city_label.widget)
         self.grid.attach(object_to_attach.widget)
+
+        if server_under_maintenance:
+            return
+
+        if not server.has_to_upgrade:
+            self.connect_server_button.connect(
+                "clicked", self.connect_to_server,
+                server.name
+            )
+            return
+
+        self.connect_server_button.label = "UPGRADE"
+        self.city_label = WidgetFactory.label(
+            "city", "Upgrade"
+        )
+        self.connect_server_button.connect(
+            "clicked", self.display_upgrade
+        )
 
     def connect_to_server(self, gtk_button_object, servername):
         self.dv.remove_background_glib(
