@@ -213,6 +213,7 @@ class ConnectToCountry(ButtonFactory):
         self.align_v = Gtk.Align.CENTER
         self.add_class("transparent")
         self.label = "CONNECT"
+        self.show = False
 
 
 class ConnectToServer(ButtonFactory):
