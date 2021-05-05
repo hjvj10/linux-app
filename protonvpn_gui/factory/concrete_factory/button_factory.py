@@ -179,6 +179,7 @@ class HeaderInfo(ButtonFactory):
 
     def __init__(self):
         super().__init__()
+        self.expand_h = False
         self.show = True
 
 

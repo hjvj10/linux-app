@@ -14,8 +14,10 @@ class Header:
         self.__button = WidgetFactory.button("header_info")
         self.__button.show = False
         self.__info_icon = WidgetFactory.image("server_feature_info")
+        self.__info_icon_hovered = WidgetFactory.image("server_feature_info_hover")
         self.__button.custom_content(self.__info_icon.widget)
         self.__attach_widgets()
+        self.__add_icon_hover()
 
     @property
     def widget(self):
@@ -24,6 +26,18 @@ class Header:
     def __attach_widgets(self):
         self.__grid.attach(self.__header_title.widget)
         self.__grid.attach_right_next_to(self.__button.widget, self.__header_title.widget)
+
+    def __add_icon_hover(self):
+        self.__button.connect("enter-notify-event", self.__add_hover)
+        self.__button.connect("leave-notify-event", self.__remove_hover)
+
+    def __add_hover(self, *_):
+        self.__button.widget.remove(self.__info_icon.widget)
+        self.__button.custom_content(self.__info_icon_hovered.widget)
+
+    def __remove_hover(self, *_):
+        self.__button.widget.remove(self.__info_icon_hovered.widget)
+        self.__button.custom_content(self.__info_icon.widget)
 
     @property
     def show(self):
