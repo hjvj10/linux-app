@@ -18,7 +18,9 @@ class Utilities:
     def get_ip():
         logger.info("Getting IP")
         try:
-            r = requests.get("https://api.protonvpn.ch/vpn/location")
+            r = requests.get(
+                "https://api.protonvpn.ch/vpn/location", timeout=3
+            )
             api_response = r.text
             api_response = json.loads(api_response)
         except (Exception, requests.exceptions.BaseHTTPError) as e:
