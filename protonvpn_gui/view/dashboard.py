@@ -68,7 +68,8 @@ class DashboardView(Gtk.ApplicationWindow):
     # The button below is not used and is left only for
     # reference that it exists and can be used if wished.
     # headerbar_menu_button = Gtk.Template.Child()
-    main_dashboard_button = Gtk.Template.Child()
+    quick_connect_button = Gtk.Template.Child()
+    main_disconnect_button = Gtk.Template.Child()
     cancel_connect_overlay_button = Gtk.Template.Child()
     dashboard_secure_core_button_menu = Gtk.Template.Child()
     dashboard_netshield_button = Gtk.Template.Child()
@@ -191,7 +192,6 @@ class DashboardView(Gtk.ApplicationWindow):
             GLibEventSourceEnum.ON_SERVER_LOAD:
                 self.dashboard_view_model.on_update_server_load,
         }
-        self.main_button_pressed = False
         self.setup_icons_images()
         self.setup_css()
         self.setup_actions()
@@ -272,7 +272,7 @@ class DashboardView(Gtk.ApplicationWindow):
             feature_button_killswitch_pixbuf
         )
 
-    def on_click_disconnect(self, gtk_button_object):
+    def on_click_disconnect(self, gkt_simple_action, _):
         """On click on Disconnect event handler.
 
         Disconnects from VPN.
@@ -281,17 +281,14 @@ class DashboardView(Gtk.ApplicationWindow):
             gtk_button_object (Gtk.Button)
 
         """
-        logger.info("Clicked on disconnect. State: \"{}\"".format(self.main_button_pressed))
-        if self.main_button_pressed:
-            return
-        self.main_button_pressed = True
+        logger.info("Clicked on disconnect.")
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.remove_background_glib(
             GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
         )
         self.dashboard_view_model.on_disconnect()
 
-    def on_click_quick_connect(self, gtk_button_object):
+    def on_click_quick_connect(self, gkt_simple_action, _):
         """On click Quick Connect event handler.
 
         Quickly connect to a VPN server.
@@ -299,10 +296,7 @@ class DashboardView(Gtk.ApplicationWindow):
         Args:
             gtk_button_object (Gtk.Button)
         """
-        logger.info("Clicked on quick connect. State: \"{}\"".format(self.main_button_pressed))
-        if self.main_button_pressed:
-            return
-        self.main_button_pressed = True
+        logger.info("Clicked on quick connect.")
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.dashboard_view_model.on_quick_connect()
 
@@ -474,6 +468,12 @@ class DashboardView(Gtk.ApplicationWindow):
         display_killswitch_popover = Gio.SimpleAction.new(
             "display_killswitch_popover", None
         )
+        quick_connect = Gio.SimpleAction.new(
+            "quick_connect", None
+        )
+        disconnect = Gio.SimpleAction.new(
+            "disconnect", None
+        )
 
         # connect action to callback
         cancel_connect_overlay_button.connect(
@@ -494,12 +494,20 @@ class DashboardView(Gtk.ApplicationWindow):
             self.quick_settings_popover.display_killswitch_settings,
             self.dashboard_killswitch_button
         )
+        quick_connect.connect(
+            "activate", self.on_click_quick_connect
+        )
+        disconnect.connect(
+            "activate", self.on_click_disconnect
+        )
 
         # add action
         self.add_action(cancel_connect_overlay_button)
         self.add_action(display_secure_core_popover)
         self.add_action(display_netshield_popover)
         self.add_action(display_killswitch_popover)
+        self.add_action(quick_connect)
+        self.add_action(disconnect)
 
         # connect server_search_entry
         self.server_search_entry.connect(

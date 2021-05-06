@@ -176,7 +176,7 @@
                   </packing>
                 </child>
                 <child type="overlay">
-                  <!-- n-columns=1 n-rows=4 -->
+                  <!-- n-columns=1 n-rows=5 -->
                   <object class="GtkGrid" id="connection_information_grid">
                     <property name="name">connection_information_grid</property>
                     <property name="visible">True</property>
@@ -425,19 +425,20 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="main_dashboard_button">
+                      <object class="GtkButton" id="quick_connect_button">
                         <property name="label" translatable="yes">Quick Connect</property>
-                        <property name="name">main_dashboard_button</property>
+                        <property name="name">quick_connect_button</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <property name="valign">center</property>
+                        <property name="action-name">win.quick_connect</property>
                         <accessibility>
                           <action action_name="click" description="Quick Connect to ProtonVPN"/>
                           <action action_name="press" description="Quick Connect to ProtonVPN"/>
                         </accessibility>
                         <child internal-child="accessible">
-                          <object class="AtkObject" id="main_dashboard_button-atkobject">
+                          <object class="AtkObject" id="quick_connect_button-atkobject">
                             <property name="AtkObject::accessible-name" translatable="yes">Quick Connect Button</property>
                             <property name="AtkObject::accessible-description" translatable="yes">Quickly connect to the fastest server.</property>
                             <property name="AtkObject::accessible-role" translatable="yes">push-button</property>
@@ -450,6 +451,35 @@
                       <packing>
                         <property name="left-attach">0</property>
                         <property name="top-attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="main_disconnect_button">
+                        <property name="label" translatable="yes">Disconnect</property>
+                        <property name="name">main_disconnect_button</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="valign">center</property>
+                        <property name="action-name">win.disconnect</property>
+                        <accessibility>
+                          <action action_name="click" description="Disconnect from ProtonVPN"/>
+                          <action action_name="press" description="Disconnect from ProtonVPN"/>
+                        </accessibility>
+                        <child internal-child="accessible">
+                          <object class="AtkObject" id="main_disconnect_button-atkobject">
+                            <property name="AtkObject::accessible-name" translatable="yes">Disconnect Button</property>
+                            <property name="AtkObject::accessible-description" translatable="yes">Disconnect from ProtonVPN server.</property>
+                            <property name="AtkObject::accessible-role" translatable="yes">push-button</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="transparent-white"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">4</property>
                       </packing>
                     </child>
                     <style>
