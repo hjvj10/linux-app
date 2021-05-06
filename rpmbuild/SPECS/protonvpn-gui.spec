@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.6.1
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
@@ -58,11 +58,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Wed Apr 05 2021 Proton Technologies AG <opensource@proton.me> 0.6.1-1
+* Wed Apr 05 2021 Proton Technologies AG <opensource@proton.me> 0.6.1-2
 - Fix connect button glitch
 - Add info icon hover effect
 - Add timetout to when fetching IP
 - Improve dashboard UI after disconnecting
+- Fix quick connect/disconnect glitch
 
 * Tue Apr 04 2021 Proton Technologies AG <opensource@proton.me> 0.6.0-1
 - Fix quick connect loop
