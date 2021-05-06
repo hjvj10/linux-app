@@ -47,7 +47,7 @@ class NotConnectedVPNView:
         ):
             label = "Network issues detected."
             ip = "None"
-
+        dv.connected_protocol_label.props.label = ""
         dv.country_servername_label.props.label = \
             label
         dv.ip_label.props.label = ip
