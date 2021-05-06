@@ -16,7 +16,7 @@ class Utilities:
 
     @staticmethod
     def get_ip():
-        logger.info("Getting IP")
+        logger.debug("Getting IP")
         try:
             r = requests.get(
                 "https://api.protonvpn.ch/vpn/location", timeout=3
@@ -33,7 +33,7 @@ class Utilities:
                 "ISP": None
             }
 
-        logger.info("IP fetched")
+        logger.debug("IP fetched")
         vpn_loc = VPNLocation.new(api_response)
 
         return vpn_loc
@@ -91,7 +91,8 @@ class Utilities:
             string
         """
         if byte_per_second <= 0:
-            return "- B/s"
+            return "0 B/s"
+
         if (
             byte_per_second >= one_kilobyte_in_bytes
             and byte_per_second < one_megabyte_in_bytes
