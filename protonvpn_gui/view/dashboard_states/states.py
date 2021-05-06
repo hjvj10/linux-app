@@ -11,7 +11,6 @@ class InitLoadView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
-        dv.main_button_pressed = False
         dv.overlay_bottom_label.props.label = ""\
             "Secure Internet Anywhere"
         dv.overlay_spinner.start()
@@ -36,7 +35,6 @@ class NotConnectedVPNView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
-        dv.main_button_pressed = False
         label = "You are not connected"
         ip = state.ip
 
@@ -52,25 +50,11 @@ class NotConnectedVPNView:
             label
         dv.ip_label.props.label = ip
         label_ctx = dv.country_servername_label.get_style_context()
-        button_ctx = dv.main_dashboard_button.get_style_context()
+        dv.quick_connect_button.props.visible = True
+        dv.main_disconnect_button.props.visible = False
         if not label_ctx.has_class("warning-color"):
             label_ctx.add_class("warning-color")
-        if button_ctx.has_class("transparent-white"):
-            button_ctx.remove_class("transparent-white")
-        if not button_ctx.has_class("transparent"):
-            button_ctx.add_class("transparent")
 
-        try:
-            dv.main_dashboard_button.disconnect_by_func(
-                dv.on_click_disconnect
-            )
-        except TypeError:
-            pass
-
-        dv.main_dashboard_button.connect(
-            "clicked", dv.on_click_quick_connect
-        )
-        dv.main_dashboard_button.props.label = "Quick Connect"
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         dv.gtk_property_setter(
@@ -85,7 +69,6 @@ class ConnectedVPNView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
-        dv.main_button_pressed = False
         country = protonvpn.get_country()
         country_string = "{}".format(
             country.get_country_name(state.countries[0])
@@ -110,26 +93,13 @@ class ConnectedVPNView:
                 state.protocol.value.upper()
             )
         dv.connected_protocol_label.props.label = protocol
+        dv.quick_connect_button.props.visible = False
+        dv.main_disconnect_button.props.visible = True
         label_ctx = dv.country_servername_label.get_style_context()
-        button_ctx = dv.main_dashboard_button.get_style_context()
 
         if label_ctx.has_class("warning-color"):
             label_ctx.remove_class("warning-color")
-        if button_ctx.has_class("transparent"):
-            button_ctx.remove_class("transparent")
-        if not button_ctx.has_class("transparent-white"):
-            button_ctx.add_class("transparent-white")
 
-        try:
-            dv.main_dashboard_button.disconnect_by_func(
-                dv.on_click_quick_connect
-            )
-        except TypeError:
-            pass
-        dv.main_dashboard_button.connect(
-            "clicked", dv.on_click_disconnect
-        )
-        dv.main_dashboard_button.props.label = "Disconnect"
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED)
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
@@ -181,7 +151,6 @@ class ConnectVPNErrorView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
-        dv.main_button_pressed = False
         dv.connecting_to_label.set_text(
             state.message
         )
