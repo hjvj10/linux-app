@@ -61,6 +61,8 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Apr 05 2021 Proton Technologies AG <opensource@proton.me> 0.6.1-1
 - Fix connect button glitch
 - Add info icon hover effect
+- Add timetout to when fetching IP
+- Improve dashboard UI after disconnecting
 
 * Tue Apr 04 2021 Proton Technologies AG <opensource@proton.me> 0.6.0-1
 - Fix quick connect loop

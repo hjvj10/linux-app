@@ -2,6 +2,8 @@ protonvpn-gui (0.6.1-1) unstable; urgency=medium
 
   * Fix connect button glitch
   * Add info icon hover effect
+  * Add timetout to when fetching IP
+  * Improve dashboard UI after disconnecting
 
  -- Proton Technologies AG <opensource@proton.me>  Wed, 05 May 2021 15:00:00 +0100
 

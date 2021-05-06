@@ -161,7 +161,6 @@ class DashboardView(Gtk.ApplicationWindow):
                 (self.download_speed_image, False),
                 (self.upload_speed_image, False),
                 (self.upload_speed_label, False),
-                (self.connected_protocol_label, False),
                 (self.serverload_label, False),
                 (self.sidebar_country_image, False),
                 (self.server_load_image, False),
@@ -172,7 +171,6 @@ class DashboardView(Gtk.ApplicationWindow):
         self.SET_UI_CONNECTED = {
             "property": "visible",
             "objects": [
-                (self.connected_protocol_label, True),
                 (self.download_speed_label, True),
                 (self.download_speed_image, True),
                 (self.upload_speed_image, True),
