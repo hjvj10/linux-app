@@ -1,6 +1,7 @@
 protonvpn-gui (0.6.2-1) unstable; urgency=medium
 
   * Add warning message if kill switch is blocking all connections
+  * Displays only countries when connected to secure core, on dashboard
 
  -- Proton Technologies AG <opensource@proton.me>  Thu, 06 May 2021 17:00:00 +0100
 
