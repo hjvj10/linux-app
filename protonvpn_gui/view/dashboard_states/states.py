@@ -38,13 +38,17 @@ class NotConnectedVPNView:
         label = "You are not connected"
         ip = state.ip
 
-        if all(
+        if state.ks_enabled:
+            label = "Kill Switch activated!"
+            ip = ""
+        elif all(
             attr is None
             for attr
             in [state.ip, state.isp, state.country]
         ):
             label = "Network issues detected."
-            ip = "None"
+            ip = ""
+
         dv.connected_protocol_label.props.label = ""
         dv.country_servername_label.props.label = \
             label
