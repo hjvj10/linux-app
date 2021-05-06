@@ -84,8 +84,11 @@ class ConnectedVPNView:
             country_string = country_string + " >> {}".format(
                 country.get_country_name(state.countries[1])
             )
+        else:
+            country_string = country_string + " {}".format(state.servername)
+
         dv.on_connect_load_sidebar_flag(state.exit_country_code)
-        country_servername = country_string + " {}".format(state.servername)
+        country_servername = country_string
         dv.country_servername_label.props.label = country_servername
         dv.ip_label.props.label = state.ip
         dv.serverload_label.props.label = state.load + "% " + "Load"
