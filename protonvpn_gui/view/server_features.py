@@ -253,6 +253,7 @@ class PlusFeatures:
 
     def __add_supported_services(self, country):
         streaming_services = protonvpn.get_session().streaming
+        streaming_icons = protonvpn.get_session().streaming_icons
         client_config = protonvpn.get_session().clientconfig
 
         try:
@@ -261,15 +262,25 @@ class PlusFeatures:
             return
 
         services.sort(key=lambda service: service["Name"])
-        services_grid = WidgetFactory.grid("default")
-        services_grid.add_class("plus-features")
+        services_grid = WidgetFactory.grid("streaming_icons_container")
         x_pos = 0
         y_pos = 0
         max_items_per_row = 3
         for service in services:
-            if client_config.features.streaming_logos and True != True:
-                # TO-DO: create icons for streaming services
-                continue
+            if client_config.features.streaming_logos and streaming_icons[service.get("Icon")]:
+                # dummy_img = WidgetFactory.image("dummy")
+                # dummy_img.add_class("margin-y-20px")
+                # pixbuf = dummy_img.create_pixbuf_custom_path(
+                #     streaming_icons[service.get("Icon")],
+                #     width=105, height=105
+                # )
+                # dummy_img.set_from_pixbuf(pixbuf)
+                # dummy_img.show = True
+                # service_widget = dummy_img
+                service_widget = WidgetFactory.image(
+                    "streaming_service_icon", streaming_icons[service.get("Icon")]
+                )
+
             else:
                 service_widget = WidgetFactory.label(
                     "streaming_title", service["Name"]

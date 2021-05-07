@@ -291,6 +291,16 @@ class Default(GridFactory):
         self.show = True
 
 
+class StreamingIconsContainer(GridFactory):
+    grid = "streaming_icons_container"
+
+    def __init__(self):
+        super().__init__()
+        self.add_class("plus-features")
+        self.align_h = Gtk.Align.FILL
+        self.show = True
+
+
 class QuickSettings(GridFactory):
     grid = "container"
 
