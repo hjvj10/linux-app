@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.6.2
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
@@ -58,10 +58,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Thu Apr 06 2021 Proton Technologies AG <opensource@proton.me> 0.6.2-1
+* Thu Apr 06 2021 Proton Technologies AG <opensource@proton.me> 0.6.2-2
 - Add warning message if kill switch is blocking all connections
 - Display only countries when connected to secure core, on dashboard
 - Display streaming icons if present
+- Add space to secure core sub-servers flags and label
 
 * Wed Apr 05 2021 Proton Technologies AG <opensource@proton.me> 0.6.1-2
 - Fix connect button glitch
