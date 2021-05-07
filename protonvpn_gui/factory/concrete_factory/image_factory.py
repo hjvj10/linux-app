@@ -162,6 +162,34 @@ class ImageFactory(WidgetFactory):
     def set_from_pixbuf(self, pixbuf_widget):
         self.__widget.set_from_pixbuf(pixbuf_widget)
 
+    def create_pixbuf_custom_path(
+        self, path, width=None, height=None
+    ):
+        """Gets the icon pixbuff for the specified filename.
+
+        If width and/or height are not provided, then the icon
+        is set with original values. Else, the icon is resized.
+
+        Args:
+            path (string):
+            width (int|float): optional
+            height (int|float): optional
+
+        Returns:
+            GdkPixbuf instance with loaded image
+        """
+        if width and height:
+            return GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=path,
+                width=width,
+                height=height,
+                preserve_aspect_ratio=True
+            )
+
+        return GdkPixbuf.Pixbuf.new_from_file(
+            filename=path
+        )
+
     def create_icon_pixbuf_from_name(
         self, icon_name, width=None, height=None
     ):
@@ -238,6 +266,23 @@ class Dummy(ImageFactory):
 
     def __init__(self, _):
         super().__init__()
+
+
+class StreamingServiceIcon(ImageFactory):
+    image = "streaming_service_icon"
+
+    def __init__(self, service_path):
+        super().__init__()
+        self.align_v = Gtk.Align.CENTER
+        self.add_class("margin-y-20px")
+        self.add_class("margin-x-5px")
+        self.set_from_pixbuf(
+            self.create_pixbuf_custom_path(
+                path=service_path,
+                width=98, height=98
+            )
+        )
+        self.show = True
 
 
 class ServerFeatureInfo(ImageFactory):
