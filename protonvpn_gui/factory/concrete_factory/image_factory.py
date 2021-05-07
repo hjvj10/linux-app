@@ -108,7 +108,7 @@ class ImageFactory(WidgetFactory):
     def remove_class(self, css_class):
         """Remove CSS class."""
         if self.has_class(css_class):
-            self.__widget_context.remvove_class(css_class)
+            self.__widget_context.remove_class(css_class)
 
     def remove_all_classes(self):
         css_list = self.__widget_context.list_classes()

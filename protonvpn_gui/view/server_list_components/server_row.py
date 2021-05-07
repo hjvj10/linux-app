@@ -70,6 +70,9 @@ class ServerRowLeftGrid:
             self.country_flag = WidgetFactory.image(
                 "small_flag", self.server.entry_country_code
             )
+            self.country_flag.remove_class("country-flag")
+            self.country_flag.add_class("margin-left-10px")
+            self.country_flag.add_class("margin-right-10px")
         except gi.repository.GLib.Error:
             self.country_flag = WidgetFactory.image("dummy_small_flag")
 
