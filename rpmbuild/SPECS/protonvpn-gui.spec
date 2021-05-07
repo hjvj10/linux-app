@@ -60,7 +60,8 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu Apr 06 2021 Proton Technologies AG <opensource@proton.me> 0.6.2-1
 - Add warning message if kill switch is blocking all connections
-- Displays only countries when connected to secure core, on dashboard
+- Display only countries when connected to secure core, on dashboard
+- Display streaming icons if present
 
 * Wed Apr 05 2021 Proton Technologies AG <opensource@proton.me> 0.6.1-2
 - Fix connect button glitch
