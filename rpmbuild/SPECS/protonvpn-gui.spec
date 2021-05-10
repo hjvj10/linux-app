@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.7.0
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
@@ -27,6 +27,7 @@ Requires: python3-protonvpn-nm-lib >= 3.1.0, python3-protonvpn-nm-lib < 3.2.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
+Requires: libappindicator-gtk3
 
 %{?python_disable_dependency_generator}
 
@@ -58,8 +59,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Mon Apr 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-1
+* Mon Apr 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-2
 - Feature: add sys-tray icon
+- Add missing indicator dependency
 
 * Thu Apr 06 2021 Proton Technologies AG <opensource@proton.me> 0.6.2-2
 - Add warning message if kill switch is blocking all connections
