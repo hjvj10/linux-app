@@ -10,6 +10,8 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 
 from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
                          UI_DIR_PATH, protonvpn_logo)
+from ..enums import IndicatorActionEnum
+from ..logger import logger
 from ..patterns.factory import WidgetFactory
 from .dialog import LoginKillSwitchDialog
 
@@ -67,7 +69,10 @@ class LoginView(Gtk.ApplicationWindow):
         self.login_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
-
+        self.application.indicator.setup_reply_subject()
+        self.application.indicator.login_action.subscribe(
+            lambda indicator_state: self.indicator_action(indicator_state)
+        )
         super().__init__(application=self.application)
         self.setup_images()
         self.setup_css()
@@ -85,6 +90,10 @@ class LoginView(Gtk.ApplicationWindow):
         self.login_button.set_property("has-default", True)
         self.proton_password_entry.set_property("activates-default", True)
         self.proton_username_entry.set_property("activates-default", True)
+
+    def indicator_action(self, indicator_state):
+        if indicator_state == IndicatorActionEnum.SHOW_GUI:
+            self.set_visible(True)
 
     def on_entry_changed(self, gtk_entry_object):
         gtk_entry_objects = [
@@ -167,6 +176,16 @@ class LoginView(Gtk.ApplicationWindow):
         self.add_action(login_action)
         self.add_action(disable_killswitch)
 
+        self.connect("delete-event", self.on_close_window)
+
+    def on_close_window(self, dashboard_view, gtk_event, _quit=False):
+        if not _quit:
+            self.hide()
+            return True
+
+        self.application.indicator.login_action.dispose()
+        self.destroy()
+
     def on_display_popover(self, gio_simple_action, _):
         self.popover_login_menu.popup()
 
@@ -218,7 +237,7 @@ class LoginView(Gtk.ApplicationWindow):
             self.overlay_box.set_property("visible", False)
         elif state == LoginState.SUCCESS:
             self.dashboard_window().present()
-            self.close()
+            self.on_close_window(None, None, True)
 
     def setup_images(self):
         dummy_object = WidgetFactory.image("dummy")

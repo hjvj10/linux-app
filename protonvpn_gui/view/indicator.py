@@ -1,15 +1,15 @@
 import gi
 
 gi.require_version("Gtk", "3.0")
-gi.require_version("Notify", "0.7")
 gi.require_version("AppIndicator3", "0.1")
 import os
 
 from gi.repository import AppIndicator3 as appindicator
-from gi.repository import GObject, Gtk, Notify
+from gi.repository import Gtk
 from ..constants import ICON_DIR_PATH, VPN_TRAY_ON, VPN_TRAY_OFF, VPN_TRAY_ERROR
 from ..enums import IndicatorActionEnum
 from ..rx.subject.replaysubject import ReplaySubject
+from ..logger import logger
 
 
 class ProtonVPNIndicator:
@@ -19,23 +19,35 @@ class ProtonVPNIndicator:
 
     def __init__(self, application):
         super().__init__()
-        self.indicator_action = ReplaySubject(buffer_size=1)
-        self.application = application
-        self.gobject = GObject
-        self.menu = self.menu()
-        self.indicator = appindicator.Indicator.new(
-            "ProtonVPN Indicator",
-            "protonvpn-indicator",
+        self.setup_reply_subject()
+        self.__application = application
+        self.__generate_menu()
+        self.__indicator = appindicator.Indicator.new(
+            "ProtonVPN Tray",
+            "protonvpn-tray",
             appindicator.IndicatorCategory.APPLICATION_STATUS)
-        self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
-        self.indicator.set_menu(self.menu)
+        self.__indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
+        self.__indicator.set_menu(self.menu)
 
-        self.tray_title = "ProtonVPN"
-        self.notify = Notify
-        self.notify.init("ProtonVPN Tray")
-        self.indicator.set_icon_full(self.ERROR_PATH, "protonvpn")
+        self.__indicator.set_icon_full(self.OFF_PATH, "protonvpn")
 
-    def menu(self):
+    @property
+    def application(self):
+        return self.__application
+
+    @property
+    def indicator(self):
+        return self.__indicator
+
+    @property
+    def login_action(self):
+        return self.__indicator_login_action
+
+    @property
+    def dashboard_action(self):
+        return self.__indicator_dashboard_action
+
+    def __generate_menu(self):
         self.menu = Gtk.Menu()
 
         self.separator_0 = Gtk.SeparatorMenuItem()
@@ -74,27 +86,46 @@ class ProtonVPNIndicator:
 
     def __quick_connect(self, _):
         """Makes a quick connection by making a cli call to protonvpn-cli-ng"""
-        self.indicator_action.on_next(IndicatorActionEnum.QUICK_CONNECT)
+        self.on_next_reply(IndicatorActionEnum.QUICK_CONNECT)
 
     def __disconnect(self, _):
         """__disconnects from a current vpn connection"""
-        self.indicator_action.on_next(IndicatorActionEnum.DISCONNECT)
+        self.on_next_reply(IndicatorActionEnum.DISCONNECT)
 
     def __show_gui(self, _):
         """Displays the GUI."""
-        self.indicator_action.on_next(IndicatorActionEnum.SHOW_GUI)
+        self.on_next_reply(IndicatorActionEnum.SHOW_GUI)
 
     def __quit_protonvpn(self, _):
         """Quit/Stop the tray icon.
         """
-        self.application.on_quit()
-        pass
+        self.__application.on_quit()
+
+    def on_next_reply(self, indicator_enum):
+        from protonvpn_gui.rx.internal.exceptions import DisposedException
+        try:
+            self.__indicator_dashboard_action.on_next(indicator_enum)
+        except DisposedException:
+            pass
+        except Exception as e:
+            logger.exception(e)
+
+        try:
+            self.__indicator_login_action.on_next(indicator_enum)
+        except DisposedException:
+            pass
+        except Exception as e:
+            logger.exception(e)
 
     def set_connected_state(self):
-        self.indicator.set_icon_full(self.ON_PATH, "protonvpn")
+        self.__indicator.set_icon_full(self.ON_PATH, "protonvpn")
 
     def set_disconnected_state(self):
-        self.indicator.set_icon_full(self.OFF_PATH, "protonvpn")
+        self.__indicator.set_icon_full(self.OFF_PATH, "protonvpn")
 
     def set_error_state(self):
-        self.indicator.set_icon_full(self.ERROR_PATH, "protonvpn")
+        self.__indicator.set_icon_full(self.ERROR_PATH, "protonvpn")
+
+    def setup_reply_subject(self):
+        self.__indicator_login_action = ReplaySubject(buffer_size=1)
+        self.__indicator_dashboard_action = ReplaySubject(buffer_size=1)

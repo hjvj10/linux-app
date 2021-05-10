@@ -41,6 +41,7 @@ class NotConnectedVPNView:
         if state.ks_enabled:
             label = "Kill Switch activated!"
             ip = ""
+            dv.application.indicator.set_error_state()
         elif all(
             attr is None
             for attr
@@ -48,6 +49,9 @@ class NotConnectedVPNView:
         ):
             label = "Network issues detected."
             ip = ""
+            dv.application.indicator.set_error_state()
+        else:
+            dv.application.indicator.set_disconnected_state()
 
         dv.connected_protocol_label.props.label = ""
         dv.country_servername_label.props.label = \
@@ -58,6 +62,7 @@ class NotConnectedVPNView:
         dv.main_disconnect_button.props.visible = False
         if not label_ctx.has_class("warning-color"):
             label_ctx.add_class("warning-color")
+
 
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
@@ -106,6 +111,8 @@ class ConnectedVPNView:
 
         if label_ctx.has_class("warning-color"):
             label_ctx.remove_class("warning-color")
+
+        dv.application.indicator.set_connected_state()
 
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED)
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
