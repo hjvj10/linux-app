@@ -7,7 +7,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
 from ..constants import CSS_DIR_PATH, UI_DIR_PATH, protonvpn_logo
-from ..factory import WidgetFactory
+from ..patterns.factory import WidgetFactory
 from ..constants import APP_VERSION
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
 from proton.constants import VERSION as api_version

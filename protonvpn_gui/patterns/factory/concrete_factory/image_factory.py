@@ -2,9 +2,9 @@ import os
 
 import gi
 
-from ...constants import (ICON_DIR_PATH, IMG_DIR_PATH, KILLSWITCH_ICON_SET,
+from ....constants import (ICON_DIR_PATH, IMG_DIR_PATH, KILLSWITCH_ICON_SET,
                           NETSHIELD_ICON_SET, SECURE_CORE_ICON_SET)
-from ...enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
+from ....enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                       DashboardSecureCoreIconEnum)
 
 gi.require_version('Gtk', '3.0')

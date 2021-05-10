@@ -1,4 +1,4 @@
-from ...factory import WidgetFactory
+from ...patterns.factory import WidgetFactory
 from .server_row import ServerRow
 from .server_header import ServerHeader
 

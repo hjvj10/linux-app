@@ -14,7 +14,7 @@ from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
                          SECURE_CORE_ICON_SET, UI_DIR_PATH)
 from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                      DashboardSecureCoreIconEnum)
-from ..factory.abstract_widget_factory import WidgetFactory
+from ..patterns.factory.abstract_widget_factory import WidgetFactory
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "quick_settings_popover.ui"))

@@ -8,7 +8,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk
 
 from ..constants import CSS_DIR_PATH, UI_DIR_PATH
-from ..factory.abstract_widget_factory import WidgetFactory
+from ..patterns.factory.abstract_widget_factory import WidgetFactory
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "server_features.ui"))

@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod, abstractclassmethod
-from ..utils import SubclassesMixin
+from ...utils import SubclassesMixin
 
 
 class WidgetFactory(SubclassesMixin, metaclass=ABCMeta):

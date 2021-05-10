@@ -10,7 +10,7 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 
 from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
                          UI_DIR_PATH, protonvpn_logo)
-from ..factory import WidgetFactory
+from ..patterns.factory import WidgetFactory
 from .dialog import LoginKillSwitchDialog
 
 
