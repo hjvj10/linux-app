@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.6.2
-%define release 2
+%define version 0.7.0
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -58,6 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-1
+- Feature: add sys-tray icon
+
 * Thu Apr 06 2021 Proton Technologies AG <opensource@proton.me> 0.6.2-2
 - Add warning message if kill switch is blocking all connections
 - Display only countries when connected to secure core, on dashboard
