@@ -11,7 +11,7 @@ from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
 from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
                      DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
                      GLibEventSourceEnum)
-from ..factory import WidgetFactory
+from ..patterns.factory import WidgetFactory
 from ..logger import logger
 from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
@@ -147,6 +147,9 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
+        self.application.indicator.indicator_action.subscribe(
+            lambda state: self.test_subscribe
+        )
         self.quick_settings_popover = QuickSettingsPopoverView(
             self.dashboard_view_model
         )
@@ -196,6 +199,10 @@ class DashboardView(Gtk.ApplicationWindow):
         self.setup_css()
         self.setup_actions()
         self.dashboard_view_model.on_startup()
+
+    def test_subscribe(self, *args):
+        print("Worked")
+        print("Here")
 
     def render_view_state(self, state):
         """Render view state.
@@ -523,6 +530,12 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_secure_core_button_menu.set_tooltip_text("Secure Core")
         self.dashboard_netshield_button.set_tooltip_text("Netshield")
         self.dashboard_killswitch_button.set_tooltip_text("Kill Switch")
+
+        self.connect("destroy", self.on_close_window)
+
+    def on_close_window(self, window):
+        self.application.hold()
+        self.hide()
 
     def filter_server_list(self, server_search_entry):
         """Filter server list based on user input.
