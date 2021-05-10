@@ -11,6 +11,7 @@ Architecture: all
 Homepage: https://github.com/ProtonVPN
 Section: net
 Depends: ${python3:Depends}, ${misc:Depends}, python3-protonvpn-nm-lib (>= 3.1.0), python3-protonvpn-nm-lib (< 3.2.0), python3-gi, python3-gi-cairo, python3-psutil, gir1.2-appindicator3-0.1
+Recommends: gir1.2-appindicator3-0.1
 Description: ProtonVPN GUI (Python 3)
  Package installs official ProtonVPN Graphical User Interface.
 
