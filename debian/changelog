@@ -1,4 +1,10 @@
-protonvpn-gui (0.6.2-2) unstable; urgency=medium
+protonvpn-gui (0.7.0-1) unstable; urgency=medium
+
+  * Feature: add sys-tray icon
+
+ -- Proton Technologies AG <opensource@proton.me>  mon, 10 May 2021 14:15:00 +0100
+ 
+ protonvpn-gui (0.6.2-2) unstable; urgency=medium
 
   * Add warning message if kill switch is blocking all connections
   * Display only countries when connected to secure core, on dashboard

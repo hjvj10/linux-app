@@ -3,7 +3,7 @@ import os
 from .enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                     DashboardSecureCoreIconEnum)
 
-APP_VERSION = "0.6.2"
+APP_VERSION = "0.7.0"
 ABSOLUTE_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 ASSETS_DIR_PATH = os.path.join(ABSOLUTE_DIR_PATH, "assets")
 
@@ -17,6 +17,10 @@ LOGGER_NAME = "protonvpn-gui"
 
 
 protonvpn_logo = "protonvpn-logo.png"
+VPN_TRAY_ON = "vpn-connected.svg"
+VPN_TRAY_OFF = "vpn-disconnected.svg"
+VPN_TRAY_ERROR = "vpn-no-network.svg"
+
 KILLSWITCH_ICON_SET = {
     DashboardKillSwitchIconEnum.OFF:
         os.path.join(

@@ -1,4 +1,4 @@
-from ..factory import WidgetFactory
+from ..patterns.factory import WidgetFactory
 from .server_list_components.country_row import CountryRow
 from .server_list_components.country_header import CountryHeader
 

@@ -10,8 +10,8 @@ from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
                          SECURE_CORE_ICON_SET, UI_DIR_PATH, protonvpn_logo)
 from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
                      DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
-                     GLibEventSourceEnum)
-from ..factory import WidgetFactory
+                     GLibEventSourceEnum, IndicatorActionEnum)
+from ..patterns.factory import WidgetFactory
 from ..logger import logger
 from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
@@ -141,16 +141,19 @@ class DashboardView(Gtk.ApplicationWindow):
     }
 
     def __init__(self, **kwargs):
-        self.dashboard_view_model = kwargs.pop("view_model")
         self.application = kwargs.pop("application")
-
+        super().__init__(application=self.application)
+        self.dashboard_view_model = kwargs.pop("view_model")
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
+        )
+        self.application.indicator.setup_reply_subject()
+        self.application.indicator.dashboard_action.subscribe(
+            lambda indicator_state: self.indicator_action(indicator_state)
         )
         self.quick_settings_popover = QuickSettingsPopoverView(
             self.dashboard_view_model
         )
-        super().__init__(application=self.application)
         self.overlay_spinner.set_property("width-request", 200)
         self.overlay_spinner.set_property("height-request", 200)
         self.connecting_overlay_spinner.set_property("width-request", 200)
@@ -196,6 +199,16 @@ class DashboardView(Gtk.ApplicationWindow):
         self.setup_css()
         self.setup_actions()
         self.dashboard_view_model.on_startup()
+
+    def indicator_action(self, indicator_state):
+        if indicator_state == IndicatorActionEnum.QUICK_CONNECT:
+            self.on_click_quick_connect(None, None)
+        elif indicator_state == IndicatorActionEnum.DISCONNECT:
+            self.on_click_disconnect(None, None)
+        elif indicator_state == IndicatorActionEnum.SHOW_GUI:
+            self.set_visible(True)
+        else:
+            logger.info("Invalid indicator state \"{}\"".format(indicator_state))
 
     def render_view_state(self, state):
         """Render view state.
@@ -523,6 +536,16 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_secure_core_button_menu.set_tooltip_text("Secure Core")
         self.dashboard_netshield_button.set_tooltip_text("Netshield")
         self.dashboard_killswitch_button.set_tooltip_text("Kill Switch")
+
+        self.connect("delete-event", self.on_close_window)
+
+    def on_close_window(self, dashboard_view, gtk_event, _quit=False):
+        if not _quit:
+            self.hide()
+            return True
+
+        self.application.indicator.dashboard_action.dispose()
+        self.destroy()
 
     def filter_server_list(self, server_search_entry):
         """Filter server list based on user input.

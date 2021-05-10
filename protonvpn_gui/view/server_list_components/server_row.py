@@ -2,7 +2,7 @@ import gi
 from protonvpn_nm_lib.enums import FeatureEnum, ServerStatusEnum
 
 from ...enums import GLibEventSourceEnum
-from ...factory import WidgetFactory
+from ...patterns.factory import WidgetFactory
 from ..dialog import ConnectUpgradeDialog
 from .server_load import ServerLoad
 

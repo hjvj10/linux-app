@@ -1,4 +1,4 @@
-from ...factory import WidgetFactory
+from ...patterns.factory import WidgetFactory
 
 
 class Header:

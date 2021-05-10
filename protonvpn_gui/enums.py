@@ -1,6 +1,12 @@
 from enum import Enum, auto
 
 
+class IndicatorActionEnum(Enum):
+    QUICK_CONNECT = 0
+    DISCONNECT = 1
+    SHOW_GUI = 2
+
+
 class GLibEventSourceEnum(Enum):
     ON_MONITOR_VPN = "on_monitor_vpn"
     ON_MONITOR_NETWORK_SPEED = "on_monitor_network_speed"

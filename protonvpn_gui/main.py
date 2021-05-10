@@ -22,6 +22,7 @@ from .view_model.login import LoginViewModel
 from .model.server_list import ServerList
 from .model.country_item import CountryItem
 from .view.dialog import QuitDialog, LogoutDialog, AboutDialog
+from .view.indicator import ProtonVPNIndicator
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -35,6 +36,7 @@ class ProtonVPNGUI(Gtk.Application):
             application_id='com.protonvpn.www',
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
+        self.indicator = None
 
     def do_startup(self):
         """Default GTK method.
@@ -78,7 +80,7 @@ class ProtonVPNGUI(Gtk.Application):
         self.setup_actions()
         logger.info("Startup successful")
 
-    def on_quit(self, *args):
+    def on_quit(self, *_):
         """On app quit event hanlder."""
         logger.info("Quit app")
         if protonvpn.get_active_protonvpn_connection():
@@ -91,9 +93,11 @@ class ProtonVPNGUI(Gtk.Application):
         try:
             protonvpn.disconnect()
         except exceptions.ConnectionNotFound:
-            self.quit()
+            pass
 
-    def on_logout(self, *args):
+        self.quit()
+
+    def on_logout(self, *_):
         if protonvpn.get_active_protonvpn_connection():
             LogoutDialog(self, self.logout)
             return
@@ -105,7 +109,10 @@ class ProtonVPNGUI(Gtk.Application):
         protonvpn.logout()
         logger.info("Destroying all windows \"{}\"".format(active_windows))
         for win in active_windows:
-            win.destroy()
+            try:
+                win.on_close_window(None, None, True)
+            except AttributeError:
+                win.destroy()
 
         self.do_activate()
 
@@ -123,6 +130,8 @@ class ProtonVPNGUI(Gtk.Application):
         Runs after app startup and before displaying any windows.
         """
         win = self.props.active_window
+        if not self.indicator:
+            self.indicator = ProtonVPNIndicator(self)
 
         if not win:
             if not protonvpn.check_session_exists():
