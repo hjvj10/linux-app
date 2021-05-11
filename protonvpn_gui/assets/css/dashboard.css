@@ -78,7 +78,7 @@ grid#connecting_overlay_grid label{
 }
 
 grid.connection_information_box{
-    padding-bottom: 80px;
+    /* padding-bottom: 80px; */
     background-image: linear-gradient(rgba(38, 42, 51, 0.6), rgb(10, 10, 10));
 }
 

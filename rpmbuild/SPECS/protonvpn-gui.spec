@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.7.0
-%define release 5
+%define version 0.7.1
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -61,6 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.1-1
+- Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
+
 * Mon Apr 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-3
 - Feature: add sys-tray icon
 - Add missing indicator dependency

@@ -1,9 +1,15 @@
-protonvpn-gui (0.7.0-5) unstable; urgency=medium
+protonvpn-gui (0.7.1-1) unstable; urgency=medium
+
+  * Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
+
+ -- Proton Technologies AG <opensource@proton.me>  Tue, 11 May 2021 17:40:00 +0100
+
+ protonvpn-gui (0.7.0-5) unstable; urgency=medium
 
   * Feature: add sys-tray icon
   * Add missing indicator dependency
 
- -- Proton Technologies AG <opensource@proton.me>  mon, 10 May 2021 14:15:00 +0100
+ -- Proton Technologies AG <opensource@proton.me>  Mon, 10 May 2021 14:15:00 +0100
  
  protonvpn-gui (0.6.2-2) unstable; urgency=medium
 

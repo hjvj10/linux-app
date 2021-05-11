@@ -158,7 +158,6 @@
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
             <property name="orientation">vertical</property>
-            <property name="column-homogeneous">True</property>
             <property name="baseline-row">1</property>
             <child>
               <object class="GtkOverlay">
@@ -181,7 +180,6 @@
                     <property name="name">connection_information_grid</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">start</property>
                     <property name="column-homogeneous">True</property>
                     <child>
                       <!-- n-columns=2 n-rows=1 -->
