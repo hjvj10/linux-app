@@ -1,6 +1,7 @@
-protonvpn-gui (0.7.0-1) unstable; urgency=medium
+protonvpn-gui (0.7.0-5) unstable; urgency=medium
 
   * Feature: add sys-tray icon
+  * Add missing indicator dependency
 
  -- Proton Technologies AG <opensource@proton.me>  mon, 10 May 2021 14:15:00 +0100
  

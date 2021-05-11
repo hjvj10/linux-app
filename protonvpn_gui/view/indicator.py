@@ -1,24 +1,110 @@
-import gi
-
-gi.require_version("Gtk", "3.0")
-gi.require_version("AppIndicator3", "0.1")
 import os
 
-from gi.repository import AppIndicator3 as appindicator
+import gi
+from abc import ABCMeta, abstractmethod
+
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
-from ..constants import ICON_DIR_PATH, VPN_TRAY_ON, VPN_TRAY_OFF, VPN_TRAY_ERROR
+
+from ..constants import (ICON_DIR_PATH, VPN_TRAY_ERROR, VPN_TRAY_OFF,
+                         VPN_TRAY_ON)
 from ..enums import IndicatorActionEnum
-from ..rx.subject.replaysubject import ReplaySubject
 from ..logger import logger
+from ..rx.subject.replaysubject import ReplaySubject
 
 
-class ProtonVPNIndicator:
+def generate_protonvpn_indicator(gtk_application):
+    try:
+        return ProtonVPNIndicator(gtk_application)
+    except ValueError:
+        return DummyIndicator()
+
+
+class MetaIndicator(metaclass=ABCMeta):
+
+    @property
+    @abstractmethod
+    def application():
+        pass
+
+    @property
+    @abstractmethod
+    def indicator(self):
+        pass
+
+    @property
+    @abstractmethod
+    def login_action(self):
+        pass
+
+    @property
+    @abstractmethod
+    def dashboard_action(self):
+        pass
+
+    @abstractmethod
+    def set_connected_state():
+        pass
+
+    @abstractmethod
+    def set_disconnected_state():
+        pass
+
+    @abstractmethod
+    def set_error_state():
+        pass
+
+    @abstractmethod
+    def setup_reply_subject():
+        pass
+
+
+class DummyIndicator(MetaIndicator):
+    """Dummy class"""
+    _type = "dummy"
+
+    @property
+    def application():
+        return None
+
+    @property
+    def indicator(self):
+        return None
+
+    @property
+    def login_action(self):
+        return None
+
+    @property
+    def dashboard_action(self):
+        return None
+
+    def set_connected_state(self):
+        """Dummy method"""
+        pass
+
+    def set_disconnected_state(self):
+        """Dummy method"""
+        pass
+
+    def set_error_state(self):
+        """Dummy method"""
+        pass
+
+    def setup_reply_subject(self):
+        """Dummy method"""
+        pass
+
+
+class ProtonVPNIndicator(MetaIndicator):
+    _type = "indicator"
     ON_PATH = os.path.join(ICON_DIR_PATH, VPN_TRAY_ON)
     OFF_PATH = os.path.join(ICON_DIR_PATH, VPN_TRAY_OFF)
     ERROR_PATH = os.path.join(ICON_DIR_PATH, VPN_TRAY_ERROR)
 
     def __init__(self, application):
-        super().__init__()
+        gi.require_version("AppIndicator3", "0.1")
+        from gi.repository import AppIndicator3 as appindicator
         self.setup_reply_subject()
         self.__application = application
         self.__generate_menu()

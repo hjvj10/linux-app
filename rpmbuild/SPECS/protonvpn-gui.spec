@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.7.0
-%define release 1
+%define release 5
 
 Prefix: %{_prefix}
 
@@ -27,6 +27,9 @@ Requires: python3-protonvpn-nm-lib >= 3.1.0, python3-protonvpn-nm-lib < 3.2.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
+Suggests: libappindicator-gtk3
+Suggests: gnome-tweaks
+Suggests: gnome-shell-extension-appindicator
 
 %{?python_disable_dependency_generator}
 
@@ -58,8 +61,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Mon Apr 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-1
+* Mon Apr 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-3
 - Feature: add sys-tray icon
+- Add missing indicator dependency
+- Add extra packages that are needed for indicator/tray to work on fedora
 
 * Thu Apr 06 2021 Proton Technologies AG <opensource@proton.me> 0.6.2-2
 - Add warning message if kill switch is blocking all connections

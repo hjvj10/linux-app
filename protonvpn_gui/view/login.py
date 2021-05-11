@@ -11,7 +11,6 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
                          UI_DIR_PATH, protonvpn_logo)
 from ..enums import IndicatorActionEnum
-from ..logger import logger
 from ..patterns.factory import WidgetFactory
 from .dialog import LoginKillSwitchDialog
 
@@ -70,9 +69,13 @@ class LoginView(Gtk.ApplicationWindow):
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
         self.application.indicator.setup_reply_subject()
-        self.application.indicator.login_action.subscribe(
-            lambda indicator_state: self.indicator_action(indicator_state)
-        )
+        try:
+            self.application.indicator.login_action.subscribe(
+                lambda indicator_state: self.indicator_action(indicator_state)
+            )
+        except AttributeError:
+            pass
+
         super().__init__(application=self.application)
         self.setup_images()
         self.setup_css()
@@ -179,11 +182,15 @@ class LoginView(Gtk.ApplicationWindow):
         self.connect("delete-event", self.on_close_window)
 
     def on_close_window(self, dashboard_view, gtk_event, _quit=False):
-        if not _quit:
+        if not _quit and self.application.indicator._type != "dummy":
             self.hide()
             return True
 
-        self.application.indicator.login_action.dispose()
+        try:
+            self.application.indicator.login_action.dispose()
+        except AttributeError:
+            pass
+
         self.destroy()
 
     def on_display_popover(self, gio_simple_action, _):

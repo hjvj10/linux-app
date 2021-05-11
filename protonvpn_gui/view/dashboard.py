@@ -148,9 +148,12 @@ class DashboardView(Gtk.ApplicationWindow):
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
         self.application.indicator.setup_reply_subject()
-        self.application.indicator.dashboard_action.subscribe(
-            lambda indicator_state: self.indicator_action(indicator_state)
-        )
+        try:
+            self.application.indicator.dashboard_action.subscribe(
+                lambda indicator_state: self.indicator_action(indicator_state)
+            )
+        except AttributeError:
+            pass
         self.quick_settings_popover = QuickSettingsPopoverView(
             self.dashboard_view_model
         )
@@ -540,11 +543,14 @@ class DashboardView(Gtk.ApplicationWindow):
         self.connect("delete-event", self.on_close_window)
 
     def on_close_window(self, dashboard_view, gtk_event, _quit=False):
-        if not _quit:
+        if not _quit and self.application.indicator._type != "dummy":
             self.hide()
             return True
 
-        self.application.indicator.dashboard_action.dispose()
+        try:
+            self.application.indicator.dashboard_action.dispose()
+        except AttributeError:
+            pass
         self.destroy()
 
     def filter_server_list(self, server_search_entry):
