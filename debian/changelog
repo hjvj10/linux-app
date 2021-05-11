@@ -1,4 +1,4 @@
-protonvpn-gui (0.7.0-3) unstable; urgency=medium
+protonvpn-gui (0.7.0-4) unstable; urgency=medium
 
   * Feature: add sys-tray icon
   * Add missing indicator dependency

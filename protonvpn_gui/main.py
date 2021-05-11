@@ -22,7 +22,7 @@ from .view_model.login import LoginViewModel
 from .model.server_list import ServerList
 from .model.country_item import CountryItem
 from .view.dialog import QuitDialog, LogoutDialog, AboutDialog
-from .view.indicator import ProtonVPNIndicator
+from .view.indicator import generate_protonvpn_indicator
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -131,7 +131,7 @@ class ProtonVPNGUI(Gtk.Application):
         """
         win = self.props.active_window
         if not self.indicator:
-            self.indicator = ProtonVPNIndicator(self)
+            self.indicator = generate_protonvpn_indicator(self)
 
         if not win:
             if not protonvpn.check_session_exists():

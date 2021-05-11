@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.7.0
-%define release 4
+%define release 5
 
 Prefix: %{_prefix}
 
@@ -27,9 +27,9 @@ Requires: python3-protonvpn-nm-lib >= 3.1.0, python3-protonvpn-nm-lib < 3.2.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
-Recommends: libappindicator-gtk3
-Recommends: gnome-tweaks
-Recommends: gnome-shell-extension-appindicator
+Suggests: libappindicator-gtk3
+Suggests: gnome-tweaks
+Suggests: gnome-shell-extension-appindicator
 
 %{?python_disable_dependency_generator}
 
