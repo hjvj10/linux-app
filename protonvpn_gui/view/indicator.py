@@ -113,7 +113,7 @@ class ProtonVPNIndicator(MetaIndicator):
             "protonvpn-tray",
             appindicator.IndicatorCategory.APPLICATION_STATUS)
         self.__indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
-        self.__indicator.set_menu(self.menu)
+        self.__indicator.set_menu(self.__menu)
 
         self.__indicator.set_icon_full(self.OFF_PATH, "protonvpn")
 
@@ -134,41 +134,41 @@ class ProtonVPNIndicator(MetaIndicator):
         return self.__indicator_dashboard_action
 
     def __generate_menu(self):
-        self.menu = Gtk.Menu()
+        self.__menu = Gtk.Menu()
 
-        self.separator_0 = Gtk.SeparatorMenuItem()
-        self.menu.append(self.separator_0)
-        self.separator_0.show()
+        self.__separator_0 = Gtk.SeparatorMenuItem()
+        self.__menu.append(self.__separator_0)
+        self.__separator_0.show()
 
-        self.q_connect = Gtk.MenuItem(label="Quick Connect")
-        self.q_connect.connect("activate", self.__quick_connect)
-        self.menu.append(self.q_connect)
-        self.q_connect.show()
+        self.__quick_connect_item = Gtk.MenuItem(label="Quick Connect")
+        self.__quick_connect_item.connect("activate", self.__quick_connect)
+        self.__menu.append(self.__quick_connect_item)
+        self.__quick_connect_item.hide()
 
-        self.disconn = Gtk.MenuItem(label="Disconnect")
-        self.disconn.connect("activate", self.__disconnect)
-        self.menu.append(self.disconn)
-        self.disconn.show()
+        self.__disconnect_item = Gtk.MenuItem(label="Disconnect")
+        self.__disconnect_item.connect("activate", self.__disconnect)
+        self.__menu.append(self.__disconnect_item)
+        self.__disconnect_item.hide()
 
-        self.separator_1 = Gtk.SeparatorMenuItem()
-        self.menu.append(self.separator_1)
-        self.separator_1.show()
+        self.__separator_1 = Gtk.SeparatorMenuItem()
+        self.__menu.append(self.__separator_1)
+        self.__separator_1.show()
 
-        self.gui = Gtk.MenuItem(label="Show")
-        self.gui.connect("activate", self.__show_gui)
-        self.menu.append(self.gui)
-        self.gui.show()
+        self.__show_gui_item = Gtk.MenuItem(label="Show ProtonVPN")
+        self.__show_gui_item.connect("activate", self.__show_gui)
+        self.__menu.append(self.__show_gui_item)
+        self.__show_gui_item.show()
 
-        self.separator_2 = Gtk.SeparatorMenuItem()
-        self.menu.append(self.separator_2)
-        self.separator_2.show()
+        self.__separator_2 = Gtk.SeparatorMenuItem()
+        self.__menu.append(self.__separator_2)
+        self.__separator_2.show()
 
-        self.exittray = Gtk.MenuItem(label="Quit")
-        self.exittray.connect("activate", self.__quit_protonvpn)
-        self.menu.append(self.exittray)
-        self.exittray.show()
+        self.__exit_tray_item = Gtk.MenuItem(label="Quit")
+        self.__exit_tray_item.connect("activate", self.__quit_protonvpn)
+        self.__menu.append(self.__exit_tray_item)
+        self.__exit_tray_item.show()
 
-        return self.menu
+        return self.__menu
 
     def __quick_connect(self, _):
         """Makes a quick connection by making a cli call to protonvpn-cli-ng"""
@@ -205,9 +205,13 @@ class ProtonVPNIndicator(MetaIndicator):
 
     def set_connected_state(self):
         self.__indicator.set_icon_full(self.ON_PATH, "protonvpn")
+        self.__quick_connect_item.hide()
+        self.__disconnect_item.show()
 
     def set_disconnected_state(self):
         self.__indicator.set_icon_full(self.OFF_PATH, "protonvpn")
+        self.__quick_connect_item.show()
+        self.__disconnect_item.hide()
 
     def set_error_state(self):
         self.__indicator.set_icon_full(self.ERROR_PATH, "protonvpn")

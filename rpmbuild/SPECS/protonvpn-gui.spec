@@ -63,6 +63,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.1-1
 - Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
+- Fix tray quick connect and disconnect buttons, so that they're contextually aware of VPN status
 
 * Mon Apr 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-3
 - Feature: add sys-tray icon

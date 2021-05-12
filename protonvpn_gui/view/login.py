@@ -21,7 +21,6 @@ class LoginView(Gtk.ApplicationWindow):
 
     # Other objects
     top_banner_revealer = Gtk.Template.Child()
-    top_banner_revealer = Gtk.Template.Child()
     bottom_killswitch_revealer = Gtk.Template.Child()
     overlay_spinner = Gtk.Template.Child()
 
@@ -88,6 +87,7 @@ class LoginView(Gtk.ApplicationWindow):
         self.killswitch_warning_label.set_text(
             "Kill Switch is blocking any outgoing connections."
         )
+        self.application.indicator.set_disconnected_state()
         self.set_killswitch_revealer_status()
         self.login_button.set_property("can-default", True)
         self.login_button.set_property("has-default", True)
@@ -157,6 +157,9 @@ class LoginView(Gtk.ApplicationWindow):
         Sets the kill switch revealer status, based
         on users kill switch setting.
         """
+        if self.login_view_model.is_killswitch_enabled():
+            self.application.indicator.set_error_state()
+
         self.bottom_killswitch_revealer.set_reveal_child(
             self.login_view_model.is_killswitch_enabled()
         )
