@@ -2,6 +2,7 @@ protonvpn-gui (0.7.1-1) unstable; urgency=medium
 
   * Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
   * Fix tray quick connect and disconnect buttons, so that they're contextually aware of VPN status
+  * Display incompatibility dialog on systems that GUI dependencies can not be met
 
  -- Proton Technologies AG <opensource@proton.me>  Tue, 11 May 2021 17:40:00 +0100
 
