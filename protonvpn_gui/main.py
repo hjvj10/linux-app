@@ -7,7 +7,7 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio, Gtk
 
-if not Gtk.MINOR_VERSION < 24:
+if Gtk.MINOR_VERSION < 24:
     from .view.incompatible_version_dialog import display_dialog
     display_dialog()
     sys.exit()
