@@ -6,6 +6,13 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio, Gtk
+
+if not Gtk.MINOR_VERSION < 24:
+    from .view.incompatible_version_dialog import display_dialog
+    display_dialog()
+    sys.exit()
+
+
 from proton.constants import VERSION as proton_version
 from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
