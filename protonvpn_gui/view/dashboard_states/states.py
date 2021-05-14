@@ -63,7 +63,6 @@ class NotConnectedVPNView:
         if not label_ctx.has_class("warning-color"):
             label_ctx.add_class("warning-color")
 
-
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         dv.gtk_property_setter(
