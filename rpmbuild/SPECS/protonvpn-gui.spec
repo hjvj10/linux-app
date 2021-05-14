@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.7.1
-%define release 2
+%define release 3
 
 Prefix: %{_prefix}
 
@@ -61,7 +61,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.1-2
+* Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.1-3
 - Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
 - Fix tray quick connect and disconnect buttons, so that they're contextually aware of VPN status
 - Display incompatibility dialog on systems that GUI dependencies can not be met

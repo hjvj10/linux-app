@@ -1,4 +1,4 @@
-protonvpn-gui (0.7.1-2) unstable; urgency=medium
+protonvpn-gui (0.7.1-3) unstable; urgency=medium
 
   * Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
   * Fix tray quick connect and disconnect buttons, so that they're contextually aware of VPN status
