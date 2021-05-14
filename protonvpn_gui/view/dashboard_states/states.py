@@ -38,7 +38,7 @@ class NotConnectedVPNView:
         label = "You are not connected"
         ip = state.ip
 
-        if state.ks_enabled:
+        if state.perma_ks_enabled:
             label = "Kill Switch activated!"
             ip = ""
             dv.application.indicator.set_error_state()

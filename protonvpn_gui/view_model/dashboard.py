@@ -65,7 +65,7 @@ class NotConnectedToVPNInfo:
     ip: str
     isp: str
     country: str
-    ks_enabled: bool
+    perma_ks_enabled: bool
 
 
 @dataclass
@@ -184,7 +184,7 @@ class DashboardViewModel:
                 ip=None,
                 isp=None,
                 country=None,
-                ks_enabled=protonvpn.get_settings().killswitch != KillswitchStatusEnum.DISABLED
+                perma_ks_enabled=protonvpn.get_settings().killswitch == KillswitchStatusEnum.HARD
             )
             self.state.on_next(result)
             return
@@ -511,7 +511,7 @@ class DashboardViewModel:
             ip=location.IP,
             isp=location.ISP,
             country=location.COUNTRY_CODE,
-            ks_enabled=protonvpn.get_settings().killswitch != KillswitchStatusEnum.DISABLED
+            perma_ks_enabled=protonvpn.get_settings().killswitch == KillswitchStatusEnum.HARD
         )
 
         return result
