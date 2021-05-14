@@ -208,10 +208,14 @@ class ProtonVPNIndicator(MetaIndicator):
         self.__quick_connect_item.hide()
         self.__disconnect_item.show()
 
-    def set_disconnected_state(self):
+    def set_disconnected_state(self, hide_quick_connect=False):
         self.__indicator.set_icon_full(self.OFF_PATH, "protonvpn")
-        self.__quick_connect_item.show()
         self.__disconnect_item.hide()
+        if hide_quick_connect:
+            self.__quick_connect_item.hide()
+            return
+
+        self.__quick_connect_item.show()
 
     def set_error_state(self):
         self.__indicator.set_icon_full(self.ERROR_PATH, "protonvpn")

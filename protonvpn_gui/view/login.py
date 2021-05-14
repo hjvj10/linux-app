@@ -87,7 +87,7 @@ class LoginView(Gtk.ApplicationWindow):
         self.killswitch_warning_label.set_text(
             "Kill Switch is blocking any outgoing connections."
         )
-        self.application.indicator.set_disconnected_state()
+        self.application.indicator.set_disconnected_state(hide_quick_connect=True)
         self.set_killswitch_revealer_status()
         self.login_button.set_property("can-default", True)
         self.login_button.set_property("has-default", True)
