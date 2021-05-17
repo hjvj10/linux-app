@@ -38,7 +38,7 @@ class NotConnectedVPNView:
         label = "You are not connected"
         ip = state.ip
 
-        if state.ks_enabled:
+        if state.perma_ks_enabled:
             label = "Kill Switch activated!"
             ip = ""
             dv.application.indicator.set_error_state()
@@ -62,7 +62,6 @@ class NotConnectedVPNView:
         dv.main_disconnect_button.props.visible = False
         if not label_ctx.has_class("warning-color"):
             label_ctx.add_class("warning-color")
-
 
         dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)

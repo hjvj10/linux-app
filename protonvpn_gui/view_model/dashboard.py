@@ -65,7 +65,7 @@ class NotConnectedToVPNInfo:
     ip: str
     isp: str
     country: str
-    ks_enabled: bool
+    perma_ks_enabled: bool
 
 
 @dataclass
@@ -184,7 +184,7 @@ class DashboardViewModel:
                 ip=None,
                 isp=None,
                 country=None,
-                ks_enabled=protonvpn.get_settings().killswitch != KillswitchStatusEnum.DISABLED
+                perma_ks_enabled=protonvpn.get_settings().killswitch == KillswitchStatusEnum.HARD
             )
             self.state.on_next(result)
             return
@@ -511,7 +511,7 @@ class DashboardViewModel:
             ip=location.IP,
             isp=location.ISP,
             country=location.COUNTRY_CODE,
-            ks_enabled=protonvpn.get_settings().killswitch != KillswitchStatusEnum.DISABLED
+            perma_ks_enabled=protonvpn.get_settings().killswitch == KillswitchStatusEnum.HARD
         )
 
         return result
@@ -573,8 +573,10 @@ class DashboardViewModel:
             .get_active_protonvpn_connection()
         if not protonvpn_connection:
             result = self.get_not_connected_state()
+        else:
+            result = self.get_connected_state()
 
-            self.state.on_next(result)
+        self.state.on_next(result)
 
     def on_update_server_load(self):
         """Update server Load.
