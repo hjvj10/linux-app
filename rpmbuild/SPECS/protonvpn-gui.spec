@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.7.1
-%define release 4
+%define version 0.7.2
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -61,6 +61,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.2-1
+- Fix crash when dummy indicator is used in the absence of tray dependency
+
+
 * Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.1-4
 - Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
 - Fix tray quick connect and disconnect buttons, so that they're contextually aware of VPN status
