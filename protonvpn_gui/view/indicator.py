@@ -79,15 +79,15 @@ class DummyIndicator(MetaIndicator):
     def dashboard_action(self):
         return None
 
-    def set_connected_state(self):
+    def set_connected_state(self, *args, **kwargs):
         """Dummy method"""
         pass
 
-    def set_disconnected_state(self):
+    def set_disconnected_state(self, *args, **kwargs):
         """Dummy method"""
         pass
 
-    def set_error_state(self):
+    def set_error_state(self, *args, **kwargs):
         """Dummy method"""
         pass
 
