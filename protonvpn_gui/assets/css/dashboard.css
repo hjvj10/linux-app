@@ -1,0 +1,279 @@
+@import "common.css";
+
+@define-color quick-settings-button-pressed #262A33;
+
+viewport{
+	background-color: transparent;
+}
+
+grid.dashboard_grid label:not(.warning-color):not(.dark-text-color){
+    color: rgb(255,255,255)
+}
+
+grid.dashboard_grid  button.transparent-white:hover label{
+    color: rgb(0,0,0);
+}
+
+label.ip{
+    font-weight: bold;
+}
+
+#download-speed-label, #upload-speed-label{
+    font-size: 14px;
+}
+
+scrolledwindow, viewport{
+    border: none;
+}
+
+.headerbar_menu_model{
+	padding: 5px 8px 5px 8px;
+}
+
+.dashboard_popover_menu box{
+    padding: 3px 5px;
+    margin: 3px 5px;
+}
+
+.dashboard_popover_menu modelbutton label{
+	margin-left: -10px
+}
+
+grid.connected_label_grid, grid.ip_server_load_labels_grid,
+grid.connection_speed_label_grid, button.transparent,
+button.transparent-white{
+    margin: 20px 30px 0px 30px
+}
+
+grid.connected_label_grid{
+    font-size: 17px;
+}
+
+grid.ip_label_grid {
+    font-size: 16px;
+}
+
+#connecting_overlay_grid {
+	margin: 0px 15px;
+}
+
+grid#connecting_overlay_grid > *{
+    margin: 20px 0px
+}
+
+grid#connecting_overlay_grid > button{
+    margin-top: 20px;
+}
+
+grid#connecting_overlay_grid > grid label{
+    font-size: 18px;
+}
+
+grid#connecting_overlay_grid > grid label#connecting_to_country_servername_label{
+    font-weight: bold;
+}
+
+grid#connecting_overlay_grid label{
+    color: rgb(255,255,255);
+}
+
+grid.connection_information_box{
+    /* padding-bottom: 80px; */
+    background-image: linear-gradient(rgba(38, 42, 51, 0.6), rgb(10, 10, 10));
+}
+
+grid.connecting_overlay_grid label{
+    color: rgb(255,255,255);
+}
+
+.connection_speed_label_grid image{
+    margin: 0 5px;
+}
+
+#top-sever-locations-grid{
+	padding: 5px 20px;
+
+}
+#top-sever-locations-grid label{
+	color: rgba(255,255,255,0.4);
+
+}
+
+grid.country-header{
+	margin-top: 16px;
+	margin-bottom: 8px;
+	margin-right: 15px;
+	/* Unsure if it fits better with bold or not */
+	/* font-weight: bolder; */
+}
+#servers-info-icon-button, grid.country-header button{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+	background-color: transparent;
+}
+#servers-info-icon-button:active, grid.country-header button:active{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+}
+#servers-info-icon-button image, grid.country-header image{
+	background-image: none;
+	border: none;
+	outline: none;
+	box-shadow: none;
+	-gtk-icon-shadow: none;
+}
+
+#dashboard-button-box-grid, #dashboard-search-entry-grid{
+	margin: 10px 20px 10px 20px
+}
+
+#dashboard-button-box-grid{
+	margin-top: 15px
+}
+
+#dashboard-button-box-grid button{
+	border: 0.5px solid rgba(0, 0, 0, 0.2);
+	outline: none;
+	-gtk-icon-effect: none;
+	-gtk-icon-source: none;
+	-gtk-icon-shadow: none;
+	box-shadow: 2px 2px 3px -1px black;
+	border-radius: 2px;
+	background-color: transparent;
+}
+
+#dashboard-button-box-grid button img{
+	-gtk-icon-effect: none;
+	-gtk-icon-source: none;
+	-gtk-icon-shadow: none;
+	outline: none;
+	box-shadow: none;
+	background-image: none;
+	text-shadow: none;
+}
+
+#dashboard-button-box-grid button.pressed{
+	background-color: @quick-settings-button-pressed;
+	box-shadow: none;
+}
+
+#dashboard-button-box-grid > button:nth-child(3){
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+#dashboard-search-entry-grid entry{
+	background-color: rgba(18, 22, 31, 0.3);
+	border-radius: 0px;
+	border: 1px solid rgba(150, 150, 150, 0.3);
+    padding-top: 5px;
+}
+
+#server-list-grid{
+	margin: 0px;
+}
+
+#server-list-grid image.server-icon{
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+#server-list-grid grid.server-row{
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#server-list-grid button.chevron{
+	background-color: transparent;
+	background-image: none;
+	box-shadow: none;
+}
+
+grid.server-list-country-margin-left{
+	margin-left: 21px;
+}
+grid.server-list-country-margin-right{
+	margin-right: 15px;
+}
+grid.server-row{
+	margin-left: 15px;
+	margin-right: 20px;
+}
+
+.test-class{
+	border: 1px solid pink;
+}
+.test-class2{
+	border: 1px solid red;
+}
+.test-class3{
+	border: 1px solid greenyellow;
+}
+.test-class4{
+	border: 1px solid blueviolet;
+}
+.test-class5{
+	border: 1px solid white;
+}
+
+#server-list-grid label.server-label{
+	margin-left: 5px;
+	margin-right: 5px;
+	font-weight: bold;
+	font-size: 105%;
+	padding: 4px 0px;
+}
+#server-list-grid label.country-label{
+	font-weight: bold;
+	padding: 4px 0px;
+}
+#server-list-grid label.city-label{
+	font-size: small;
+	color:rgba(255, 255, 255, 0.5);
+	/* This padding is specific so that button don't "jump" */
+}
+
+#server-list-grid label.disabled-label{
+	color:rgba(255, 255, 255, 0.5);
+}
+
+#server-list-grid grid.country-row{
+	/* padding: 8px 0px; */
+	padding: 0px;
+	margin: 0px;
+}
+#server-list-grid grid.country-elements{
+	padding: 10px 0px;
+}
+
+#server-list-grid widget:not(:last-child) grid.country-row{
+	border-bottom: 0.2px solid rgba(255,255,255, 0.4)
+}
+
+#server-list-grid grid image.country-flag{
+	margin-right: 8px
+}
+
+#server-list-grid button.transparent{
+	padding: 0px 8px;
+	border-radius: 15px;
+	margin: 0;
+	border-width: 1px;
+}
+#server-list-grid button.transparent label{
+	font-size: 10px;
+}
+#server-list-grid grid.country-row button.chevron-unfold, #server-list-grid grid.country-row button.chevron-fold{
+	margin-left: 12px;
+	border: none;
+	margin: 0;
+	-gtk-icon-shadow: none;
+}
+.server-names-grid{
+	background-color: rgb(37, 39, 44);
+	padding-bottom:  5px;
+}

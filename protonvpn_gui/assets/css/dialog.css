@@ -1,0 +1,26 @@
+/* Not need to import common.css as it automatically inherits from dashboard */
+
+#dialog_container_grid grid.grid-spacing{
+    margin: 50px 30px;
+}
+
+#dialog_container_grid grid.grid-button-spacing{
+    margin: 20px 30px;
+}
+
+#dialog_container_grid grid.grid-button-bg-color{
+    background-color: rgba(18, 22, 31, 0.3);
+}
+
+#dialog_container_grid button.transparent{
+	padding: 0px 8px;
+	border-radius: 15px;
+	margin: 0;
+	border-width: 1px;
+}
+#dialog_container_grid button.transparent label{
+	font-size: 10px;
+}
+#dialog_container_grid  button.transparent-white{
+    margin: 0px;
+}

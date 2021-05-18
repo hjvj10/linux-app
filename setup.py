@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 
 from setuptools import find_packages, setup
-from linux_app.constants import APP_VERSION
+from protonvpn_gui.constants import APP_VERSION
 
 long_description = """
 Official ProtonVPN App for Linux based systems.
 """
 
 setup(
-    name="linux-app",
+    name="protonvpn-gui",
     version=APP_VERSION,
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "protonvpn = linux_app.main:main"
+            "protonvpn = protonvpn_gui.main:main"
         ]
     },
     description="Official ProtonVPN App for Linux",
@@ -21,14 +21,13 @@ setup(
     author_email="contact@protonvpn.com",
     long_description=long_description,
     install_requires=[
-        "protonvpn-nm-lib~=0.4.0"
+        "protonvpn-nm-lib~=3.1.0", "psutil"
     ],
     include_package_data=True,
     license="GPLv3",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Topic :: Security",
-        "Environment :: Console",
         "Intended Audience :: End Users/Desktop",
         "Operating System :: POSIX :: Linux",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -40,4 +39,3 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
 )
-

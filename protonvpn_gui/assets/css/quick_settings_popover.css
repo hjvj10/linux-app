@@ -1,0 +1,111 @@
+#QuickSettingsPopoverView{
+    background: linear-gradient(
+        180deg,
+        @background-gradient-first-color 0%,
+        @background-gradient-second-color 100%
+    );
+    border-radius: 0px;
+	box-shadow: 0px 0px 5px -2px black;
+}
+
+#QuickSettingsPopoverView > grid{
+    margin: 15px;
+}
+
+#quick_settings_popover_container_grid grid.quick-settings-content label.quick-settings-title{
+	font-size: large;
+    margin-bottom: 15px;
+}
+#quick_settings_popover_container_grid grid.quick-settings-content label.quick-settings-description{
+    font-size: medium;
+}
+#quick_settings_popover_container_grid button.view-more label{
+    color: @green-color;
+}
+#quick_settings_popover_container_grid button.view-more{
+    margin-bottom: 20px;
+    padding: 0;
+}
+#quick_settings_popover_container_grid grid.quick-settings-content label.quick-settings-footnote{
+    font-size: small;
+    margin: 0;
+    font-style: italic;
+    color: rgba(255,255,255, 0.5)
+}
+
+
+#quick_settings_popover_container_grid button,
+#quick_settings_popover_container_grid label{
+    border: none;
+    background-image: none;
+    outline: none;
+    -gtk-icon-shadow: none;
+}
+#quick_settings_popover_container_grid button:not(.view-more){
+    border-radius: 2px;
+    box-shadow: 2px 2px 3px -3px rgb(0, 0, 0);
+}
+
+#quick_settings_popover_container_grid button.selected{
+    background-color: rgb(32,32,38);	
+	box-shadow: inset 1px 1px 5px -5px rgb(0, 0, 0);
+}
+#quick_settings_popover_container_grid label.selected{
+    color: rgb(255,255,255);
+    font-weight: bold;
+}
+
+#quick_settings_popover_container_grid button.available{
+    background-color: rgb(60, 65, 78);
+}
+
+#quick_settings_popover_container_grid label.available{
+    color: rgb(255,255,255);
+    font-weight: normal;
+}
+
+#quick_settings_popover_container_grid button.unavailable{
+    background-color: rgb(60, 65, 78);
+}
+
+#quick_settings_popover_container_grid label.unavailable{
+    font-weight: normal;
+    color: rgba(255,255,255, 0.3);
+}
+
+#quick_settings_popover_container_grid button.quick-settings{
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
+    outline: none;
+    box-shadow: none;
+    background-image: none;
+    text-shadow: none;
+    background-color: @green-color;
+    border-color: @green-color;
+    border-radius: 100px;
+    margin-bottom: 15px;
+}
+#quick_settings_popover_container_grid button.quick-settings:hover{
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
+    outline: none;
+    box-shadow: none;
+    background-image: none;
+    text-shadow: none;
+    border-color: @dark-green-color;
+    background-color: @dark-green-color;
+}
+
+#quick_settings_popover_container_grid button.quick-settings label{
+	font-size: small;
+    font-weight: bold;
+    color: rgb(255,255,255)
+}
+
+#quick_settings_popover_container_grid label.upgrade-in-button{
+    border: 1px solid rgba(255,255,255, 0.1);
+    padding: 5px 5px;
+	border-radius: 100px;
+    font-size: small;
+    color: rgba(255,255,255, 0.2);
+}

@@ -1,0 +1,91 @@
+protonvpn-gui (0.7.1-4) stable; urgency=medium
+
+  * Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
+  * Fix tray quick connect and disconnect buttons, so that they're contextually aware of VPN status
+  * Display incompatibility dialog on systems that GUI dependencies can not be met
+  * Hide quick connect tray item on login window
+  * Update GUI and tray after reconnecting to VPN from suspend or network change
+
+ -- Proton Technologies AG <opensource@proton.me>  Tue, 11 May 2021 17:40:00 +0100
+
+ protonvpn-gui (0.7.0-5) unstable; urgency=medium
+
+  * Feature: add sys-tray icon
+  * Add missing indicator dependency
+
+ -- Proton Technologies AG <opensource@proton.me>  Mon, 10 May 2021 14:15:00 +0100
+ 
+ protonvpn-gui (0.6.2-2) unstable; urgency=medium
+
+  * Add warning message if kill switch is blocking all connections
+  * Display only countries when connected to secure core, on dashboard
+  * Display streaming icons if present
+  * Add space to secure core sub-servers flags and label
+
+ -- Proton Technologies AG <opensource@proton.me>  Thu, 06 May 2021 17:00:00 +0100
+
+protonvpn-gui (0.6.1-2) unstable; urgency=medium
+
+  * Fix connect button glitch
+  * Add info icon hover effect
+  * Add timetout to when fetching IP
+  * Improve dashboard UI after disconnecting
+  * Fix quick connect/disconnect glitch
+
+ -- Proton Technologies AG <opensource@proton.me>  Wed, 05 May 2021 15:00:00 +0100
+
+protonvpn-gui (0.6.0-1) unstable; urgency=medium
+
+  * Fix quick connect loop
+  * Add possibility to login upon pressing Enter after filling in credentials on login window
+  * Make possibile to add extra content to dialog via a method
+  * Modify connecting overlay message display
+  * Display an appropriate error on failed login
+  * Other color and styling changes 
+
+ -- Proton Technologies AG <opensource@proton.me>  Tue, 04 May 2021 11:30:00 +0100
+
+ protonvpn-gui (0.5.0-1) unstable; urgency=medium
+
+  * Add new server list headers
+  * Feature: Add streaming information for servers that provide streaming services
+  * Update server list styling
+
+ -- Proton Technologies AG <opensource@proton.me>  Wed, 21 Apr 2021 11:30:00 +0100
+ 
+ protonvpn-gui (0.4.0-2) unstable; urgency=medium
+
+  * Add about dialog; display current version
+  * Add .desktop file
+
+ -- Proton Technologies AG <opensource@proton.me>  Wed, 21 Apr 2021 11:30:00 +0100
+
+ protonvpn-gui (0.3.0-1) unstable; urgency=medium
+
+  * Adjust and displays server load colour
+  * Implement server multi-features aka feature bitmap
+  * Disable permanent Kill Switch from login window if it is enabled
+
+ -- Proton Technologies AG <opensource@proton.me>  Fri, 16 Apr 2021 16:30:00 +0100
+ 
+ protonvpn-gui (0.2.0-1) unstable; urgency=medium
+
+  * Implement logout and quit
+  * Feature: filter countries
+
+ -- Proton Technologies AG <opensource@proton.me>  Wed, 14 Apr 2021 11:20:00 +0100
+ 
+ protonvpn-gui (0.1.0-2) unstable; urgency=medium
+
+  * Add quick-settings buttons
+  * Add reconnetion logic after clicking on quick-settings buttons
+  * Fix secure core server list reload
+  * Fix issue when connecting to servers with long names
+
+ -- Proton Technologies AG <opensource@proton.me>  Fri, 2 Apr 2021 10:30:00 +0100
+
+protonvpn-gui (0.0.3-1) unstable; urgency=low
+
+  * First package
+
+ -- Proton Technologies AG <opensource@proton.me>  Mon, 2 Mar 2021 17:00:00 +0000

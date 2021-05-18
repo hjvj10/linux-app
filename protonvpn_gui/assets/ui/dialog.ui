@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <template class="DialogView" parent="GtkApplicationWindow">
+    <property name="can-focus">False</property>
+    <property name="modal">True</property>
+    <property name="window-position">center</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="type-hint">dialog</property>
+    <property name="urgency-hint">True</property>
+    <property name="gravity">center</property>
+    <property name="show-menubar">False</property>
+    <child>
+      <!-- n-columns=1 n-rows=1 -->
+      <object class="GtkGrid" id="dialog_container_grid">
+        <property name="name">dialog_container_grid</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="headerbar">
+        <property name="name">headerbar</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="has-subtitle">False</property>
+        <property name="spacing">2</property>
+        <property name="show-close-button">True</property>
+        <child>
+          <object class="GtkImage" id="headerbar_sign_icon">
+            <property name="name">headerbar_sign_icon</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="headerbar_label">
+            <property name="name">headerbar_label</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

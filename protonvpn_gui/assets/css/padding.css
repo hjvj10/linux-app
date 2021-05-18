@@ -1,0 +1,170 @@
+.padding-all-none{
+  padding: 0px;
+}
+
+.padding-x-none{
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.padding-y-none{
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+/*___padding 5px___*/
+.padding-all-5px{
+  padding: 5px;
+}
+
+.padding-x-5px{
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.padding-y-5px{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.padding-left-5px{
+  padding-left: 5px;
+}
+
+.padding-right-5px{
+  padding-right: 5px;
+}
+
+.padding-top-5px{
+  padding-top: 5px;
+}
+
+.padding-bottom-5px{
+  padding-bottom: 5px;
+}
+
+
+/*___padding 10px___*/
+.padding-all-10px{
+  padding: 10px;
+}
+
+.padding-x-10px{
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.padding-y-10px{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.padding-left-10px{
+  padding-left: 10px;
+}
+
+.padding-right-10px{
+  padding-right: 10px;
+}
+
+.padding-top-10px{
+  padding-top: 10px;
+}
+
+.padding-bottom-10px{
+  padding-bottom: 10px;
+}
+
+/*___padding 15px___*/
+.padding-all-15px{
+  padding: 15px;
+}
+
+.padding-x-15px{
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.padding-y-15px{
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.padding-left-15px{
+  padding-left: 15px;
+}
+
+.padding-right-15px{
+  padding-right: 15px;
+}
+
+.padding-top-15px{
+  padding-top: 15px;
+}
+
+.padding-bottom-15px{
+  padding-bottom: 15px;
+}
+
+/*___padding 20px___*/
+.padding-all-20px{
+  padding: 20px;
+}
+
+.padding-x-20px{
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.padding-y-20px{
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.padding-left-20px{
+  padding-left: 20px;
+}
+
+.padding-right-20px{
+  padding-right: 20px;
+}
+
+.padding-top-20px{
+  padding-top: 20px;
+}
+
+.padding-bottom-20px{
+  padding-bottom: 20px;
+}
+
+
+/*___padding 50px___*/
+.padding-all-50px{
+  padding: 50px;
+}
+
+.padding-x-50px{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.padding-y-50px{
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.padding-left-50px{
+  padding-left: 50px;
+}
+
+.padding-right-50px{
+  padding-right: 50px;
+}
+
+.padding-top-50px{
+  padding-top: 50px;
+}
+
+.padding-bottom-50px{
+  padding-bottom: 50px;
+}
