@@ -1,4 +1,4 @@
-protonvpn-gui (0.7.2-1) stable; urgency=medium
+protonvpn-gui (0.7.2-1) unstable; urgency=medium
 
   * Fix crash when dummy indicator is used in the absence of tray dependency
 
