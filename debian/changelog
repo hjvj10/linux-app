@@ -1,10 +1,16 @@
+protonvpn-gui (0.7.3-1) unstable; urgency=medium
+
+  * Add support for python3-protonvpn-nm-lib 3.2.0
+
+ -- Proton Technologies AG <opensource@proton.me>  Mon, 24 May 2021 12:30:00 +0100
+
 protonvpn-gui (0.7.2-1) unstable; urgency=medium
 
   * Fix crash when dummy indicator is used in the absence of tray dependency
 
  -- Proton Technologies AG <opensource@proton.me>  Tue, 11 May 2021 17:40:00 +0100
  
- protonvpn-gui (0.7.1-4) stable; urgency=medium
+protonvpn-gui (0.7.1-4) unstable; urgency=medium
 
   * Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
   * Fix tray quick connect and disconnect buttons, so that they're contextually aware of VPN status
@@ -14,14 +20,14 @@ protonvpn-gui (0.7.2-1) unstable; urgency=medium
 
  -- Proton Technologies AG <opensource@proton.me>  Tue, 11 May 2021 17:40:00 +0100
 
- protonvpn-gui (0.7.0-5) unstable; urgency=medium
+protonvpn-gui (0.7.0-5) unstable; urgency=medium
 
   * Feature: add sys-tray icon
   * Add missing indicator dependency
 
  -- Proton Technologies AG <opensource@proton.me>  Mon, 10 May 2021 14:15:00 +0100
  
- protonvpn-gui (0.6.2-2) unstable; urgency=medium
+protonvpn-gui (0.6.2-2) unstable; urgency=medium
 
   * Add warning message if kill switch is blocking all connections
   * Display only countries when connected to secure core, on dashboard
@@ -51,7 +57,7 @@ protonvpn-gui (0.6.0-1) unstable; urgency=medium
 
  -- Proton Technologies AG <opensource@proton.me>  Tue, 04 May 2021 11:30:00 +0100
 
- protonvpn-gui (0.5.0-1) unstable; urgency=medium
+protonvpn-gui (0.5.0-1) unstable; urgency=medium
 
   * Add new server list headers
   * Feature: Add streaming information for servers that provide streaming services
@@ -59,14 +65,14 @@ protonvpn-gui (0.6.0-1) unstable; urgency=medium
 
  -- Proton Technologies AG <opensource@proton.me>  Wed, 21 Apr 2021 11:30:00 +0100
  
- protonvpn-gui (0.4.0-2) unstable; urgency=medium
+protonvpn-gui (0.4.0-2) unstable; urgency=medium
 
   * Add about dialog; display current version
   * Add .desktop file
 
  -- Proton Technologies AG <opensource@proton.me>  Wed, 21 Apr 2021 11:30:00 +0100
 
- protonvpn-gui (0.3.0-1) unstable; urgency=medium
+protonvpn-gui (0.3.0-1) unstable; urgency=medium
 
   * Adjust and displays server load colour
   * Implement server multi-features aka feature bitmap
@@ -74,14 +80,14 @@ protonvpn-gui (0.6.0-1) unstable; urgency=medium
 
  -- Proton Technologies AG <opensource@proton.me>  Fri, 16 Apr 2021 16:30:00 +0100
  
- protonvpn-gui (0.2.0-1) unstable; urgency=medium
+protonvpn-gui (0.2.0-1) unstable; urgency=medium
 
   * Implement logout and quit
   * Feature: filter countries
 
  -- Proton Technologies AG <opensource@proton.me>  Wed, 14 Apr 2021 11:20:00 +0100
  
- protonvpn-gui (0.1.0-2) unstable; urgency=medium
+protonvpn-gui (0.1.0-2) unstable; urgency=medium
 
   * Add quick-settings buttons
   * Add reconnetion logic after clicking on quick-settings buttons
