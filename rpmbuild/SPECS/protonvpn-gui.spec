@@ -1,7 +1,7 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.7.2
+%define version 0.7.3
 %define release 1
 
 Prefix: %{_prefix}
@@ -23,7 +23,7 @@ BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-Requires: python3-protonvpn-nm-lib >= 3.1.0, python3-protonvpn-nm-lib < 3.2.0
+Requires: python3-protonvpn-nm-lib >= 3.2.0, python3-protonvpn-nm-lib < 3.3.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
@@ -61,9 +61,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 24 2021 Proton Technologies AG <opensource@proton.me> 0.7.3-1
+- Add support for python3-protonvpn-nm-lib 3.2.0
+
 * Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.2-1
 - Fix crash when dummy indicator is used in the absence of tray dependency
-
 
 * Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.1-4
 - Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
