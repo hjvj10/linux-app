@@ -4,7 +4,7 @@
 
 branch ?= master
 DOCKERFILE_BUILD=/tmp/Dockerfile.image
-NAME_IMAGE ?= "$(CI_REGISTRY_IMAGE)-$(src)"
+NAME_IMAGE ?= "$(CI_REGISTRY_IMAGE)/$(src)"
 TAG_IMAGE := branch-$(subst /,-,$(branch))
 PYTHON_FOLDER = "linux-app"
 
