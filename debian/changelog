@@ -1,4 +1,4 @@
-protonvpn-gui (0.7.3-2) unstable; urgency=medium
+protonvpn-gui (0.7.3-3) unstable; urgency=medium
 
   * Add support for python3-protonvpn-nm-lib 3.2.0
 
