@@ -61,38 +61,38 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Mon Apr 24 2021 Proton Technologies AG <opensource@proton.me> 0.7.3-3
+* Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 0.7.3-3
 - Add support for python3-protonvpn-nm-lib 3.2.0
 
-* Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.2-1
+* Tue May 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.2-1
 - Fix crash when dummy indicator is used in the absence of tray dependency
 
-* Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.1-4
+* Tue May 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.1-4
 - Fix quick settings invisible blocking overlay, preventing from pressing on quick setting buttons
 - Fix tray quick connect and disconnect buttons, so that they're contextually aware of VPN status
 - Display incompatibility dialog on systems that GUI dependencies can not be met
 - Hide quick connect tray item on login window
 - Update GUI and tray after reconnecting to VPN from suspend or network change
 
-* Mon Apr 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-3
+* Mon May 10 2021 Proton Technologies AG <opensource@proton.me> 0.7.0-3
 - Feature: add sys-tray icon
 - Add missing indicator dependency
 - Add extra packages that are needed for indicator/tray to work on fedora
 
-* Thu Apr 06 2021 Proton Technologies AG <opensource@proton.me> 0.6.2-2
+* Thu May 06 2021 Proton Technologies AG <opensource@proton.me> 0.6.2-2
 - Add warning message if kill switch is blocking all connections
 - Display only countries when connected to secure core, on dashboard
 - Display streaming icons if present
 - Add space to secure core sub-servers flags and label
 
-* Wed Apr 05 2021 Proton Technologies AG <opensource@proton.me> 0.6.1-2
+* Wed May 05 2021 Proton Technologies AG <opensource@proton.me> 0.6.1-2
 - Fix connect button glitch
 - Add info icon hover effect
 - Add timetout to when fetching IP
 - Improve dashboard UI after disconnecting
 - Fix quick connect/disconnect glitch
 
-* Tue Apr 04 2021 Proton Technologies AG <opensource@proton.me> 0.6.0-1
+* Tue May 04 2021 Proton Technologies AG <opensource@proton.me> 0.6.0-1
 - Fix quick connect loop
 - Add possibility to login upon pressing Enter after filling in credentials on login window
 - Make possibile to add extra content to dialog via a method
