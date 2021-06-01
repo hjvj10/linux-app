@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.7.3
-%define release 2
+%define release 3
 
 Prefix: %{_prefix}
 
@@ -61,7 +61,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Mon Apr 24 2021 Proton Technologies AG <opensource@proton.me> 0.7.3-2
+* Mon Apr 24 2021 Proton Technologies AG <opensource@proton.me> 0.7.3-3
 - Add support for python3-protonvpn-nm-lib 3.2.0
 
 * Tue Apr 11 2021 Proton Technologies AG <opensource@proton.me> 0.7.2-1
