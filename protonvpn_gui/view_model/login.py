@@ -42,7 +42,7 @@ class LoginViewModel:
             result = LoginError(
                 "Your connection is not secure. "
                 "Please change network and attempt a new connection."
-                )
+            )
         except proton_excp.NewConnectionError as e:
             logger.exception(e)
             result = LoginError(

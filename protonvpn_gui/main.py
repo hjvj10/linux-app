@@ -28,7 +28,7 @@ from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
 from .model.server_list import ServerList
 from .model.country_item import CountryItem
-from .view.dialog import QuitDialog, LogoutDialog, AboutDialog
+from .view.dialog import QuitDialog, LogoutDialog, AboutDialog, DisplayMessageDialog
 from .view.indicator import generate_protonvpn_indicator
 
 
@@ -126,6 +126,38 @@ class ProtonVPNGUI(Gtk.Application):
     def on_click_about(self, simple_action, _):
         AboutDialog(self)
 
+    def on_click_get_logs(self, simple_action, _):
+        process = BackgroundProcess.setup(
+            self._async_get_logs
+        )
+        process.start()
+
+    def _async_get_logs(self):
+        bug_report = protonvpn.get_bug_report()
+        DisplayMessageDialog
+
+        try:
+            bug_report.open_folder_with_logs()
+        except Exception as e:
+            logger.exception(e)
+            DisplayMessageDialog(
+                self,
+                title="Unable to generate logs",
+                description="\nUnable to open file explorer with logs. "
+                "You can find logs at ~/.cache/protonvpn/logs"
+            )
+            return
+
+        try:
+            bug_report.generate_logs()
+        except Exception as e:
+            logger.exception(e)
+            DisplayMessageDialog(
+                self,
+                title="Unable to generate logs",
+                description="\nUnable to generate logs: {}".format(e)
+            )
+
     def on_display_preferences(self, *args):
         """On app display preferences event hanlder."""
         logger.info("Display preferences")
@@ -193,6 +225,10 @@ class ProtonVPNGUI(Gtk.Application):
         about_dialog = Gio.SimpleAction.new("about", None)
         about_dialog.connect("activate", self.on_click_about)
         self.add_action(about_dialog)
+
+        get_logs = Gio.SimpleAction.new("get-logs", None)
+        get_logs.connect("activate", self.on_click_get_logs)
+        self.add_action(get_logs)
 
         # TO-DO: Implement preferences
         # display_preferences = Gio.SimpleAction.new("display_preferences", None)

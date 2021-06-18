@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.7.3
-%define release 3
+%define version 0.8.0
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -23,7 +23,7 @@ BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-Requires: python3-protonvpn-nm-lib >= 3.2.0, python3-protonvpn-nm-lib < 3.3.0
+Requires: python3-protonvpn-nm-lib >= 3.3.0, python3-protonvpn-nm-lib < 3.4.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
@@ -61,6 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 0.8.0-1
+- Feature: Add button to get logs
+
 * Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 0.7.3-3
 - Add support for python3-protonvpn-nm-lib 3.2.0
 
