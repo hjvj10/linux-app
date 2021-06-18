@@ -142,13 +142,13 @@ class LoginKillSwitchDialog:
             "Do you want to disable Kill Switch ?"
 
         self.dialog_view.main_button.connect(
-            "clicked", self._disable_killswitch,
+            "clicked", self.on_click_disable_killswitch,
             callback_func, application
         )
         self.dialog_view.main_button.label = "Disable"
         self.dialog_view.display_dialog()
 
-    def _disable_killswitch(self, continue_button, callback_func, application):
+    def on_click_disable_killswitch(self, continue_button, callback_func, application):
         self.login_view_model.disable_killswitch()
         callback_func()
         self.dialog_view.close_dialog()
@@ -171,12 +171,12 @@ class ConnectUpgradeDialog:
             "upgrade your subscription."
 
         self.dialog_view.main_button.connect(
-            "clicked", self._upgrade_account, callback_func
+            "clicked", self.on_click_upgrade_account, callback_func
         )
         self.dialog_view.main_button.label = "Upgrade"
         self.dialog_view.display_dialog()
 
-    def _upgrade_account(self, main_button, callback_func):
+    def on_click_upgrade_account(self, main_button, callback_func):
         """Open window in browser with the specified URI to upgrade account."""
         Gtk.show_uri_on_window(
             None,
@@ -199,12 +199,12 @@ class LogoutDialog:
             "Do you want to continue ?"
 
         self.dialog_view.main_button.connect(
-            "clicked", self._logout, callback_func
+            "clicked", self.on_click_logout, callback_func
         )
         self.dialog_view.main_button.label = "Continue"
         self.dialog_view.display_dialog()
 
-    def _logout(self, main_button, callback_func):
+    def on_click_logout(self, main_button, callback_func):
         """Call logout callback."""
         callback_func()
 
@@ -222,12 +222,12 @@ class QuitDialog:
             "Do you want to continue ?"
 
         self.dialog_view.main_button.connect(
-            "clicked", self._quit, callback_func
+            "clicked", self.on_click_quit, callback_func
         )
         self.dialog_view.main_button.label = "Continue"
         self.dialog_view.display_dialog()
 
-    def _quit(self, main_button, callback_func):
+    def on_click_quit(self, main_button, callback_func):
         """Call logout callback."""
         callback_func()
 
@@ -248,11 +248,8 @@ class AboutDialog:
         self.dialog_view.content_label.content = app_version
         self.dialog_view.buttons_visible = False
         additional_context = WidgetFactory.grid("default")
-        import datetime
-        currentDateTime = datetime.datetime.now()
-        date = currentDateTime.date()
         copyright_label = WidgetFactory.label(
-            "default", "Copyright Proton Technologies AG {}".format(date.strftime("%Y"))
+            "default", "Copyright Proton Technologies AG 2021"
         )
         copyright_label.add_class("dark-text-color")
         copyright_label.add_class("font-small")
@@ -262,5 +259,20 @@ class AboutDialog:
         copyright_label.ident_h = 0
         copyright_label.ident_v = 0
         self.dialog_view.add_extra_content(additional_context.widget)
+
+        self.dialog_view.display_dialog()
+
+
+class DisplayMessageDialog:
+    """Display message dialog
+
+    This dialog can be used whenever a message should be displayed to the user.
+    """
+    def __init__(self, application, callback_func=None, title=None, description=None):
+        self.dialog_view = DialogView(application)
+        self.dialog_view.headerbar_label.set_text(title if title else "Information")
+        self.dialog_view.content_label.content = \
+            description if description else "No additional context was provided."
+        self.dialog_view.buttons_visible = False
 
         self.dialog_view.display_dialog()
