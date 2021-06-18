@@ -143,9 +143,10 @@ class ProtonVPNGUI(Gtk.Application):
             DisplayMessageDialog(
                 self,
                 title="Unable to generate logs",
-                description="\nUnable to open file explorer with logs."
+                description="\nUnable to open file explorer with logs. "
                 "You can find logs at ~/.cache/protonvpn/logs"
             )
+            return
 
         try:
             bug_report.generate_logs()
@@ -156,7 +157,6 @@ class ProtonVPNGUI(Gtk.Application):
                 title="Unable to generate logs",
                 description="\nUnable to generate logs: {}".format(e)
             )
-            return
 
     def on_display_preferences(self, *args):
         """On app display preferences event hanlder."""
