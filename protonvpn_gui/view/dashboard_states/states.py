@@ -85,8 +85,9 @@ class ConnectedVPNView:
             country_string = "{}".format(country.get_country_name(
                 state.countries[0]
             ))
-            country_string = country_string + " >> {}".format(
-                country.get_country_name(state.countries[1])
+            country_string = "{} >> {}".format(
+                country.get_country_name(state.countries[1]),
+                country_string
             )
         else:
             country_string = country_string + " {}".format(state.servername)
