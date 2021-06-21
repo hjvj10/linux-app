@@ -276,3 +276,13 @@ class DisplayMessageDialog:
         self.dialog_view.buttons_visible = False
 
         self.dialog_view.display_dialog()
+
+    def close_dialog(self):
+        self.dialog_view.close_dialog()
+
+    def update_dialog_content(self, title=None, desc=None):
+        if title:
+            self.dialog_view.headerbar_label.set_text(title)
+
+        if desc:
+            self.dialog_view.content_label.content = desc
