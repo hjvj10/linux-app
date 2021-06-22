@@ -1,4 +1,10 @@
-protonvpn-gui (0.8.0-2) unstable; urgency=medium
+protonvpn-gui (1.0.0-1) unstable; urgency=medium
+
+  * Update package to stable
+
+ -- Proton Technologies AG <opensource@proton.me>  Tue, 22 Jun 2021 09:00:00 +0100
+ 
+ protonvpn-gui (0.8.0-2) unstable; urgency=medium
 
   * Feature: Add button to get logs
 

@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 0.8.0
-%define release 2
+%define version 1.0.0
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -61,6 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 1.0.0-1
+- Update package to stable
+
 * Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 0.8.0-2
 - Feature: Add button to get logs
 
