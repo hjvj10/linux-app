@@ -127,36 +127,52 @@ class ProtonVPNGUI(Gtk.Application):
         AboutDialog(self)
 
     def on_click_get_logs(self, simple_action, _):
+        dialog = DisplayMessageDialog(
+            self,
+            title="Generating logs",
+            description="Generating logs, please wait..."
+        )
         process = BackgroundProcess.setup(
-            self._async_get_logs
+            self._async_get_logs, dialog
         )
         process.start()
 
-    def _async_get_logs(self):
-        bug_report = protonvpn.get_bug_report()
-        DisplayMessageDialog
+    def _async_get_logs(self, dialog):
+        import gi
 
-        try:
-            bug_report.open_folder_with_logs()
-        except Exception as e:
-            logger.exception(e)
-            DisplayMessageDialog(
-                self,
-                title="Unable to generate logs",
-                description="\nUnable to open file explorer with logs. "
-                "You can find logs at ~/.cache/protonvpn/logs"
-            )
-            return
+        gi.require_version('Gtk', '3.0')
+
+        from gi.repository import GLib
+        bug_report = protonvpn.get_bug_report()
 
         try:
             bug_report.generate_logs()
         except Exception as e:
             logger.exception(e)
-            DisplayMessageDialog(
-                self,
-                title="Unable to generate logs",
-                description="\nUnable to generate logs: {}".format(e)
+            GLib.idle_add(
+                self.__dialog_updater,
+                dialog,
+                "Unable to generate logs",
+                "\nUnable to generate logs: {}".format(e)
             )
+            return
+
+        try:
+            bug_report.open_folder_with_logs()
+        except Exception as e:
+            logger.exception(e)
+            GLib.idle_add(
+                self.__dialog_updater,
+                dialog,
+                "Unable to generate logs",
+                "\nUnable to open file explorer with logs. You can find the logs at ~/.cache/protonvpn/logs"
+            )
+            return
+
+        GLib.idle_add(dialog.close_dialog)
+
+    def __dialog_updater(self, dialog, title, description):
+        dialog.update_dialog_content(title, description)
 
     def on_display_preferences(self, *args):
         """On app display preferences event hanlder."""

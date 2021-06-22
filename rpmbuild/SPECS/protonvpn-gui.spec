@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 0.8.0
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
@@ -61,7 +61,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 0.8.0-1
+* Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 0.8.0-2
 - Feature: Add button to get logs
 
 * Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 0.7.3-3
