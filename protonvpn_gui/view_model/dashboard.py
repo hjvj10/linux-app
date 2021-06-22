@@ -400,6 +400,8 @@ class DashboardViewModel:
                 or ConnectionTypeEnum.SERVERNAME.
         """
         logger.info("Setting up connection")
+
+        setup_connection_error = False
         try:
             if reconnect:
                 server = protonvpn.setup_reconnect()
@@ -408,10 +410,69 @@ class DashboardViewModel:
                     connection_type=connection_type_enum,
                     connection_type_extra_arg=extra_arg
                 )
+        except exceptions.ServerCacheNotFound as e:
+            logger.exception(e)
+            setup_connection_error = \
+                "\nServer cache is missing. " \
+                "Please ensure that you have internet connection to " \
+                "cache servers."
+        except exceptions.ServernameServerNotFound as e:
+            logger.exception(e)
+            setup_connection_error = \
+                "\nNo server could be found with the provided servername.\n" \
+                "Either the server is under maintenance or\nyou " \
+                "don't have access to it with your plan."
+        except exceptions.FeatureServerNotFound as e:
+            logger.exception(e)
+            setup_connection_error = \
+                "\nNo servers were found with the provided feature.\n" \
+                "Either the servers with the provided feature are " \
+                "under maintenance or\nyou don't have access to the " \
+                "specified feature with your plan."
+        except exceptions.FastestServerInCountryNotFound as e:
+            logger.exception(e)
+            setup_connection_error = \
+                "\nNo server could be found with the provided country.\n" \
+                "Either the provided country is not available or\n" \
+                "you don't have access to the specified country " \
+                "with your plan."
+        except (
+            exceptions.RandomServerNotFound, exceptions.FastestServerNotFound
+        ) as e:
+            logger.exception(e)
+            setup_connection_error = \
+                "\nNo server could be found.\n" \
+                "Please ensure that you have an active internet connection.\n" \
+                "If the issue persists, please contact support."
+        except exceptions.DefaultOVPNPortsNotFoundError as e:
+            logger.exception(e)
+            setup_connection_error = \
+                "\nThere are missing configurations. " \
+                "Please ensure that you have internet connection."
+        except exceptions.IllegalServername as e:
+            logger.exception(e)
+            setup_connection_error = \
+                "\nProvided servername is invalid. Please ensure that you've " \
+                "correctly typed the servername."
+        except exceptions.DisableConnectivityCheckError as e:
+            logger.exception(e)
+            setup_connection_error = \
+                "\nIt was not possible to automatically disable connectivity check. " \
+                "This step is necessary for the Kill Switch to function properly, " \
+                "please disable connectivity check copying and pasting the following" \
+                "command into terminal:\nbusctl set-property org.freedesktop.NetworkManager " \
+                "/org/freedesktop/NetworkManager org.freedesktop.NetworkManager " \
+                "ConnectivityCheckEnabled 'b' 0"
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
+            setup_connection_error = \
+                "\nAn unknown error has occured. Please ensure that you have " \
+                "internet connectivity." \
+                "\nIf the issue persists, please contact support."
+
+        if setup_connection_error:
             result = ConnectError(
-                str(e)
+                setup_connection_error
             )
             self.state.on_next(result)
             return
