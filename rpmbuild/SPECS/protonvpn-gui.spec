@@ -1,7 +1,7 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.0.0
+%define version 1.0.1
 %define release 1
 
 Prefix: %{_prefix}
@@ -61,6 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 22 2021 Proton Technologies AG <opensource@proton.me> 1.0.1-1
+- Hotfix: Display force disable connectivity check message in case of failure
+
 * Mon May 24 2021 Proton Technologies AG <opensource@proton.me> 1.0.0-1
 - Update package to stable
 
