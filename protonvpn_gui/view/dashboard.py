@@ -118,7 +118,7 @@ class DashboardView(Gtk.ApplicationWindow):
     feature_button_icon_width = 20
     feature_button_icon_height = 20
     on_network_speed_update_seconds = 1
-    on_vpn_monitor_update_seconds = 10
+    on_vpn_monitor_update_seconds = 1
     on_server_load_update_seconds = 900
 
     glib_source_tracker = {
