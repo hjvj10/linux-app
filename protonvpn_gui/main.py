@@ -222,7 +222,7 @@ class ProtonVPNGUI(Gtk.Application):
             country_item=CountryItem
         )
         dashboard_view_model = DashboardViewModel(
-            Utilities, BackgroundProcess, server_list
+            Utilities, server_list
         )
         return DashboardView(
             application=self,

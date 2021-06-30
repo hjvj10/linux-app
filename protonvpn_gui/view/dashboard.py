@@ -17,13 +17,14 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
                                     ConnectPreparingInfo, Loading,
                                     NetworkSpeed, NotConnectedToVPNInfo,
-                                    QuickSettingsStatus, ServerListData)
+                                    QuickSettingsStatus, DisplayDialog)
 from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
                                ConnectVPNInProgressView,
                                ConnectVPNPreparingView, InitLoadView,
                                NotConnectedVPNView, UpdateNetworkSpeedView)
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
+from .dialog import DisplayMessageDialog
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -147,6 +148,7 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
+        self.server_list_view = ServerListView(self, self.dashboard_view_model)
         self.application.indicator.setup_reply_subject()
         try:
             self.application.indicator.dashboard_action.subscribe(
@@ -192,16 +194,19 @@ class DashboardView(Gtk.ApplicationWindow):
         self.overlay_box_context = self.overlay_box.get_style_context()
         self.glib_source_updated_method = {
             GLibEventSourceEnum.ON_MONITOR_VPN:
-                self.dashboard_view_model.on_monitor_vpn,
+                self.dashboard_view_model.on_monitor_vpn_async,
             GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED:
-                self.dashboard_view_model.on_update_speed,
+                self.dashboard_view_model.on_update_speed_async,
             GLibEventSourceEnum.ON_SERVER_LOAD:
                 self.dashboard_view_model.on_update_server_load,
         }
         self.setup_icons_images()
         self.setup_css()
         self.setup_actions()
-        self.dashboard_view_model.on_startup()
+        self._preload_ui_resources()
+
+    def _preload_ui_resources(self):
+        self.dashboard_view_model.on_startup_preload_resources_async()
 
     def indicator_action(self, indicator_state):
         if indicator_state == IndicatorActionEnum.QUICK_CONNECT:
@@ -236,10 +241,14 @@ class DashboardView(Gtk.ApplicationWindow):
             ConnectVPNErrorView(self, state)
         elif isinstance(state, NetworkSpeed):
             UpdateNetworkSpeedView(self, state)
-        elif isinstance(state, ServerListData):
-            self.server_list_view = ServerListView(self, state)
         elif isinstance(state, QuickSettingsStatus):
             self.update_quick_settings(state)
+        elif isinstance(state, DisplayDialog):
+            DisplayMessageDialog(
+                self.application,
+                title=state.title,
+                description=state.text
+            )
 
     def update_quick_settings(self, state):
         """Updates quick settings icons based on state.
