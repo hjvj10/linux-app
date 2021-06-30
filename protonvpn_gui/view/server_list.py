@@ -6,19 +6,18 @@ from .server_list_components.country_row import CountryRow
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import GLib
+from gi.repository import Gio, GLib, GObject
 
-from ..model.background_process import BackgroundProcess
 from ..view_model.dashboard import ServerListData
-from ..logger import logger
 
 
-class ServerListView:
+class ServerListView(GObject.Object):
     """ServerList class.
 
     Setup the server list.
     """
     def __init__(self, dashboard_view, dashboard_view_model):
+        GObject.Object.__init__(self)
         self.__country_rows = 0
         self.dv = dashboard_view
         self.dashboard_view_model = dashboard_view_model
@@ -28,11 +27,10 @@ class ServerListView:
         self.__server_list = None
         self.__country_widget_position_tracker = {}
         self.__header_tracker = []
-        self.__run_callback = False
 
     def render_view_state(self, state):
         if isinstance(state, ServerListData):
-            self.populate_async(
+            self._populate_async(
                 state.server_list,
                 self.dv.dashboard_view_model.on_startup_load_dashboard_resources_async
             )
@@ -41,29 +39,22 @@ class ServerListView:
     def total_of_existing_countries(self):
         return self.__country_rows
 
-    def populate_async(self, server_list, callback=None):
+    def _populate_async(self, server_list, callback):
         self.__server_list = server_list
-        p = BackgroundProcess.setup(self.__populate, callback)
-        p.start()
+        task = Gio.Task.new(self, None, callback)
+        task.run_in_thread(self.__populate)
 
-    def __populate(self, callback):
+    def __populate(self, *_):
         server_list_widget = self.__generate_widget_list().widget
-        GLib.idle_add(self.__attach_server_list, server_list_widget, callback)
-        while not self.__run_callback:
-            pass
+        GLib.idle_add(self.__attach_server_list, server_list_widget)
 
-        try:
-            callback()
-        except Exception as e: # noqa
-            logger.exception(e)
-
-    def __attach_server_list(self, widget, callback):
+    def __attach_server_list(self, widget):
         if self.dv.server_list_grid.get_child_at(0, 0):
             self.dv.server_list_grid.remove_row(0)
         self.dv.server_list_grid.attach(
             widget, 0, 0, 1, 1
         )
-        self.__run_callback = True
+        return False
 
     def __generate_widget_list(self):
         replaceable_child_grid = WidgetFactory.grid("dummy")
