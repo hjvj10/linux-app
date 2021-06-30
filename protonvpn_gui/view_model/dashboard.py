@@ -186,7 +186,8 @@ class DashboardViewModel:
         """Async load initial UI components such as quick settings and
         server list."""
         self.state.on_next(Loading())
-        process = BackgroundProcess.setup(self.__on_startup)
+        process = BackgroundProcess.get()
+        process.setup(self.__on_startup)
         process.start()
 
     def __on_startup(self):
@@ -198,15 +199,17 @@ class DashboardViewModel:
         try:
             self.__server_list_vm.on_load_servers()
         except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
             result = DisplayDialog(
                 title="Error Loading Servers",
                 text=str(e)
             )
             self.state.on_next(result)
 
-    def on_startup_load_dashboard_resources_async(self):
+    def on_startup_load_dashboard_resources_async(self, *_):
         """Async load dashboard resources."""
-        process = BackgroundProcess.setup(self.__on_startup_load_dashboard_resources)
+        process = BackgroundProcess.get()
+        process.setup(self.__on_startup_load_dashboard_resources)
         process.start()
 
     def __on_startup_load_dashboard_resources(self):
@@ -231,6 +234,7 @@ class DashboardViewModel:
                 else:
                     result = self.__get_connected_state()
             except (exceptions.ProtonVPNException, Exception) as e:
+                logger.exception(e)
                 result = DisplayDialog(
                     title="Error Getting VPN State",
                     text=str(e)
@@ -419,8 +423,9 @@ class DashboardViewModel:
                     ]
                 )
         except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
             result = DisplayDialog(
-                title="Unable Get Connection Data",
+                title="Unable to get Connection Data",
                 text=str(e)
             )
 
@@ -547,7 +552,8 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.setup(self.__on_monitor_vpn)
+        process = BackgroundProcess.get()
+        process.setup(self.__on_monitor_vpn)
         process.start()
         return True
 
@@ -560,10 +566,18 @@ class DashboardViewModel:
         """
         protonvpn_connection = protonvpn\
             .get_active_protonvpn_connection()
-        if not protonvpn_connection:
-            result = self.__get_not_connected_state()
-        else:
-            result = self.__get_connected_state()
+
+        try:
+            if not protonvpn_connection:
+                result = self.__get_not_connected_state()
+            else:
+                result = self.__get_connected_state()
+        except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
+            result = DisplayDialog(
+                title="Unable to get Connection Data",
+                text=str(e)
+            )
 
         self.state.on_next(result)
 
@@ -577,7 +591,8 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.setup(
+        process = BackgroundProcess.get()
+        process.setup(
             self.__on_update_speed
         )
         process.start()
@@ -608,7 +623,8 @@ class ServerListViewModel:
         self.server_list = server_list
 
     def on_load_servers_async(self):
-        process = BackgroundProcess.setup(
+        process = BackgroundProcess.get()
+        process.setup(
             self.on_load_servers
         )
         process.start()
@@ -638,7 +654,8 @@ class ServerListViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.setup(
+        process = BackgroundProcess.get()
+        process.setup(
             self.__on_update_server_load
         )
         process.start()

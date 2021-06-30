@@ -6,6 +6,7 @@ from ..rx.subject.replaysubject import ReplaySubject
 from ..logger import logger
 from protonvpn_nm_lib.enums import KillswitchStatusEnum
 from proton import exceptions as proton_excp
+from ..model.background_process import BackgroundProcess
 
 
 class LoginState(Enum):
@@ -20,19 +21,19 @@ class LoginError:
 
 class LoginViewModel:
 
-    def __init__(self, bg_process):
-        self.bg_process = bg_process
+    def __init__(self):
         self.user_settings = protonvpn.get_settings()
         self.state = ReplaySubject(buffer_size=1)
 
-    def login(self, username, password):
+    def login_async(self, username, password):
         self.state.on_next(LoginState.IN_PROGRESS)
-        process = self.bg_process.setup(
-            self.login_sync, username, password
+        process = BackgroundProcess.get()
+        process.setup(
+            self.__login, username, password
         )
         process.start()
 
-    def login_sync(self, username, password):
+    def __login(self, username, password):
         result = None
         try:
             protonvpn.login(username, password)

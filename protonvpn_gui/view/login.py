@@ -230,7 +230,7 @@ class LoginView(Gtk.ApplicationWindow):
     def on_clicked_login(self, gio_simple_action, _):
         username = self.proton_username_entry.get_text()
         password = self.proton_password_entry.get_text()
-        self.login_view_model.login(username, password)
+        self.login_view_model.login_async(username, password)
 
     def render_view_state(self, state):
         if state == LoginState.IN_PROGRESS:

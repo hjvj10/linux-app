@@ -1,23 +1,18 @@
-import gi
-
 from ..patterns.factory import WidgetFactory
 from .server_list_components.country_header import CountryHeader
 from .server_list_components.country_row import CountryRow
 
-gi.require_version('Gtk', '3.0')
-
-from gi.repository import Gio, GLib, GObject
-
+from gi.repository import GLib
 from ..view_model.dashboard import ServerListData
+from ..model.background_process import BackgroundProcess
 
 
-class ServerListView(GObject.Object):
+class ServerListView():
     """ServerList class.
 
     Setup the server list.
     """
     def __init__(self, dashboard_view, dashboard_view_model):
-        GObject.Object.__init__(self)
         self.__country_rows = 0
         self.dv = dashboard_view
         self.dashboard_view_model = dashboard_view_model
@@ -41,8 +36,9 @@ class ServerListView(GObject.Object):
 
     def _populate_async(self, server_list, callback):
         self.__server_list = server_list
-        task = Gio.Task.new(self, None, callback)
-        task.run_in_thread(self.__populate)
+        process = BackgroundProcess.get("gtask")
+        process.setup(callback=callback)
+        process.start(self.__populate)
 
     def __populate(self, *_):
         server_list_widget = self.__generate_widget_list().widget

@@ -132,7 +132,8 @@ class ProtonVPNGUI(Gtk.Application):
             title="Generating logs",
             description="Generating logs, please wait..."
         )
-        process = BackgroundProcess.setup(
+        process = BackgroundProcess.get()
+        process.setup(
             self._async_get_logs, dialog
         )
         process.start()
@@ -203,9 +204,7 @@ class ProtonVPNGUI(Gtk.Application):
         Returns:
             LoginView
         """
-        login_view_model = LoginViewModel(
-            BackgroundProcess
-        )
+        login_view_model = LoginViewModel()
         return LoginView(
             application=self,
             view_model=login_view_model,
