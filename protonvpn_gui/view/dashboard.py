@@ -641,3 +641,12 @@ class DashboardView(Gtk.ApplicationWindow):
             self.glib_source_tracker[
                 glib_source_type
             ] = None
+
+    def prepare_for_app_shutdown(self):
+        self.on_click_disconnect(None, None)
+
+        self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        self.remove_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
+        self.remove_background_glib(
+            GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
+        )

@@ -21,6 +21,11 @@ class BackgroundProcess(SubclassesMixin):
 
     @classmethod
     @abstractmethod
+    def setup():
+        pass
+
+    @classmethod
+    @abstractmethod
     def start():
         pass
 
@@ -32,9 +37,9 @@ class PythonThreading(BackgroundProcess):
         self.process = None
         self.set_task_data = None
 
-    def setup(self, target_method, *args, **kwargs):
+    def setup(self, target, *args, **kwargs):
         self.process = threading.Thread(
-            target=target_method, args=args, kwargs=kwargs
+            target=target, args=args, kwargs=kwargs
         )
         self.process.daemon = True
 
@@ -49,6 +54,7 @@ class GTaskThreading(BackgroundProcess, GObject.GObject):
         GObject.Object.__init__(self)
         self.process = None
         self.__task_data = None
+        self.__func_to_run_in_thread = None
 
     @property
     def task_data(self):
@@ -56,11 +62,23 @@ class GTaskThreading(BackgroundProcess, GObject.GObject):
 
     @task_data.setter
     def task_data(self, newvalue):
-        if self.process and (isinstance(newvalue, int) or newvalue is None):
-            self.process.set_task_data(newvalue)
+        if not isinstance(newvalue, int) or newvalue is None:
+            raise TypeError("Only int and None types are accepted")
 
-    def setup(self, cancellable=None, callback=None, callback_data=None):
+        self.__task_data = newvalue
+
+    def setup(self, target=None, cancellable=None, callback=None, callback_data=None):
         self.process = Gio.Task.new(self, cancellable, callback, callback_data)
+        self.__func_to_run_in_thread = target
 
-    def start(self, func_to_run_in_thread):
-        self.process.run_in_thread(func_to_run_in_thread)
+    def start(self, func_to_run_in_thread=None):
+        if not func_to_run_in_thread and not self.__func_to_run_in_thread:
+            raise Exception("Threaded function has not been passed")
+
+        self.process.set_task_data(self.__task_data)
+
+        to_run_in_thread = self.__func_to_run_in_thread
+        if func_to_run_in_thread:
+            to_run_in_thread = func_to_run_in_thread
+
+        self.process.run_in_thread(to_run_in_thread)

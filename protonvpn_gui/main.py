@@ -13,23 +13,29 @@ if Gtk.MINOR_VERSION < 24:
     sys.exit()
 
 
+import gi
 from proton.constants import VERSION as proton_version
+from protonvpn_nm_lib import exceptions
 from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
-from protonvpn_nm_lib import exceptions
 
 from .constants import APP_VERSION
 from .logger import logger
+from .patterns.factory import BackgroundProcess
+from .model.country_item import CountryItem
+from .model.server_list import ServerList
 from .model.utilities import Utilities
-from .model.background_process import BackgroundProcess
 from .view.dashboard import DashboardView
+from .view.dialog import (AboutDialog, DisplayMessageDialog, LogoutDialog,
+                          QuitDialog)
+from .view.indicator import generate_protonvpn_indicator
 from .view.login import LoginView
 from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
-from .model.server_list import ServerList
-from .model.country_item import CountryItem
-from .view.dialog import QuitDialog, LogoutDialog, AboutDialog, DisplayMessageDialog
-from .view.indicator import generate_protonvpn_indicator
+
+gi.require_version('Gtk', '3.0')
+
+from gi.repository import GLib
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -104,24 +110,49 @@ class ProtonVPNGUI(Gtk.Application):
 
         self.quit()
 
+    def display_login_window(self, *_):
+        self.get_login_window().present()
+
     def on_logout(self, *_):
+        dialog = DisplayMessageDialog(
+            application=self,
+            title="Logout",
+            description="Logging out..."
+        )
+        p = BackgroundProcess.factory("gtask")
+        p.setup(
+            target=self._logout,
+            callback=self.display_login_window,
+        )
         if protonvpn.get_active_protonvpn_connection():
-            LogoutDialog(self, self.logout)
+            dialog.close_dialog()
+            LogoutDialog(self, p.start)
             return
 
-        self.logout()
+        p.start()
 
-    def logout(self):
+    def _logout(self, *args):
         active_windows = self.get_windows()
-        protonvpn.logout()
-        logger.info("Destroying all windows \"{}\"".format(active_windows))
+
+        # stop background processes
+        logger.info("Stopping background process")
         for win in active_windows:
             try:
-                win.on_close_window(None, None, True)
+                GLib.idle_add(win.prepare_for_app_shutdown)
             except AttributeError:
-                win.destroy()
+                pass
 
-        self.do_activate()
+        # logout
+        logger.info("Logging out")
+        protonvpn.logout()
+
+        # close windows
+        logger.info("Closing all windows \"{}\"".format(active_windows))
+        for win in active_windows:
+            try:
+                GLib.idle_add(win.on_close_window, None, None, True)
+            except AttributeError:
+                GLib.idle_add(win.destroy)
 
     def on_click_about(self, simple_action, _):
         AboutDialog(self)
@@ -132,18 +163,13 @@ class ProtonVPNGUI(Gtk.Application):
             title="Generating logs",
             description="Generating logs, please wait..."
         )
-        process = BackgroundProcess.get()
+        process = BackgroundProcess.factory()
         process.setup(
             self._async_get_logs, dialog
         )
         process.start()
 
     def _async_get_logs(self, dialog):
-        import gi
-
-        gi.require_version('Gtk', '3.0')
-
-        from gi.repository import GLib
         bug_report = protonvpn.get_bug_report()
 
         try:
@@ -180,7 +206,7 @@ class ProtonVPNGUI(Gtk.Application):
         logger.info("Display preferences")
         print("To-do")
 
-    def do_activate(self):
+    def do_activate(self, *_):
         """Default GTK method.
 
         Runs after app startup and before displaying any windows.
