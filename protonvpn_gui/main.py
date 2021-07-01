@@ -44,12 +44,14 @@ class ProtonVPNGUI(Gtk.Application):
     Windows are composite objects. Follows
     MVVM pattern.
     """
+
     def __init__(self):
         super().__init__(
             application_id='com.protonvpn.www',
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
         self.indicator = None
+        self.is_logging_out = False
 
     def do_startup(self):
         """Default GTK method.
@@ -111,9 +113,19 @@ class ProtonVPNGUI(Gtk.Application):
         self.quit()
 
     def display_login_window(self, *_):
+        self.is_logging_out = False
         self.get_login_window().present()
 
     def on_logout(self, *_):
+        if self.is_logging_out:
+            dialog = DisplayMessageDialog(
+                application=self,
+                title="Logout",
+                description="You're currently being logged out, please wait..."
+            )
+            return
+
+        self.is_logging_out = True
         dialog = DisplayMessageDialog(
             application=self,
             title="Logout",
@@ -124,6 +136,7 @@ class ProtonVPNGUI(Gtk.Application):
             target=self._logout,
             callback=self.display_login_window,
         )
+
         if protonvpn.get_active_protonvpn_connection():
             dialog.close_dialog()
             LogoutDialog(self, p.start)
@@ -144,7 +157,10 @@ class ProtonVPNGUI(Gtk.Application):
 
         # logout
         logger.info("Logging out")
-        protonvpn.logout()
+        try:
+            protonvpn.logout()
+        except (Exception, exceptions.ProtonVPNException) as e:
+            logger.exception(e)
 
         # close windows
         logger.info("Closing all windows \"{}\"".format(active_windows))
