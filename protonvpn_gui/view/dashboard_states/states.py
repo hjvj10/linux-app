@@ -53,6 +53,8 @@ class NotConnectedVPNView:
         else:
             dv.application.indicator.set_disconnected_state()
 
+        dv.quick_connect_button.props.sensitive = True
+
         dv.connected_protocol_label.props.label = ""
         dv.country_servername_label.props.label = \
             label
@@ -107,6 +109,7 @@ class ConnectedVPNView:
         dv.connected_protocol_label.props.label = protocol
         dv.quick_connect_button.props.visible = False
         dv.main_disconnect_button.props.visible = True
+        dv.main_disconnect_button.props.sensitive = True
         label_ctx = dv.country_servername_label.get_style_context()
 
         if label_ctx.has_class("warning-color"):
@@ -168,6 +171,8 @@ class ConnectVPNErrorView:
         dv.connecting_to_label.set_text(
             state.message
         )
+        dv.quick_connect_button.props.sensitive = True
+        dv.main_disconnect_button.props.sensitive = False
         dv.connecting_to_label.props.visible = False
         dv.cancel_connect_overlay_button.props.visible = True
         dv.cancel_connect_overlay_button.set_label("Close")

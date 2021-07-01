@@ -311,6 +311,7 @@ class DashboardView(Gtk.ApplicationWindow):
         self.remove_background_glib(
             GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
         )
+        self.main_disconnect_button.props.sensitive = False
         self.dashboard_view_model.on_disconnect()
 
     def on_click_quick_connect(self, gkt_simple_action, _):
@@ -323,6 +324,7 @@ class DashboardView(Gtk.ApplicationWindow):
         """
         logger.info("Clicked on quick connect.")
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        self.quick_connect_button.props.sensitive = False
         self.dashboard_view_model.on_quick_connect()
 
     def on_click_hide_connect_overlay(
