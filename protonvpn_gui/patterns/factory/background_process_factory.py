@@ -4,7 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio, GObject
-from ..utils import SubclassesMixin
+from ...utils import SubclassesMixin
 from abc import abstractmethod
 
 
@@ -12,7 +12,7 @@ class BackgroundProcess(SubclassesMixin):
     """Abstract Widget Factory class."""
 
     @classmethod
-    def get(cls, threading_backend=None):
+    def factory(cls, threading_backend=None):
         subclasses_dict = cls._get_subclasses_dict("threading_backend")
         if threading_backend is None:
             return subclasses_dict["python"]()

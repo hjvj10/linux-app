@@ -4,7 +4,7 @@ from .server_list_components.country_row import CountryRow
 
 from gi.repository import GLib
 from ..view_model.dashboard import ServerListData
-from ..model.background_process import BackgroundProcess
+from ..patterns.factory import BackgroundProcess
 
 
 class ServerListView():
@@ -36,7 +36,7 @@ class ServerListView():
 
     def _populate_async(self, server_list, callback):
         self.__server_list = server_list
-        process = BackgroundProcess.get("gtask")
+        process = BackgroundProcess.factory("gtask")
         process.setup(callback=callback)
         process.start(self.__populate)
 

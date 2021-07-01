@@ -6,7 +6,7 @@ from ..rx.subject.replaysubject import ReplaySubject
 from ..logger import logger
 from protonvpn_nm_lib.enums import KillswitchStatusEnum
 from proton import exceptions as proton_excp
-from ..model.background_process import BackgroundProcess
+from ..patterns.factory import BackgroundProcess
 
 
 class LoginState(Enum):
@@ -27,7 +27,7 @@ class LoginViewModel:
 
     def login_async(self, username, password):
         self.state.on_next(LoginState.IN_PROGRESS)
-        process = BackgroundProcess.get()
+        process = BackgroundProcess.factory()
         process.setup(
             self.__login, username, password
         )

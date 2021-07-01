@@ -15,7 +15,7 @@ from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                      DashboardSecureCoreIconEnum)
 from ..logger import logger
 from ..rx.subject.replaysubject import ReplaySubject
-from ..model.background_process import BackgroundProcess
+from ..patterns.factory import BackgroundProcess
 
 
 @dataclass
@@ -186,7 +186,7 @@ class DashboardViewModel:
         """Async load initial UI components such as quick settings and
         server list."""
         self.state.on_next(Loading())
-        process = BackgroundProcess.get()
+        process = BackgroundProcess.factory()
         process.setup(self.__on_startup)
         process.start()
 
@@ -208,7 +208,7 @@ class DashboardViewModel:
 
     def on_startup_load_dashboard_resources_async(self, *_):
         """Async load dashboard resources."""
-        process = BackgroundProcess.get()
+        process = BackgroundProcess.factory()
         process.setup(self.__on_startup_load_dashboard_resources)
         process.start()
 
@@ -552,7 +552,7 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.get()
+        process = BackgroundProcess.factory()
         process.setup(self.__on_monitor_vpn)
         process.start()
         return True
@@ -591,7 +591,7 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.get()
+        process = BackgroundProcess.factory()
         process.setup(
             self.__on_update_speed
         )
@@ -623,7 +623,7 @@ class ServerListViewModel:
         self.server_list = server_list
 
     def on_load_servers_async(self):
-        process = BackgroundProcess.get()
+        process = BackgroundProcess.factory()
         process.setup(
             self.on_load_servers
         )
@@ -654,7 +654,7 @@ class ServerListViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.get()
+        process = BackgroundProcess.factory()
         process.setup(
             self.__on_update_server_load
         )
