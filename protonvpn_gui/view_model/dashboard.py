@@ -186,11 +186,11 @@ class DashboardViewModel:
         """Async load initial UI components such as quick settings and
         server list."""
         self.state.on_next(Loading())
-        process = BackgroundProcess.factory()
+        process = BackgroundProcess.factory("gtask")
         process.setup(self.__on_startup)
         process.start()
 
-    def __on_startup(self):
+    def __on_startup(self, *_):
         """Load initial UI components such as quick settings and
         server list.
 
@@ -208,11 +208,11 @@ class DashboardViewModel:
 
     def on_startup_load_dashboard_resources_async(self, *_):
         """Async load dashboard resources."""
-        process = BackgroundProcess.factory()
+        process = BackgroundProcess.factory("gtask")
         process.setup(self.__on_startup_load_dashboard_resources)
         process.start()
 
-    def __on_startup_load_dashboard_resources(self):
+    def __on_startup_load_dashboard_resources(self, *_):
         """Load dashboard resources.
 
         This updates the rest of dashboard UI components.
@@ -552,12 +552,12 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.factory()
+        process = BackgroundProcess.factory("gtask")
         process.setup(self.__on_monitor_vpn)
         process.start()
         return True
 
-    def __on_monitor_vpn(self):
+    def __on_monitor_vpn(self, *_):
         """Monitor VPN connection.
 
         This methods monitors a VPN connection state from withing
@@ -591,14 +591,14 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.factory()
+        process = BackgroundProcess.factory("gtask")
         process.setup(
             self.__on_update_speed
         )
         process.start()
         return True
 
-    def __on_update_speed(self):
+    def __on_update_speed(self, *_):
         """Updates UI with current network speed.
 
         This method is and should be executed within a python thread,
@@ -622,14 +622,14 @@ class ServerListViewModel:
         self.dashboard_vm = dashboard_view_model
         self.server_list = server_list
 
-    def on_load_servers_async(self):
-        process = BackgroundProcess.factory()
+    def on_load_servers_async(self, *_):
+        process = BackgroundProcess.factory("gtask")
         process.setup(
             self.on_load_servers
         )
         process.start()
 
-    def on_load_servers(self):
+    def on_load_servers(self, *_):
         if not self.server_list.servers:
             self.__generate_server_list()
 
@@ -654,7 +654,7 @@ class ServerListViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = BackgroundProcess.factory()
+        process = BackgroundProcess.factory("gtask")
         process.setup(
             self.__on_update_server_load
         )
