@@ -1,37 +1,60 @@
 from ..patterns.factory import WidgetFactory
-from .server_list_components.country_row import CountryRow
 from .server_list_components.country_header import CountryHeader
+from .server_list_components.country_row import CountryRow
+
+from gi.repository import GLib
+from ..view_model.dashboard import ServerListData
+from ..patterns.factory import BackgroundProcess
 
 
-class ServerListView:
+class ServerListView():
     """ServerList class.
 
     Setup the server list.
     """
-    def __init__(self, dashboard_view, state):
+    def __init__(self, dashboard_view, dashboard_view_model):
         self.__country_rows = 0
         self.dv = dashboard_view
-        self.__server_list = state.server_list
+        self.dashboard_view_model = dashboard_view_model
+        self.dashboard_view_model.state.subscribe(
+            lambda state: GLib.idle_add(self.render_view_state, state)
+        )
+        self.__server_list = None
         self.__country_widget_position_tracker = {}
         self.__header_tracker = []
-        self.__populate()
+
+    def render_view_state(self, state):
+        if isinstance(state, ServerListData):
+            self._populate_async(
+                state.server_list,
+                self.dv.dashboard_view_model.on_startup_load_dashboard_resources_async
+            )
 
     @property
     def total_of_existing_countries(self):
         return self.__country_rows
 
-    def __populate(self):
-        self.__attach_countries()
+    def _populate_async(self, server_list, callback):
+        self.__server_list = server_list
+        process = BackgroundProcess.factory("gtask")
+        process.setup(callback=callback)
+        process.start(self.__populate)
 
-    def __attach_countries(self):
-        replaceable_child_grid = WidgetFactory.grid("dummy")
-        replaceable_child_grid.show = True
+    def __populate(self, *_):
+        server_list_widget = self.__generate_widget_list().widget
+        GLib.idle_add(self.__attach_server_list, server_list_widget)
 
+    def __attach_server_list(self, widget):
         if self.dv.server_list_grid.get_child_at(0, 0):
             self.dv.server_list_grid.remove_row(0)
         self.dv.server_list_grid.attach(
-            replaceable_child_grid.widget, 0, 0, 1, 1
+            widget, 0, 0, 1, 1
         )
+        return False
+
+    def __generate_widget_list(self):
+        replaceable_child_grid = WidgetFactory.grid("dummy")
+        replaceable_child_grid.show = True
 
         country_header = CountryHeader(self.dv.application)
         row_counter = 0
@@ -67,6 +90,7 @@ class ServerListView:
             ] = country_grid_row
 
         self.__country_rows = self.__server_list.total_countries_count
+        return replaceable_child_grid
 
     def _yield_countries(self):
         for country_item in self.__server_list.servers:
@@ -80,16 +104,18 @@ class ServerListView:
             if user_input.lower() in country_name.lower()
         ]
 
-        self.__set_headers_visilbility(False)
+        self.__show_headers(False)
         if len(user_input) < 1:
-            self.__set_headers_visilbility(True)
+            self.__show_headers(True)
 
         for _, country_row in self.__country_widget_position_tracker.items():
-            country_row.row_grid.show = False
             if country_row in filtered_country_widgets:
                 country_row.row_grid.show = True
+                continue
 
-    def __set_headers_visilbility(self, bool_val):
+            country_row.row_grid.show = False
+
+    def __show_headers(self, bool_val):
         """Sets header visibility.
 
         Ideally the headers should be hidden when a user is performing a search,

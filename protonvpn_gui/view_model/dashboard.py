@@ -15,6 +15,7 @@ from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                      DashboardSecureCoreIconEnum)
 from ..logger import logger
 from ..rx.subject.replaysubject import ReplaySubject
+from ..patterns.factory import BackgroundProcess
 
 
 @dataclass
@@ -78,6 +79,12 @@ class QuickSettingsStatus:
     secure_core: DashboardSecureCoreIconEnum
     netshield: DashboardNetshieldIconEnum
     killswitch: DashboardKillSwitchIconEnum
+
+
+@dataclass
+class DisplayDialog:
+    title: str
+    text: str
 
 
 class DashboardViewModel:
@@ -149,33 +156,67 @@ class DashboardViewModel:
         VPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
-    def __init__(self, utils, bg_process, server_list):
+    def __init__(self, utils, server_list):
         self.utils = utils
-        self.bg_process = bg_process
-        self.server_list = server_list
+        self.__quick_settings_vm = QuickSettingsViewModel(self)
+        self.__server_list_vm = ServerListViewModel(self, server_list)
         self.state = ReplaySubject(buffer_size=1)
 
-    def on_startup(self):
-        """On startup method.
+    @property
+    def quick_settings_view_model(self):
+        return self.__quick_settings_vm
 
-        This method is invoked once the application window is started.
-        It displays a loading screen and then invokes a python thread
-        so that the animiation does not stopped during this loading state.
-        """
+    @property
+    def server_list_view_model(self):
+        return self.__server_list_vm
+
+    def on_switch_secure_core_button(self, *args):
+        self.__quick_settings_vm.on_switch_secure_core_button(*args)
+
+    def on_switch_netshield_button(self, *args):
+        self.__quick_settings_vm.on_switch_netshield_button(*args)
+
+    def on_switch_killswitch_button(self, *args):
+        self.__quick_settings_vm.on_switch_killswitch_button(*args)
+
+    def on_update_server_load(self):
+        self.__server_list_vm.on_update_server_load_async()
+
+    def on_startup_preload_resources_async(self):
+        """Async load initial UI components such as quick settings and
+        server list."""
         self.state.on_next(Loading())
-        process = self.bg_process.setup(self.on_startup_sync)
+        process = BackgroundProcess.factory("gtask")
+        process.setup(self.__on_startup)
         process.start()
 
-    def on_startup_sync(self):
-        """Threaded method.
+    def __on_startup(self, *_):
+        """Load initial UI components such as quick settings and
+        server list.
 
-        This method should be started within a python thread,
-        so that the UI is fluid and does not freeze the main
-        thread, due protonvpn library (described in class docstring).
+        This needs to be pre-loaded before displaying the dashboard."""
+        self.state.on_next(self.get_quick_settings_state())
+        try:
+            self.__server_list_vm.on_load_servers()
+        except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
+            result = DisplayDialog(
+                title="Error Loading Servers",
+                text=str(e)
+            )
+            self.state.on_next(result)
 
-        This class updates the UI state accordingly.
+    def on_startup_load_dashboard_resources_async(self, *_):
+        """Async load dashboard resources."""
+        process = BackgroundProcess.factory("gtask")
+        process.setup(self.__on_startup_load_dashboard_resources)
+        process.start()
+
+    def __on_startup_load_dashboard_resources(self, *_):
+        """Load dashboard resources.
+
+        This updates the rest of dashboard UI components.
         """
-
         try:
             protonvpn.ensure_connectivity()
         except (exceptions.ProtonVPNException, Exception) as e:
@@ -186,44 +227,25 @@ class DashboardViewModel:
                 country=None,
                 perma_ks_enabled=protonvpn.get_settings().killswitch == KillswitchStatusEnum.HARD
             )
-            self.state.on_next(result)
-            return
-
-        if not protonvpn.get_active_protonvpn_connection():
-            result = self.get_not_connected_state()
         else:
-            result = self.get_connected_state()
+            try:
+                if not protonvpn.get_active_protonvpn_connection():
+                    result = self.__get_not_connected_state()
+                else:
+                    result = self.__get_connected_state()
+            except (exceptions.ProtonVPNException, Exception) as e:
+                logger.exception(e)
+                result = DisplayDialog(
+                    title="Error Getting VPN State",
+                    text=str(e)
+                )
 
-        self.state.on_next(self.get_quick_settings_state())
-        self.on_load_servers_sync()
         self.state.on_next(result)
-
-    def on_load_servers(self):
-        process = self.bg_process.setup(
-            self.on_load_servers_sync
-        )
-        process.start()
-        return True
-
-    def __generate_server_list(self):
-        self.server_list.generate_list(
-            ServerTierEnum(protonvpn.get_session().vpn_tier)
-        )
-
-    def on_load_servers_sync(self):
-        if not self.server_list.servers:
-            self.__generate_server_list()
-
-        self.server_list.display_secure_core = \
-            protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON
-
-        state = ServerListData(self.server_list)
-        self.state.on_next(state)
 
     def on_quick_connect(self):
         """Quick connect to ProtonVPN.
 
-        This method sets the state of the UI
+        This method sets the state of the UIsync_async
         to preparing and calls the method
         connect() with ConnectionTypeEnum type.
 
@@ -231,8 +253,6 @@ class DashboardViewModel:
         within a python thread. Due to current situation, it is
         not done so due the reasons specified in class docstring.
         """
-        result = ConnectPreparingInfo()
-        self.state.on_next(result)
         logger.info("Preparing to quick connect")
         self.connect(ConnectionTypeEnum.FASTEST)
 
@@ -246,8 +266,6 @@ class DashboardViewModel:
         Ideally this method should be run
         as a background process.
         """
-        result = ConnectPreparingInfo()
-        self.state.on_next(result)
         logger.info("Preparing to connect to country \"{}\"".format(
             country_code
         ))
@@ -266,8 +284,6 @@ class DashboardViewModel:
         Ideally this method should be run
         as a background process.
         """
-        result = ConnectPreparingInfo()
-        self.state.on_next(result)
         logger.info("Preparing to connect to servername \"{}\"".format(
             servername
         ))
@@ -275,97 +291,6 @@ class DashboardViewModel:
             ConnectionTypeEnum.SERVERNAME,
             servername
         )
-
-    def on_switch_secure_core_button(self, secure_core_enum):
-        """On reconnect Secure Core."""
-        logger.info("Setting secure core to \"{}\"".format(secure_core_enum))
-        protonvpn.get_settings().secure_core = secure_core_enum
-
-        self.on_load_servers()
-
-        if protonvpn.get_active_protonvpn_connection():
-            logger.info("Preparing reconnect with \"{}\"".format(
-                secure_core_enum
-            ))
-            self.prepare_secure_core_reconnect(secure_core_enum)
-        else:
-            self.state.on_next(self.get_quick_settings_state())
-
-    def prepare_secure_core_reconnect(self, secure_core_enum):
-        """Prepares Secure Core reconnect.
-
-        Args:
-            secure_core_enum (SecureCoreStatusEnum)
-
-        If there is an active connection, this method will attempt
-        to reconnect to a server which the exit country matches
-        the entry country of a secure core server. If none is found,
-        then it will only call get_fastest_server(), since the library
-        is aware of this status.
-        """
-        connection_metadata = protonvpn.get_connection_metadata()
-        connected_server = connection_metadata[
-            ConnectionMetadataEnum.SERVER.value
-        ]
-        exit_country = protonvpn.config_for_server_with_servername(
-            connected_server
-        ).exit_country
-
-        server = None
-        if secure_core_enum == SecureCoreStatusEnum.ON:
-            self.server_list.display_secure_core = True
-            servers_list = list(map(
-                lambda country: list(filter(
-                    lambda server:
-                    server.exit_country_code.lower() == exit_country.lower(),
-                    country.servers
-                )),
-                self.server_list.servers
-            ))
-            flattened_servers = [
-                server for sub in servers_list for server in sub
-            ]
-            if len(flattened_servers) > 0:
-                flattened_servers.sort(
-                    key=lambda server: server.score, reverse=True
-                )
-                server = flattened_servers[0]
-
-        if not server:
-            server = protonvpn.config_for_fastest_server()
-
-        result = ConnectPreparingInfo()
-        self.state.on_next(result)
-        logger.info("Preparing to connect to servername \"{}\"".format(
-            server.name
-        ))
-        self.connect(
-            ConnectionTypeEnum.SERVERNAME,
-            server.name
-        )
-
-    def on_switch_netshield_button(self, netshield_enum):
-        logger.info("Setting netshield to \"{}\"".format(netshield_enum))
-        protonvpn.get_settings().netshield = netshield_enum
-        if protonvpn.get_active_protonvpn_connection():
-            logger.info("Preparing reconnect with \"{}\"".format(
-                netshield_enum
-            ))
-            self.on_reconnect()
-        else:
-            self.state.on_next(self.get_quick_settings_state())
-
-    def on_switch_killswitch_button(self, ks_enum):
-        logger.info("Setting killswitch to \"{}\"".format(ks_enum))
-        protonvpn.get_settings().killswitch = ks_enum
-        active_connection = protonvpn.get_active_protonvpn_connection()
-        if active_connection and ks_enum == KillswitchStatusEnum.SOFT:
-            logger.info("Preparing reconnect with \"{}\"".format(
-                ks_enum
-            ))
-            self.on_reconnect()
-        else:
-            self.state.on_next(self.get_quick_settings_state())
 
     def on_reconnect(self):
         """Reconnect to previously connected server.
@@ -377,8 +302,7 @@ class DashboardViewModel:
         Ideally this method should be run
         as a background process.
         """
-        result = ConnectPreparingInfo()
-        self.state.on_next(result)
+        logger.info("Preparing to reconnect")
         self.connect(connection_type_enum=None, reconnect=True)
 
     def connect(self, connection_type_enum, extra_arg=None, reconnect=False):
@@ -400,7 +324,8 @@ class DashboardViewModel:
                 or ConnectionTypeEnum.SERVERNAME.
         """
         logger.info("Setting up connection")
-
+        result = ConnectPreparingInfo()
+        self.state.on_next(result)
         setup_connection_error = False
         try:
             if reconnect:
@@ -488,14 +413,22 @@ class DashboardViewModel:
         state = connect_response[ConnectionStartStatusEnum.STATE]
 
         # step 3
-        if state == VPNConnectionStateEnum.IS_ACTIVE:
-            result = self.get_connected_state()
-        else:
-            result = ConnectError(
-                self._conn_reason_msg[
-                    connect_response[ConnectionStartStatusEnum.REASON]
-                ]
+        try:
+            if state == VPNConnectionStateEnum.IS_ACTIVE:
+                result = self.__get_connected_state()
+            else:
+                result = ConnectError(
+                    self._conn_reason_msg[
+                        connect_response[ConnectionStartStatusEnum.REASON]
+                    ]
+                )
+        except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
+            result = DisplayDialog(
+                title="Unable to get Connection Data",
+                text=str(e)
             )
+
         self.state.on_next(self.get_quick_settings_state())
         self.state.on_next(result)
 
@@ -525,7 +458,7 @@ class DashboardViewModel:
         within a python thread, but is not done so due to
         the reasons specified in class docstring.
         """
-        result = self.get_not_connected_state()
+        result = self.__get_not_connected_state()
         try:
             protonvpn.disconnect()
         except (exceptions.ConnectionNotFound, AttributeError):
@@ -534,7 +467,7 @@ class DashboardViewModel:
         self.state.on_next(result)
         return False
 
-    def get_connected_state(self):
+    def __get_connected_state(self):
         """Get connected state.
 
         Returns:
@@ -561,7 +494,7 @@ class DashboardViewModel:
 
         return result
 
-    def get_not_connected_state(self):
+    def __get_not_connected_state(self):
         """Get not connected state.
 
         Returns:
@@ -605,7 +538,7 @@ class DashboardViewModel:
 
         return state
 
-    def on_monitor_vpn(self):
+    def on_monitor_vpn_async(self):
         """Start VPN connection monitor.
 
         Since the VPN can be enabled via CLI,
@@ -619,11 +552,12 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = self.bg_process.setup(self.on_monitor_vpn_async)
+        process = BackgroundProcess.factory("gtask")
+        process.setup(self.__on_monitor_vpn)
         process.start()
         return True
 
-    def on_monitor_vpn_async(self):
+    def __on_monitor_vpn(self, *_):
         """Monitor VPN connection.
 
         This methods monitors a VPN connection state from withing
@@ -632,49 +566,22 @@ class DashboardViewModel:
         """
         protonvpn_connection = protonvpn\
             .get_active_protonvpn_connection()
-        if not protonvpn_connection:
-            result = self.get_not_connected_state()
-        else:
-            result = self.get_connected_state()
 
-        self.state.on_next(result)
-
-    def on_update_server_load(self):
-        """Update server Load.
-
-        The main method is started within a background process
-        so that the UI will not freeze.
-
-        Since it is being invoked via a GLib method, it returns True
-        so that the method can be called again. If returned False,
-        then the callback would stop.
-        """
-        process = self.bg_process.setup(
-            self.on_update_server_load_sync
-        )
-        process.start()
-        return True
-
-    def on_update_server_load_sync(self):
-        """Update server load.
-
-        This method refreshes server cache. The library
-        will automatically decide what it should cache, so this
-        method can be safely used at anytime.
-
-        This method is and should be executed within a python thread.
-        """
-        session = protonvpn.get_session()
         try:
-            session.update_servers_if_needed()
-        except Exception as e:
+            if not protonvpn_connection:
+                result = self.__get_not_connected_state()
+            else:
+                result = self.__get_connected_state()
+        except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
-
-        result = self.get_connected_state()
+            result = DisplayDialog(
+                title="Unable to get Connection Data",
+                text=str(e)
+            )
 
         self.state.on_next(result)
 
-    def on_update_speed(self):
+    def on_update_speed_async(self):
         """Update network speed.
 
         The main method is started within a python thread
@@ -684,13 +591,14 @@ class DashboardViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
-        process = self.bg_process.setup(
-            self.on_update_speed_sync
+        process = BackgroundProcess.factory("gtask")
+        process.setup(
+            self.__on_update_speed
         )
         process.start()
         return True
 
-    def on_update_speed_sync(self):
+    def __on_update_speed(self, *_):
         """Updates UI with current network speed.
 
         This method is and should be executed within a python thread,
@@ -707,3 +615,161 @@ class DashboardViewModel:
         )
 
         self.state.on_next(result)
+
+
+class ServerListViewModel:
+    def __init__(self, dashboard_view_model, server_list):
+        self.dashboard_vm = dashboard_view_model
+        self.server_list = server_list
+
+    def on_load_servers_async(self, *_):
+        process = BackgroundProcess.factory("gtask")
+        process.setup(
+            self.on_load_servers
+        )
+        process.start()
+
+    def on_load_servers(self, *_):
+        if not self.server_list.servers:
+            self.__generate_server_list()
+
+        self.server_list.display_secure_core = \
+            protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON
+
+        state = ServerListData(self.server_list)
+        self.dashboard_vm.state.on_next(state)
+
+    def __generate_server_list(self):
+        self.server_list.generate_list(
+            ServerTierEnum(protonvpn.get_session().vpn_tier)
+        )
+
+    def on_update_server_load_async(self):
+        """Update server Load.
+
+        The main method is started within a background process
+        so that the UI will not freeze.
+
+        Since it is being invoked via a GLib method, it returns True
+        so that the method can be called again. If returned False,
+        then the callback would stop.
+        """
+        process = BackgroundProcess.factory("gtask")
+        process.setup(
+            self.__on_update_server_load
+        )
+        process.start()
+
+    def __on_update_server_load(self):
+        """Update server load.
+
+        This method refreshes server cache. The library
+        will automatically decide what it should cache, so this
+        method can be safely used at anytime.
+
+        This method is and should be executed within a python thread.
+        """
+        session = protonvpn.get_session()
+        try:
+            session.servers
+        except Exception as e:
+            logger.exception(e)
+
+        result = self.dashboard_vm.__get_connected_state()
+
+        self.dashboard_vm.state.on_next(result)
+
+
+class QuickSettingsViewModel:
+
+    def __init__(self, dashboard_view_model):
+        self.dashboard_vm = dashboard_view_model
+
+    def on_switch_secure_core_button(self, secure_core_enum):
+        """On reconnect Secure Core."""
+        logger.info("Setting secure core to \"{}\"".format(secure_core_enum))
+        protonvpn.get_settings().secure_core = secure_core_enum
+
+        self.dashboard_vm.server_list_view_model.on_load_servers_async()
+
+        if protonvpn.get_active_protonvpn_connection():
+            logger.info("Preparing reconnect with \"{}\"".format(
+                secure_core_enum
+            ))
+            self.__prepare_secure_core_reconnect(secure_core_enum)
+        else:
+            self.dashboard_vm.state.on_next(self.dashboard_vm.get_quick_settings_state())
+
+    def __prepare_secure_core_reconnect(self, secure_core_enum):
+        """Prepares Secure Core reconnect.
+
+        Args:
+            secure_core_enum (SecureCoreStatusEnum)
+
+        If there is an active connection, this method will attempt
+        to reconnect to a server which the exit country matches
+        the entry country of a secure core server. If none is found,
+        then it will only call get_fastest_server(), since the library
+        is aware of this status.
+        """
+        connection_metadata = protonvpn.get_connection_metadata()
+        connected_server = connection_metadata[
+            ConnectionMetadataEnum.SERVER.value
+        ]
+        exit_country = protonvpn.config_for_server_with_servername(
+            connected_server
+        ).exit_country
+
+        server = None
+        if secure_core_enum == SecureCoreStatusEnum.ON:
+            self.dashboard_vm.server_list_view_model.server_list.display_secure_core = True
+            servers_list = list(map(
+                lambda country: list(filter(
+                    lambda server:
+                    server.exit_country_code.lower() == exit_country.lower(),
+                    country.servers
+                )),
+                self.dashboard_vm.server_list_view_model.server_list.servers
+            ))
+            flattened_servers = [
+                server for sub in servers_list for server in sub
+            ]
+            if len(flattened_servers) > 0:
+                flattened_servers.sort(
+                    key=lambda server: server.score, reverse=True
+                )
+                server = flattened_servers[0]
+
+        if not server:
+            server = protonvpn.config_for_fastest_server()
+
+        logger.info("Preparing to connect to servername \"{}\"".format(
+            server.name
+        ))
+        self.dashboard_vm.connect(
+            ConnectionTypeEnum.SERVERNAME,
+            server.name
+        )
+
+    def on_switch_netshield_button(self, netshield_enum):
+        logger.info("Setting netshield to \"{}\"".format(netshield_enum))
+        protonvpn.get_settings().netshield = netshield_enum
+        if protonvpn.get_active_protonvpn_connection():
+            logger.info("Preparing reconnect with \"{}\"".format(
+                netshield_enum
+            ))
+            self.dashboard_vm.on_reconnect()
+        else:
+            self.dashboard_vm.state.on_next(self.dashboard_vm.get_quick_settings_state())
+
+    def on_switch_killswitch_button(self, ks_enum):
+        logger.info("Setting killswitch to \"{}\"".format(ks_enum))
+        protonvpn.get_settings().killswitch = ks_enum
+        active_connection = protonvpn.get_active_protonvpn_connection()
+        if active_connection and ks_enum == KillswitchStatusEnum.SOFT:
+            logger.info("Preparing reconnect with \"{}\"".format(
+                ks_enum
+            ))
+            self.dashboard_vm.on_reconnect()
+        else:
+            self.dashboard_vm.state.on_next(self.dashboard_vm.get_quick_settings_state())

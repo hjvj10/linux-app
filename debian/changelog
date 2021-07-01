@@ -1,3 +1,9 @@
+protonvpn-gui (1.1.0-1) unstable; urgency=medium
+
+  * Enhancement: Improve GUI responsiveness
+  
+ -- Proton Technologies AG <opensource@proton.me>  Thu, 01 Jul 2021 13:30:00 +0100
+ 
 protonvpn-gui (1.0.1-1) unstable; urgency=medium
 
   * Hotfix: Display force disable connectivity check message in case of failure

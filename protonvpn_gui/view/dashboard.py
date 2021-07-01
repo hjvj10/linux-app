@@ -17,13 +17,14 @@ from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
                                     ConnectInProgressInfo,
                                     ConnectPreparingInfo, Loading,
                                     NetworkSpeed, NotConnectedToVPNInfo,
-                                    QuickSettingsStatus, ServerListData)
+                                    QuickSettingsStatus, DisplayDialog)
 from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
                                ConnectVPNInProgressView,
                                ConnectVPNPreparingView, InitLoadView,
                                NotConnectedVPNView, UpdateNetworkSpeedView)
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
+from .dialog import DisplayMessageDialog
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -117,7 +118,7 @@ class DashboardView(Gtk.ApplicationWindow):
     feature_button_icon_width = 20
     feature_button_icon_height = 20
     on_network_speed_update_seconds = 1
-    on_vpn_monitor_update_seconds = 10
+    on_vpn_monitor_update_seconds = 1
     on_server_load_update_seconds = 900
 
     glib_source_tracker = {
@@ -147,6 +148,7 @@ class DashboardView(Gtk.ApplicationWindow):
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
+        self.server_list_view = ServerListView(self, self.dashboard_view_model)
         self.application.indicator.setup_reply_subject()
         try:
             self.application.indicator.dashboard_action.subscribe(
@@ -192,16 +194,19 @@ class DashboardView(Gtk.ApplicationWindow):
         self.overlay_box_context = self.overlay_box.get_style_context()
         self.glib_source_updated_method = {
             GLibEventSourceEnum.ON_MONITOR_VPN:
-                self.dashboard_view_model.on_monitor_vpn,
+                self.dashboard_view_model.on_monitor_vpn_async,
             GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED:
-                self.dashboard_view_model.on_update_speed,
+                self.dashboard_view_model.on_update_speed_async,
             GLibEventSourceEnum.ON_SERVER_LOAD:
                 self.dashboard_view_model.on_update_server_load,
         }
         self.setup_icons_images()
         self.setup_css()
         self.setup_actions()
-        self.dashboard_view_model.on_startup()
+        self._preload_ui_resources()
+
+    def _preload_ui_resources(self):
+        self.dashboard_view_model.on_startup_preload_resources_async()
 
     def indicator_action(self, indicator_state):
         if indicator_state == IndicatorActionEnum.QUICK_CONNECT:
@@ -236,10 +241,14 @@ class DashboardView(Gtk.ApplicationWindow):
             ConnectVPNErrorView(self, state)
         elif isinstance(state, NetworkSpeed):
             UpdateNetworkSpeedView(self, state)
-        elif isinstance(state, ServerListData):
-            self.server_list_view = ServerListView(self, state)
         elif isinstance(state, QuickSettingsStatus):
             self.update_quick_settings(state)
+        elif isinstance(state, DisplayDialog):
+            DisplayMessageDialog(
+                self.application,
+                title=state.title,
+                description=state.text
+            )
 
     def update_quick_settings(self, state):
         """Updates quick settings icons based on state.
@@ -302,6 +311,7 @@ class DashboardView(Gtk.ApplicationWindow):
         self.remove_background_glib(
             GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
         )
+        self.main_disconnect_button.props.sensitive = False
         self.dashboard_view_model.on_disconnect()
 
     def on_click_quick_connect(self, gkt_simple_action, _):
@@ -314,6 +324,7 @@ class DashboardView(Gtk.ApplicationWindow):
         """
         logger.info("Clicked on quick connect.")
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        self.quick_connect_button.props.sensitive = False
         self.dashboard_view_model.on_quick_connect()
 
     def on_click_hide_connect_overlay(
@@ -632,3 +643,12 @@ class DashboardView(Gtk.ApplicationWindow):
             self.glib_source_tracker[
                 glib_source_type
             ] = None
+
+    def prepare_for_app_shutdown(self):
+        self.on_click_disconnect(None, None)
+
+        self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        self.remove_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
+        self.remove_background_glib(
+            GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
+        )

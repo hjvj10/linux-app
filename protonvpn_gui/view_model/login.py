@@ -6,6 +6,7 @@ from ..rx.subject.replaysubject import ReplaySubject
 from ..logger import logger
 from protonvpn_nm_lib.enums import KillswitchStatusEnum
 from proton import exceptions as proton_excp
+from ..patterns.factory import BackgroundProcess
 
 
 class LoginState(Enum):
@@ -20,22 +21,25 @@ class LoginError:
 
 class LoginViewModel:
 
-    def __init__(self, bg_process):
-        self.bg_process = bg_process
+    def __init__(self):
         self.user_settings = protonvpn.get_settings()
         self.state = ReplaySubject(buffer_size=1)
+        self.__username = None
+        self.__password = None
 
-    def login(self, username, password):
+    def login_async(self, username, password):
+        self.__username = username
+        self.__password = password
+
         self.state.on_next(LoginState.IN_PROGRESS)
-        process = self.bg_process.setup(
-            self.login_sync, username, password
-        )
+        process = BackgroundProcess.factory("gtask")
+        process.setup(self.__login)
         process.start()
 
-    def login_sync(self, username, password):
+    def __login(self, *_):
         result = None
         try:
-            protonvpn.login(username, password)
+            protonvpn.login(self.__username, self.__password)
             result = LoginState.SUCCESS
         except proton_excp.TLSPinningError as e:
             logger.exception(e)

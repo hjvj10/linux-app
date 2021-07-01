@@ -70,6 +70,14 @@ class ButtonFactory(AbstractButtonFactory):
         self.__widget.props.visible = newvalue
 
     @property
+    def disable(self):
+        return self.__widget.props.sensitive
+
+    @disable.setter
+    def disable(self, newvalue):
+        self.__widget.props.sensitive = newvalue
+
+    @property
     def expand_h(self):
         """Get horizontal expand."""
         return self.__widget.get_hexpand()
