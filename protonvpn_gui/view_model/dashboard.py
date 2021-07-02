@@ -259,7 +259,9 @@ class DashboardViewModel:
                     text=str(e)
                 )
 
-        self.main_context.invoke_full(GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result)
+        self.main_context.invoke_full(
+            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
+        )
 
     def on_quick_connect(self):
         """Quick connect to ProtonVPN.
@@ -455,7 +457,9 @@ class DashboardViewModel:
                 text=str(e)
             )
 
-        self.main_context.invoke_full(GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result)
+        self.main_context.invoke_full(
+            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
+        )
 
     def __display_connection_information_during_connect(self, server):
         connection_metadata = protonvpn.get_connection_metadata()
@@ -474,7 +478,9 @@ class DashboardViewModel:
         )
 
         logger.info("Displaying connection information")
-        self.main_context.invoke_full(GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result)
+        self.main_context.invoke_full(
+            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
+        )
 
     def on_disconnect(self):
         """On disconnect method.
@@ -483,6 +489,7 @@ class DashboardViewModel:
         within a python thread, but is not done so due to
         the reasons specified in class docstring.
         """
+        self.state.on_next(Loading())
         result = self.__get_not_connected_state()
         try:
             protonvpn.disconnect()
@@ -607,7 +614,9 @@ class DashboardViewModel:
                 text=str(e)
             )
 
-        self.main_context.invoke_full(GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result)
+        self.main_context.invoke_full(
+            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
+        )
 
     def on_update_speed_async(self):
         """Update network speed.
@@ -641,7 +650,9 @@ class DashboardViewModel:
             download=dl,
             upload=up
         )
-        self.main_context.invoke_full(GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result)
+        self.main_context.invoke_full(
+            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
+        )
 
 
 class ServerListViewModel:
