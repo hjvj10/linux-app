@@ -12,8 +12,7 @@ if Gtk.MINOR_VERSION < 24:
     display_dialog()
     sys.exit()
 
-
-import gi
+from .enums import GTKPriorityEnum
 from proton.constants import VERSION as proton_version
 from protonvpn_nm_lib import exceptions
 from protonvpn_nm_lib.api import protonvpn
@@ -33,10 +32,6 @@ from .view.login import LoginView
 from .view_model.dashboard import DashboardViewModel
 from .view_model.login import LoginViewModel
 
-gi.require_version('Gtk', '3.0')
-
-from gi.repository import GLib
-
 
 class ProtonVPNGUI(Gtk.Application):
     """ProtonVPN GTK Applcation.
@@ -52,6 +47,15 @@ class ProtonVPNGUI(Gtk.Application):
         )
         self.indicator = None
         self.is_logging_out = False
+        self.__main_context = None
+
+    @property
+    def main_context(self):
+        if not self.__main_context:
+            from gi.repository import GLib
+            self.__main_context = GLib.main_context_default()
+
+        return self.__main_context
 
     def do_startup(self):
         """Default GTK method.
@@ -151,7 +155,10 @@ class ProtonVPNGUI(Gtk.Application):
         logger.info("Stopping background process")
         for win in active_windows:
             try:
-                GLib.idle_add(win.prepare_for_app_shutdown)
+                self.main_context.invoke_full(
+                    GTKPriorityEnum.PRIORITY_DEFAULT.value,
+                    win.prepare_for_app_shutdown
+                )
             except AttributeError:
                 pass
 
@@ -166,9 +173,12 @@ class ProtonVPNGUI(Gtk.Application):
         logger.info("Closing all windows \"{}\"".format(active_windows))
         for win in active_windows:
             try:
-                GLib.idle_add(win.on_close_window, None, None, True)
+                self.main_context.invoke_full(
+                    GTKPriorityEnum.PRIORITY_DEFAULT.value,
+                    win.on_close_window, None, None, True
+                )
             except AttributeError:
-                GLib.idle_add(win.destroy)
+                self.main_context.invoke_full(GTKPriorityEnum.PRIORITY_DEFAULT.value, win.destroy)
 
     def on_click_about(self, simple_action, _):
         AboutDialog(self)
@@ -192,7 +202,8 @@ class ProtonVPNGUI(Gtk.Application):
             bug_report.generate_logs()
         except Exception as e:
             logger.exception(e)
-            GLib.idle_add(
+            self.main_context.invoke_full(
+                GTKPriorityEnum.PRIORITY_DEFAULT.value,
                 self.__dialog_updater,
                 dialog,
                 "Unable to generate logs",
@@ -204,15 +215,17 @@ class ProtonVPNGUI(Gtk.Application):
             bug_report.open_folder_with_logs()
         except Exception as e:
             logger.exception(e)
-            GLib.idle_add(
+            self.main_context.invoke_full(
+                GTKPriorityEnum.PRIORITY_DEFAULT.value,
                 self.__dialog_updater,
                 dialog,
-                "Unable to generate logs",
-                "\nUnable to open file explorer with logs. You can find the logs at ~/.cache/protonvpn/logs"
+                "Unable to generate logs" \
+                "\nUnable to open file explorer with logs. " \
+                "You can find the logs at ~/.cache/protonvpn/logs" # noqa
             )
             return
 
-        GLib.idle_add(dialog.close_dialog)
+        self.main_context.invoke_full(GTKPriorityEnum.PRIORITY_DEFAULT.value, dialog.close_dialog)
 
     def __dialog_updater(self, dialog, title, description):
         dialog.update_dialog_content(title, description)
