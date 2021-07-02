@@ -193,18 +193,18 @@
     </style>
   </object>
   <template class="DashboardView" parent="GtkApplicationWindow">
-    <property name="width-request">360</property>
-    <property name="height-request">710</property>
     <property name="can-focus">False</property>
     <property name="can-default">True</property>
+    <property name="resizable">False</property>
     <property name="window-position">center</property>
-    <property name="default-width">360</property>
     <property name="default-height">710</property>
     <property name="show-menubar">False</property>
     <child>
       <object class="GtkOverlay">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <child>
           <!-- n-columns=1 n-rows=5 -->
           <object class="GtkGrid" id="dashboard_grid">
@@ -671,6 +671,7 @@
                 <property name="can-focus">True</property>
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
+                <property name="min-content-width">400</property>
                 <child>
                   <object class="GtkViewport" id="server_list_view_port">
                     <property name="name">server-list-view-port</property>

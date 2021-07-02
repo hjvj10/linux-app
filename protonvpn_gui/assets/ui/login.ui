@@ -8,7 +8,7 @@
     <property name="can-focus">False</property>
     <property name="window-position">center</property>
     <property name="default-width">210</property>
-    <property name="default-height">740</property>
+    <property name="default-height">710</property>
     <property name="show-menubar">False</property>
     <child>
       <object class="GtkOverlay">
