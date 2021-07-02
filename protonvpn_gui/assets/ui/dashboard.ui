@@ -2,196 +2,6 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
-  <object class="GtkPopover" id="dashboard_popover_menu">
-    <property name="can-focus">False</property>
-    <property name="position">bottom</property>
-    <child>
-      <object class="GtkBox" id="box1">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkModelButton">
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="hexpand">True</property>
-            <property name="action-name">app.display_preferences</property>
-            <property name="text" translatable="yes">Preferences</property>
-            <accessibility>
-              <relation type="node-child-of" target="box1"/>
-              <action action_name="click" description="Open preferences window."/>
-              <action action_name="press" description="Open preferences window."/>
-            </accessibility>
-            <child internal-child="accessible">
-              <object class="AtkObject">
-                <property name="AtkObject::accessible-name" translatable="yes">preferences-menu-item</property>
-                <property name="AtkObject::accessible-description" translatable="yes">Preferences menu item</property>
-                <property name="AtkObject::accessible-role" translatable="yes">menu-item</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSeparator">
-            <property name="can-focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <object class="GtkModelButton">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="action-name">app.about</property>
-            <property name="text" translatable="yes">About</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">5</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSeparator">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">6</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <object class="GtkModelButton">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="hexpand">True</property>
-            <property name="action-name">app.logout</property>
-            <property name="text" translatable="yes">Logout</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">8</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSeparator">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">9</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <object class="GtkModelButton">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="hexpand">True</property>
-            <property name="action-name">app.get-logs</property>
-            <property name="text" translatable="yes">Get Logs</property>
-            <accessibility>
-              <relation type="node-child-of" target="box1"/>
-              <action action_name="click" description="Quit ProtonVPN application."/>
-              <action action_name="press" description="Quit ProtonVPN application."/>
-            </accessibility>
-            <child internal-child="accessible">
-              <object class="AtkObject">
-                <property name="AtkObject::accessible-name" translatable="yes">get-protonvpn-logs</property>
-                <property name="AtkObject::accessible-description" translatable="yes">Get ProtonVPN logs.</property>
-                <property name="AtkObject::accessible-role" translatable="yes">menu-item</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">11</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSeparator">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">12</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <object class="GtkModelButton">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="hexpand">True</property>
-            <property name="action-name">app.quit</property>
-            <property name="text" translatable="yes">Quit</property>
-            <accessibility>
-              <relation type="node-child-of" target="box1"/>
-              <action action_name="click" description="Quit ProtonVPN application."/>
-              <action action_name="press" description="Quit ProtonVPN application."/>
-            </accessibility>
-            <child internal-child="accessible">
-              <object class="AtkObject">
-                <property name="AtkObject::accessible-name" translatable="yes">quit-protonvpn-appliacation</property>
-                <property name="AtkObject::accessible-description" translatable="yes">Quit ProtonVPN application.</property>
-                <property name="AtkObject::accessible-role" translatable="yes">menu-item</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">14</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-    <child internal-child="accessible">
-      <object class="AtkObject" id="dashboard_popover_menu-atkobject">
-        <property name="AtkObject::accessible-name" translatable="yes">Popup Menu</property>
-        <property name="AtkObject::accessible-role" translatable="yes">popup-menu</property>
-      </object>
-    </child>
-    <style>
-      <class name="dashboard_popover_menu"/>
-    </style>
-  </object>
   <template class="DashboardView" parent="GtkApplicationWindow">
     <property name="can-focus">False</property>
     <property name="can-default">True</property>
@@ -968,4 +778,195 @@
       </object>
     </child>
   </template>
+  <object class="GtkPopover" id="dashboard_popover_menu">
+    <property name="can-focus">False</property>
+    <property name="relative-to">headerbar_menu_button</property>
+    <property name="position">bottom</property>
+    <child>
+      <object class="GtkBox" id="box1">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton">
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="hexpand">True</property>
+            <property name="action-name">app.display_preferences</property>
+            <property name="text" translatable="yes">Preferences</property>
+            <accessibility>
+              <relation type="node-child-of" target="box1"/>
+              <action action_name="click" description="Open preferences window."/>
+              <action action_name="press" description="Open preferences window."/>
+            </accessibility>
+            <child internal-child="accessible">
+              <object class="AtkObject">
+                <property name="AtkObject::accessible-name" translatable="yes">preferences-menu-item</property>
+                <property name="AtkObject::accessible-description" translatable="yes">Preferences menu item</property>
+                <property name="AtkObject::accessible-role" translatable="yes">menu-item</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.about</property>
+            <property name="text" translatable="yes">About</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">6</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="hexpand">True</property>
+            <property name="action-name">app.logout</property>
+            <property name="text" translatable="yes">Logout</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">8</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">9</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="hexpand">True</property>
+            <property name="action-name">app.get-logs</property>
+            <property name="text" translatable="yes">Get Logs</property>
+            <accessibility>
+              <relation type="node-child-of" target="box1"/>
+              <action action_name="click" description="Quit ProtonVPN application."/>
+              <action action_name="press" description="Quit ProtonVPN application."/>
+            </accessibility>
+            <child internal-child="accessible">
+              <object class="AtkObject">
+                <property name="AtkObject::accessible-name" translatable="yes">get-protonvpn-logs</property>
+                <property name="AtkObject::accessible-description" translatable="yes">Get ProtonVPN logs.</property>
+                <property name="AtkObject::accessible-role" translatable="yes">menu-item</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">11</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">12</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="hexpand">True</property>
+            <property name="action-name">app.quit</property>
+            <property name="text" translatable="yes">Quit</property>
+            <accessibility>
+              <relation type="node-child-of" target="box1"/>
+              <action action_name="click" description="Quit ProtonVPN application."/>
+              <action action_name="press" description="Quit ProtonVPN application."/>
+            </accessibility>
+            <child internal-child="accessible">
+              <object class="AtkObject">
+                <property name="AtkObject::accessible-name" translatable="yes">quit-protonvpn-appliacation</property>
+                <property name="AtkObject::accessible-description" translatable="yes">Quit ProtonVPN application.</property>
+                <property name="AtkObject::accessible-role" translatable="yes">menu-item</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">14</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child internal-child="accessible">
+      <object class="AtkObject" id="dashboard_popover_menu-atkobject">
+        <property name="AtkObject::accessible-name" translatable="yes">Popup Menu</property>
+        <property name="AtkObject::accessible-role" translatable="yes">popup-menu</property>
+      </object>
+    </child>
+    <style>
+      <class name="dashboard_popover_menu"/>
+    </style>
+  </object>
 </interface>
