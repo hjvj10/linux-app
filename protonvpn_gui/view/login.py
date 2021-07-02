@@ -76,10 +76,6 @@ class LoginView(Gtk.ApplicationWindow):
             pass
 
         super().__init__(application=self.application)
-        self.setup_images()
-        self.setup_css()
-        self.setup_actions()
-        self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()  # noqa
         self.proton_username_entry.connect("changed", self.on_entry_changed)
         self.proton_password_entry.connect("changed", self.on_entry_changed)
         self.overlay_spinner.set_property("width-request", 200)
@@ -88,11 +84,17 @@ class LoginView(Gtk.ApplicationWindow):
             "Kill Switch is blocking any outgoing connections."
         )
         self.application.indicator.set_disconnected_state(hide_quick_connect=True)
-        self.set_killswitch_revealer_status()
         self.login_button.set_property("can-default", True)
         self.login_button.set_property("has-default", True)
         self.proton_password_entry.set_property("activates-default", True)
         self.proton_username_entry.set_property("activates-default", True)
+
+        self.set_windows_resize_restrictions()
+        self.setup_images()
+        self.setup_css()
+        self.setup_actions()
+        self.set_killswitch_revealer_status()
+        self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()  # noqa
 
     def indicator_action(self, indicator_state):
         if indicator_state == IndicatorActionEnum.SHOW_GUI:
@@ -248,6 +250,18 @@ class LoginView(Gtk.ApplicationWindow):
         elif state == LoginState.SUCCESS:
             self.dashboard_window().present()
             self.on_close_window(None, None, True)
+
+    def set_windows_resize_restrictions(self):
+        geometry = Gdk.Geometry()
+        geometry.min_width = 0
+        geometry.max_width = self.get_default_size().width
+        geometry.min_height = 0
+        geometry.max_height = 99999
+        self.set_geometry_hints(
+            self,
+            geometry,
+            (Gdk.WindowHints.MIN_SIZE | Gdk.WindowHints.MAX_SIZE)
+        )
 
     def setup_images(self):
         dummy_object = WidgetFactory.image("dummy")

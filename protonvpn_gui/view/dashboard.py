@@ -200,6 +200,7 @@ class DashboardView(Gtk.ApplicationWindow):
             GLibEventSourceEnum.ON_SERVER_LOAD:
                 self.dashboard_view_model.on_update_server_load,
         }
+        self.set_windows_resize_restrictions()
         self.setup_icons_images()
         self.setup_css()
         self.setup_actions()
@@ -373,6 +374,18 @@ class DashboardView(Gtk.ApplicationWindow):
 
         """
         self.dashboard_popover_menu.popup()
+
+    def set_windows_resize_restrictions(self):
+        geometry = Gdk.Geometry()
+        geometry.min_width = 0
+        geometry.max_width = self.get_default_size().width
+        geometry.min_height = 0
+        geometry.max_height = 99999
+        self.set_geometry_hints(
+            self,
+            geometry,
+            (Gdk.WindowHints.MIN_SIZE | Gdk.WindowHints.MAX_SIZE)
+        )
 
     def setup_icons_images(self):
         """Sets up all icons and images at application start.

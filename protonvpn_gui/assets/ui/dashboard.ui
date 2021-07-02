@@ -195,8 +195,8 @@
   <template class="DashboardView" parent="GtkApplicationWindow">
     <property name="can-focus">False</property>
     <property name="can-default">True</property>
-    <property name="resizable">False</property>
     <property name="window-position">center</property>
+    <property name="default-width">400</property>
     <property name="default-height">710</property>
     <property name="show-menubar">False</property>
     <child>
