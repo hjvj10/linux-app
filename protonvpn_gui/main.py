@@ -49,13 +49,13 @@ class ProtonVPNGUI(Gtk.Application):
         self.is_logging_out = False
         self.__main_context = None
 
-        @property
-        def main_context(self):
-            if not self.__main_context:
-                from gi.repository import GLib
-                self.__main_context = GLib.main_context_default()
+    @property
+    def main_context(self):
+        if not self.__main_context:
+            from gi.repository import GLib
+            self.__main_context = GLib.main_context_default()
 
-            return self.__main_context
+        return self.__main_context
 
     def do_startup(self):
         """Default GTK method.
