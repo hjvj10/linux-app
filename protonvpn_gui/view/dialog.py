@@ -207,7 +207,7 @@ class LogoutDialog:
     def on_click_logout(self, main_button, callback_func):
         """Call logout callback."""
         self.dialog_view.content_label.content = "Please wait while you're " \
-            "logged out..."
+            "being logged out..."
         self.dialog_view.main_button.show = False
         callback_func()
 

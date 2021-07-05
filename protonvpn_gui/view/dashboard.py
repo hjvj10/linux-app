@@ -118,7 +118,7 @@ class DashboardView(Gtk.ApplicationWindow):
     feature_button_icon_width = 20
     feature_button_icon_height = 20
     on_network_speed_update_seconds = 1
-    on_vpn_monitor_update_seconds = 1
+    on_vpn_monitor_update_seconds = 3
     on_server_load_update_seconds = 900
 
     glib_source_tracker = {
@@ -626,7 +626,7 @@ class DashboardView(Gtk.ApplicationWindow):
         """
         if self.glib_source_tracker[
                 glib_source_type
-        ] == None:
+        ] is None:
             logger.debug(
                 "{} does not exist, adding it.".format(glib_source_type)
             )
