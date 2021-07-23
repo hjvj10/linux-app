@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.1.0
-%define release 1
+%define release 7
 
 Prefix: %{_prefix}
 
@@ -61,8 +61,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Thu Jul 01 2021 Proton Technologies AG <opensource@proton.me> 1.1.0-1
-- Enhancement: Improve GUI responsiveness
+* Thu Jul 01 2021 Proton Technologies AG <opensource@proton.me> 1.1.0-7
+- Enhancement: Improve GUI responsiveness; prevent the GUI from resizing on X axis
 
 * Tue Jun 22 2021 Proton Technologies AG <opensource@proton.me> 1.0.1-1
 - Hotfix: Display force disable connectivity check message in case of failure

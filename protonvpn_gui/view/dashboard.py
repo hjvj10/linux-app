@@ -118,7 +118,7 @@ class DashboardView(Gtk.ApplicationWindow):
     feature_button_icon_width = 20
     feature_button_icon_height = 20
     on_network_speed_update_seconds = 1
-    on_vpn_monitor_update_seconds = 1
+    on_vpn_monitor_update_seconds = 3
     on_server_load_update_seconds = 900
 
     glib_source_tracker = {
@@ -200,6 +200,7 @@ class DashboardView(Gtk.ApplicationWindow):
             GLibEventSourceEnum.ON_SERVER_LOAD:
                 self.dashboard_view_model.on_update_server_load,
         }
+        self.set_windows_resize_restrictions()
         self.setup_icons_images()
         self.setup_css()
         self.setup_actions()
@@ -373,6 +374,18 @@ class DashboardView(Gtk.ApplicationWindow):
 
         """
         self.dashboard_popover_menu.popup()
+
+    def set_windows_resize_restrictions(self):
+        geometry = Gdk.Geometry()
+        geometry.min_width = 0
+        geometry.max_width = self.get_default_size().width
+        geometry.min_height = 0
+        geometry.max_height = 99999
+        self.set_geometry_hints(
+            self,
+            geometry,
+            (Gdk.WindowHints.MIN_SIZE | Gdk.WindowHints.MAX_SIZE)
+        )
 
     def setup_icons_images(self):
         """Sets up all icons and images at application start.
@@ -613,7 +626,7 @@ class DashboardView(Gtk.ApplicationWindow):
         """
         if self.glib_source_tracker[
                 glib_source_type
-        ] == None:
+        ] is None:
             logger.debug(
                 "{} does not exist, adding it.".format(glib_source_type)
             )
@@ -645,8 +658,6 @@ class DashboardView(Gtk.ApplicationWindow):
             ] = None
 
     def prepare_for_app_shutdown(self):
-        self.on_click_disconnect(None, None)
-
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.remove_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         self.remove_background_glib(

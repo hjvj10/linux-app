@@ -50,3 +50,15 @@ class DashboardSecureCoreIconEnum(Enum):
     ON_DISABLE = auto()
     ON_ACTIVE = auto()
     CHEVRON = auto()
+
+
+class GTKPriorityEnum(Enum):
+    """GTK Constants
+
+    https://developer.gnome.org/glib/stable/glib-The-Main-Event-Loop.html#G-PRIORITY-HIGH:CAPS
+    """
+    PRIORITY_HIGH = -100
+    PRIORITY_DEFAULT = 0
+    PRIORITY_HIGH_IDLE = 100
+    PRIORITY_DEFAULT_IDLE = 200
+    PRIORITY_LOW = 300

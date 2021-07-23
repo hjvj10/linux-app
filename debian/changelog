@@ -1,6 +1,6 @@
-protonvpn-gui (1.1.0-1) unstable; urgency=medium
+protonvpn-gui (1.1.0-7) unstable; urgency=medium
 
-  * Enhancement: Improve GUI responsiveness
+  * Enhancement: Improve GUI responsiveness; prevent the GUI from resizing on X axis
   
  -- Proton Technologies AG <opensource@proton.me>  Thu, 01 Jul 2021 13:30:00 +0100
  

@@ -5,6 +5,7 @@ from .server_list_components.country_row import CountryRow
 from gi.repository import GLib
 from ..view_model.dashboard import ServerListData
 from ..patterns.factory import BackgroundProcess
+from ..enums import GTKPriorityEnum
 
 
 class ServerListView():
@@ -42,7 +43,9 @@ class ServerListView():
 
     def __populate(self, *_):
         server_list_widget = self.__generate_widget_list().widget
-        GLib.idle_add(self.__attach_server_list, server_list_widget)
+        GLib.main_context_default().invoke_full(
+            GTKPriorityEnum.PRIORITY_HIGH.value, self.__attach_server_list, server_list_widget
+        )
 
     def __attach_server_list(self, widget):
         if self.dv.server_list_grid.get_child_at(0, 0):

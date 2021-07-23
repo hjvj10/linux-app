@@ -19,11 +19,11 @@ class Utilities:
         logger.debug("Getting IP")
         try:
             r = requests.get(
-                "https://api.protonvpn.ch/vpn/location", timeout=3
+                "https://api.protonvpn.ch/vpn/location", timeout=1
             )
             api_response = r.text
             api_response = json.loads(api_response)
-        except (Exception, requests.exceptions.BaseHTTPError) as e:
+        except (Exception, requests.exceptions.BaseHTTPError, requests.exceptions.Timeout) as e:
             logger.exception(e)
             api_response = {
                 "IP": None,
