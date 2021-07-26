@@ -4,6 +4,7 @@ from logging.handlers import RotatingFileHandler
 
 from protonvpn_nm_lib.constants import PROTON_XDG_CACHE_HOME_LOGS
 from .constants import LOGGER_NAME
+import time
 
 
 def get_logger():
@@ -12,6 +13,7 @@ def get_logger():
         "%(asctime)s — %(filename)s — %(levelname)s —"
         "%(funcName)s:%(lineno)d — %(message)s"
     )
+    FORMATTER.converter = time.gmtime
 
     if not os.path.isdir(PROTON_XDG_CACHE_HOME_LOGS):
         os.makedirs(PROTON_XDG_CACHE_HOME_LOGS)
