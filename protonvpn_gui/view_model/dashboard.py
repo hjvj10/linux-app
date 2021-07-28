@@ -192,6 +192,7 @@ class DashboardViewModel:
 
     def on_update_server_load(self):
         self.__server_list_vm.on_update_server_load_async()
+        return True
 
     def on_startup_preload_resources_async(self):
         """Async load initial UI components such as quick settings and
@@ -248,9 +249,9 @@ class DashboardViewModel:
         else:
             try:
                 if not protonvpn.get_active_protonvpn_connection():
-                    result = self.__get_not_connected_state()
+                    result = self._get_not_connected_state()
                 else:
-                    result = self.__get_connected_state()
+                    result = self._get_connected_state()
             except (exceptions.ProtonVPNException, Exception) as e:
                 logger.exception(e)
                 result = DisplayDialog(
@@ -438,7 +439,7 @@ class DashboardViewModel:
         # step 3
         try:
             if state == VPNConnectionStateEnum.IS_ACTIVE:
-                result = self.__get_connected_state()
+                result = self._get_connected_state()
             else:
                 result = ConnectError(
                     self._conn_reason_msg[
@@ -487,7 +488,7 @@ class DashboardViewModel:
         self.main_context.invoke_full(
             GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, Loading()
         )
-        result = self.__get_not_connected_state()
+        result = self._get_not_connected_state()
         try:
             protonvpn.disconnect()
         except (exceptions.ConnectionNotFound, AttributeError):
@@ -498,7 +499,7 @@ class DashboardViewModel:
         )
         return False
 
-    def __get_connected_state(self):
+    def _get_connected_state(self):
         """Get connected state.
 
         Returns:
@@ -525,7 +526,7 @@ class DashboardViewModel:
 
         return result
 
-    def __get_not_connected_state(self):
+    def _get_not_connected_state(self):
         """Get not connected state.
 
         Returns:
@@ -599,13 +600,13 @@ class DashboardViewModel:
             protonvpn_connection = protonvpn\
                 .get_active_protonvpn_connection()
         except: # noqa
-            result = self.__get_not_connected_state()
+            result = self._get_not_connected_state()
         else:
             try:
                 if not protonvpn_connection:
-                    result = self.__get_not_connected_state()
+                    result = self._get_not_connected_state()
                 else:
-                    result = self.__get_connected_state()
+                    result = self._get_connected_state()
             except (exceptions.ProtonVPNException, Exception) as e:
                 logger.exception(e)
                 result = DisplayDialog(
@@ -628,9 +629,7 @@ class DashboardViewModel:
         then the callback would stop.
         """
         process = BackgroundProcess.factory("gtask")
-        process.setup(
-            self.__on_update_speed
-        )
+        process.setup(self.__on_update_speed)
         process.start()
         return True
 
@@ -658,12 +657,11 @@ class ServerListViewModel:
     def __init__(self, dashboard_view_model, server_list):
         self.dashboard_vm = dashboard_view_model
         self.server_list = server_list
+        self.__updating_update_server_load = False
 
     def on_load_servers_async(self, *_):
         process = BackgroundProcess.factory("gtask")
-        process.setup(
-            self.on_load_servers
-        )
+        process.setup(self.on_load_servers)
         process.start()
 
     def on_load_servers(self, *_):
@@ -683,6 +681,11 @@ class ServerListViewModel:
             ServerTierEnum(protonvpn.get_session().vpn_tier)
         )
 
+    def __finish_on_update_server_load(self, self_thread, task, data):
+        var = bool(task.propagate_int())
+        if var:
+            self.__updating_update_server_load = False
+
     def on_update_server_load_async(self):
         """Update server Load.
 
@@ -693,13 +696,19 @@ class ServerListViewModel:
         so that the method can be called again. If returned False,
         then the callback would stop.
         """
+        if self.__updating_update_server_load:
+            print("skipped")
+            return
+
+        self.__updating_update_server_load = True
         process = BackgroundProcess.factory("gtask")
         process.setup(
-            self.__on_update_server_load
+            self.__on_update_server_load,
+            callback=self.__finish_on_update_server_load
         )
         process.start()
 
-    def __on_update_server_load(self, *_):
+    def __on_update_server_load(self, task, self_thread, data, cancellable):
         """Update server load.
 
         This method refreshes server cache. The library
@@ -709,16 +718,25 @@ class ServerListViewModel:
         This method is and should be executed within a python thread.
         """
         session = protonvpn.get_session()
+
+        # By requests the servers, it will automatically trigger a request
+        # to the API, to updated the serverlist if needed.
         try:
             session.servers
         except Exception as e:
+            # Display dialog with message
             logger.exception(e)
+            task.return_int(0)
+            return
 
-        result = self.dashboard_vm.__get_connected_state()
-
-        self.dashboard_vm.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.dashboard_vm.state.on_next, result
-        )
+        try:
+            self.on_load_servers_async(False)
+        except Exception as e:
+            # Display dialog with message
+            logger.exception(e)
+            task.return_int(0)
+        else:
+            task.return_int(1)
 
 
 class QuickSettingsViewModel:
