@@ -206,6 +206,48 @@ class Default(LabelFactory):
         self.show = True
 
 
+class TroubleshootDescription(LabelFactory):
+    """TroubleshootDescription class."""
+    label = "troubleshoot_description"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.justify = Gtk.Justification.FILL
+        self.align_h = Gtk.Align.FILL
+        self.expand_h = True
+        # self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("dark-text-color")
+        self.add_class("quick-settings-title")
+        # self.add_class("margin-left-10px")
+        self.line_wrap = True
+        self.ident_h = 0
+        self.width_in_chars = 60
+        self.max_width_in_chars = 60
+        # WORD
+        # CHAR
+        # WORD_CHAR
+        self.char_wrap_mode = Pango.WrapMode.WORD
+
+
+class TroubleshootTitle(LabelFactory):
+    """TroubleshootTitle class."""
+    label = "troubleshoot_title"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        # self.align_h = Gtk.Align.CENTER
+        # self.justify = Gtk.Justification.CENTER
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.ident_h = 0
+        # self.width_in_chars = 10
+        # self.max_width_in_chars = 10
+        self.add_class("bold")
+        self.add_class("default-text-color")
+
+
 class PremiumFeaturesPopoverTitle(LabelFactory):
     """PremiumFeaturesPopoverTitle class."""
     label = "premium_features_popover_title"

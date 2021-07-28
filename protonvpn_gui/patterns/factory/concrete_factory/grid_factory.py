@@ -291,6 +291,16 @@ class Default(GridFactory):
         self.show = True
 
 
+class TroubleshootContainer(GridFactory):
+    grid = "troubleshoot_container"
+
+    def __init__(self):
+        super().__init__()
+        self.row_spacing = 20
+        self.align_h = Gtk.Align.FILL
+        self.show = True
+
+
 class StreamingIconsContainer(GridFactory):
     grid = "streaming_icons_container"
 
