@@ -1,6 +1,7 @@
 protonvpn-gui (1.2.0-1) unstable; urgency=medium
 
   * Fix: Logs should be using UTC time
+  * Fix: Display window icons (minimize, maximize and close)
   
  -- Proton Technologies AG <opensource@proton.me>  Mon, 26 Jul 2021 08:12:00 +0100
 
