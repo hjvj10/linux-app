@@ -63,6 +63,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Mon Jul 26 2021 Proton Technologies AG <opensource@proton.me> 1.2.0-1
 - Fix: Logs should be using UTC time
+- Fix: Display window icons (minimize, maximize and close)
 
 * Thu Jul 01 2021 Proton Technologies AG <opensource@proton.me> 1.1.0-7
 - Enhancement: Improve GUI responsiveness; prevent the GUI from resizing on X axis

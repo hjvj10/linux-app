@@ -86,7 +86,7 @@ label.dark-text-color{
 }
 
 /* BUTTONS */
-button {
+button.enabled, button.disabled, button.transparent, button.transparent-white {
   -gtk-icon-effect: none;
   -gtk-icon-source: none;
   outline: none;
