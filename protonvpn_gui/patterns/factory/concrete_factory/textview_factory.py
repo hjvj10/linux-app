@@ -16,9 +16,6 @@ class TextViewFactory(WidgetFactory):
 
     def __init__(self, text):
         self.__textbuffer = Gtk.TextBuffer()
-        self.__tag_link = self.__textbuffer.create_tag(
-            "bold", weight=Pango.Weight.BOLD
-        )
         self.__textbuffer.set_text(text)
         self.__widget = Gtk.TextView(buffer=self.__textbuffer)
         self.__widget_context = self.__widget.get_style_context()
@@ -27,6 +24,12 @@ class TextViewFactory(WidgetFactory):
     def factory(cls, widget_name, text):
         subclasses_dict = cls._get_subclasses_dict("textview")
         return subclasses_dict[widget_name](text)
+
+    def __create_hyperlink_tag(self):
+        return self.__textbuffer.create_tag(
+            underline=Pango.Underline.SINGLE,
+            foreground="#4DA358"
+        )
 
     @property
     def widget(self):
@@ -55,11 +58,16 @@ class TextViewFactory(WidgetFactory):
         """
         self.__textbuffer.set_text(newvalue)
 
-    def insert_link_at_end(self, string):
+    def inset_text_at_end(self, text):
         end_iter = self.__textbuffer.get_end_iter()
-        self.__textbuffer.insert(end_iter, string)
-        new_end_iter = self.__textbuffer.get_end_iter()
-        self.__textbuffer.apply_tag(self.__tag_link, end_iter, new_end_iter)
+        self.__textbuffer.insert(end_iter, text)
+
+    def insert_link_at_end(self, text, url, callback=None):
+        end_iter = self.__textbuffer.get_end_iter()
+        _hyperlink_tag = self.__create_hyperlink_tag()
+        if callback:
+            _hyperlink_tag.connect("event", callback, url)
+        self.__textbuffer.insert_with_tags(end_iter, text, _hyperlink_tag)
 
     @property
     def image(self):
@@ -115,7 +123,7 @@ class TextViewFactory(WidgetFactory):
     @align_h.setter
     def align_h(self, newvalue):
         """Set horizontal align."""
-        return self.__widget.set_halign(newvalue)
+        self.__widget.set_halign(newvalue)
 
     @property
     def align_v(self):
@@ -125,48 +133,44 @@ class TextViewFactory(WidgetFactory):
     @align_v.setter
     def align_v(self, newvalue):
         """Set vertical align."""
-        return self.__widget.set_valign(newvalue)
-
-    # @property
-    # def ident_h(self):
-    #     """Get vertical align."""
-    #     return self.__widget.get_xalign()
-
-    # @ident_h.setter
-    # def ident_h(self, newvalue):
-    #     """Set vertical align."""
-    #     return self.__widget.set_xalign(float(newvalue))
+        self.__widget.set_valign(newvalue)
 
     @property
-    def justify(self):
-        return self.__widget.get_justify()
+    def editable(self):
+        """Get if text is editable."""
+        return self.__widget.get_editable()
 
-    @justify.setter
-    def justify(self, newvalue):
-        self.__widget.set_justify(newvalue)
-
-    # @property
-    # def width_in_chars(self):
-    #     return self.__widget.get_width_chars()
-
-    # @width_in_chars.setter
-    # def width_in_chars(self, newvalue):
-    #     self.__widget.set_width_chars(newvalue)
-
-    # @property
-    # def max_width_in_chars(self):
-    #     return self.__widget.get_max_width_chars()
-
-    # @max_width_in_chars.setter
-    # def max_width_in_chars(self, newvalue):
-    #     self.__widget.set_max_width_chars(newvalue)
+    @editable.setter
+    def editable(self, newvalue):
+        """Set if text is editable."""
+        self.__widget.set_editable(newvalue)
 
     @property
-    def line_wrap(self):
+    def cursor(self):
+        """Get if cursor is visible."""
+        return self.__widget.get_cursor_visible()
+
+    @cursor.setter
+    def cursor(self, newvalue):
+        """Set if cursor is visible."""
+        self.__widget.set_cursor_visible(newvalue)
+
+    @property
+    def overwrite(self):
+        """Get if text is overwritable."""
+        return self.__widget.get_overwrite()
+
+    @overwrite.setter
+    def overwrite(self, newvalue):
+        """Set text is overwritable."""
+        self.__widget.set_overwrite(newvalue)
+
+    @property
+    def wrap_mode(self):
         return self.__widget.get_wrap_mode()
 
-    @line_wrap.setter
-    def line_wrap(self, newvalue):
+    @wrap_mode.setter
+    def wrap_mode(self, newvalue):
         wrap_dict = {
             "none": Gtk.WrapMode(0),
             "char": Gtk.WrapMode(1),
@@ -177,6 +181,59 @@ class TextViewFactory(WidgetFactory):
             raise NotImplementedError("Wrap mode not supported")
 
         self.__widget.set_wrap_mode(wrap_dict[newvalue])
+
+    @property
+    def overwrite(self):
+        """Get if text is overwritable."""
+        return self.__widget.get_overwrite()
+
+    @overwrite.setter
+    def overwrite(self, newvalue):
+        """Set text is overwritable."""
+        return self.__widget.set_overwrite(newvalue)
+
+    @property
+    def ident_h(self):
+        """Get line identation."""
+        return self.__widget.get_indent()
+
+    @ident_h.setter
+    def ident_h(self, newvalue):
+        """Set line identation."""
+        return self.__widget.set_indent(newvalue)
+
+    @property
+    def justify(self):
+        return self.__widget.get_justification()
+
+    @justify.setter
+    def justify(self, newvalue):
+        justify_dict = {
+            "left": Gtk.Justification(0),
+            "right": Gtk.Justification(1),
+            "center": Gtk.Justification(2),
+            "fill": Gtk.Justification(3),
+        }
+        if newvalue not in justify_dict:
+            raise NotImplementedError("Wrap mode not supported")
+
+        self.__widget.set_justification(justify_dict[newvalue])
+
+    @property
+    def max_width(self):
+        return self.__widget.props.width_request
+
+    @max_width.setter
+    def max_width(self, newvalue):
+        self.__widget.props.width_request = newvalue
+
+    @property
+    def accept_tabs(self):
+        return self.__widget.get_accepts_tab()
+
+    @accept_tabs.setter
+    def accept_tabs(self, newvalue):
+        self.__widget.set_accepts_tab(newvalue)
 
     def add_class(self, css_class):
         """Add CSS class."""
@@ -237,14 +294,18 @@ class Dummy(TextViewFactory):
 
 
 class QuickSettingDescription(TextViewFactory):
-    textview = "quick_setting_description"
+    textview = "default"
 
     def __init__(self, text):
         super().__init__(text)
-        self.align_h = Gtk.Align.START
-        self.expand_h = True
-        self.align_v = Gtk.Align.FILL
-        self.line_wrap = "word"
+        self.align_h = Gtk.Align.FILL
+        self.align_v = Gtk.Align.START
+        self.editable = False
+        self.cursor = False
+        self.overwrite = False
+        self.accept_tabs = False
         self.show = True
-        self.add_class("quick-settings-description")
-        self.add_class("default-text-color")
+        self.wrap_mode = "word"
+        self.max_width = 320
+        self.justify = "fill"
+        self.add_class("default-text-view")

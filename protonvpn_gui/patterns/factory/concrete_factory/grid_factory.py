@@ -296,7 +296,7 @@ class TroubleshootContainer(GridFactory):
 
     def __init__(self):
         super().__init__()
-        self.row_spacing = 20
+        self.row_spacing = 10
         self.align_h = Gtk.Align.FILL
         self.show = True
 

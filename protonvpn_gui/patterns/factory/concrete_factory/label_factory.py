@@ -140,11 +140,11 @@ class LabelFactory(WidgetFactory):
         self.__widget.set_line_wrap(newvalue)
 
     @property
-    def char_wrap_mode(self):
+    def wrap_mode(self):
         return self.__widget.get_line_wrap_mode()
 
-    @char_wrap_mode.setter
-    def char_wrap_mode(self, newvalue):
+    @wrap_mode.setter
+    def wrap_mode(self, newvalue):
         if not self.line_wrap:
             self.line_wrap = True
         return self.__widget.set_line_wrap_mode(newvalue)
@@ -227,7 +227,7 @@ class TroubleshootDescription(LabelFactory):
         # WORD
         # CHAR
         # WORD_CHAR
-        self.char_wrap_mode = Pango.WrapMode.WORD
+        self.wrap_mode = Pango.WrapMode.WORD
 
 
 class TroubleshootTitle(LabelFactory):
@@ -236,14 +236,10 @@ class TroubleshootTitle(LabelFactory):
 
     def __init__(self, label_text):
         super().__init__(label_text)
-        # self.align_h = Gtk.Align.CENTER
-        # self.justify = Gtk.Justification.CENTER
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
         self.ident_h = 0
-        # self.width_in_chars = 10
-        # self.max_width_in_chars = 10
         self.add_class("bold")
         self.add_class("default-text-color")
 
@@ -284,7 +280,7 @@ class PremiumFeaturesPopoverDescription(LabelFactory):
         # Word
         # Char
         # WordChar
-        self.char_wrap_mode = Pango.WrapMode.WORD_CHAR
+        self.wrap_mode = Pango.WrapMode.WORD_CHAR
 
 
 class PremiumFeaturesPopoverChip(LabelFactory):
@@ -318,7 +314,7 @@ class StreamingDescription(LabelFactory):
         # Word
         # Char
         # WordChar
-        self.char_wrap_mode = Pango.WrapMode.WORD_CHAR
+        self.wrap_mode = Pango.WrapMode.WORD_CHAR
 
 
 class StreamingTitle(LabelFactory):
