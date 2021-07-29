@@ -12,7 +12,7 @@ from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
                          UI_DIR_PATH, protonvpn_logo)
 from ..enums import IndicatorActionEnum
 from ..patterns.factory import WidgetFactory
-from .dialog import LoginKillSwitchDialog
+from .dialog import LoginKillSwitchDialog, TroubleshootDialog
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
@@ -247,6 +247,8 @@ class LoginView(Gtk.ApplicationWindow):
             self.top_banner_revealer_grid_context.add_class("banner-error")
             self.top_banner_revealer.set_reveal_child(True)
             self.overlay_box.set_property("visible", False)
+            if state.display_troubleshoot_dialog:
+                TroubleshootDialog(self.application)
         elif state == LoginState.SUCCESS:
             self.dashboard_window().present()
             self.on_close_window(None, None, True)
