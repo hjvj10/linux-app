@@ -188,29 +188,23 @@ class ServerRowRightGrid:
         if server_under_maintenance:
             return
 
-        if not server.has_to_upgrade:
-            self.connect_server_button.connect(
-                "clicked", self.connect_to_server,
-                server.name
-            )
-            return
-
-        self.connect_server_button.label = "UPGRADE"
-        self.city_label = WidgetFactory.label(
-            "city", "Upgrade"
-        )
         self.connect_server_button.connect(
-            "clicked", self.display_upgrade
+            "clicked", self.connect_to_server,
+            server.name, server.has_to_upgrade
         )
 
-    def connect_to_server(self, gtk_button_object, servername):
-        self.dv.remove_background_glib(
-            GLibEventSourceEnum.ON_MONITOR_VPN
-        )
-        self.dv.dashboard_view_model.on_servername_connect(servername)
+        if server.has_to_upgrade:
+            self.connect_server_button.label = "UPGRADE"
+            self.city_label.content = "Upgrade"
 
-    def display_upgrade(self, gtk_button_object):
-        ConnectUpgradeDialog(self.dv.application)
+    def connect_to_server(self, gtk_button_object, servername, user_has_to_upgrade):
+        if user_has_to_upgrade:
+            ConnectUpgradeDialog(self.dv.application)
+        else:
+            self.dv.remove_background_glib(
+                GLibEventSourceEnum.ON_MONITOR_VPN
+            )
+            self.dv.dashboard_view_model.on_servername_connect(servername)
 
     def on_server_enter(self, gtk_widget, event_crossing):
         """Show connect button on enter country row."""
