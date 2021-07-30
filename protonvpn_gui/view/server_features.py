@@ -257,17 +257,17 @@ class CountryStreamingWidget:
     """
     def __init__(self, application, country, parent_widget=False):
         self.country = country
+        self.application = application
 
         if parent_widget:
             self.__view = parent_widget
             return
 
-        self.__view = ServerFeaturesView(application)
-        self.__view.title = "Streaming"
-        self.__view.attach(self.generate_widget(country).widget)
-        self.__view.display()
-
     def generate_widget(self):
+        supported_services = self.__add_supported_services()
+        if not supported_services:
+            return
+
         _widget = WidgetFactory.grid("default")
         feature_logo = WidgetFactory.image("premium_popover_streaming")
         title = WidgetFactory.label("premium_features_popover_title")
@@ -277,7 +277,6 @@ class CountryStreamingWidget:
         description.content = "Connect to a Plus server in this country to start streaming." \
             "\n\nNote: Use a new browser tab and/or clear the cache to ensure new content appears."
 
-        supported_services = self.__add_supported_services()
         _widget.attach(feature_logo.widget)
         _widget.attach_right_next_to(
             title.widget, feature_logo.widget
@@ -293,6 +292,17 @@ class CountryStreamingWidget:
             description.widget, supported_services.widget
         )
         return _widget
+
+    def display(self, *_):
+        self.__view = ServerFeaturesView(self.application)
+        self.__view.title = "Streaming"
+        _w = self.generate_widget()
+
+        if not _w:
+            return
+
+        self.__view.attach(_w.widget)
+        self.__view.display()
 
     def __add_supported_services(self):
         streaming_services = protonvpn.get_session().streaming

@@ -178,6 +178,16 @@ class Default(ButtonFactory):
         super().__init__()
 
 
+class ServerRowStreamingFeature(ButtonFactory):
+    button = "server_row_streaming_feature"
+
+    def __init__(self):
+        super().__init__()
+        self.expand_h = False
+        self.show = True
+        self.add_class("no-default")
+
+
 class HeaderInfo(ButtonFactory):
     button = "header_info"
 
