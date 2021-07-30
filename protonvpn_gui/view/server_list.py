@@ -38,8 +38,8 @@ class ServerListView():
     def _populate_async(self, server_list, callback):
         self.__server_list = server_list
         process = BackgroundProcess.factory("gtask")
-        process.setup(callback=callback)
-        process.start(self.__populate)
+        process.setup(target=self.__populate, callback=callback)
+        process.start()
 
     def __populate(self, *_):
         server_list_widget = self.__generate_widget_list().widget

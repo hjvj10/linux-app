@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.1.0
-%define release 7
+%define version 1.1.1
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -61,6 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Thu Jul 30 2021 Proton Technologies AG <opensource@proton.me> 1.1.1-1
+- Hotfix: Fix Gio.Task.run_in_thread issue
+
 * Thu Jul 01 2021 Proton Technologies AG <opensource@proton.me> 1.1.0-7
 - Enhancement: Improve GUI responsiveness; prevent the GUI from resizing on X axis
 
