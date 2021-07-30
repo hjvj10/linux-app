@@ -21,14 +21,14 @@ class ServerFeaturesView(Gtk.ApplicationWindow):
 
     def __init__(self, application):
         super().__init__(application=application)
-        self.provider = Gtk.CssProvider()
-        self.provider.load_from_path(
+        _provider = Gtk.CssProvider()
+        _provider.load_from_path(
             os.path.join(CSS_DIR_PATH, "server_features.css")
         )
         screen = Gdk.Screen.get_default()
         Gtk.StyleContext.add_provider_for_screen(
             screen,
-            self.provider,
+            _provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
         self.set_position(Gtk.PositionType.BOTTOM)
@@ -40,6 +40,9 @@ class ServerFeaturesView(Gtk.ApplicationWindow):
     @property
     def title(self):
         return self.get_title()
+
+    def attach(self, widget, column=0, row=0, width=1, height=1):
+        self.server_features_container_grid.attach(widget, column, row, width, height)
 
     @title.setter
     def title(self, newvalue):
@@ -58,12 +61,12 @@ class ServerFeaturesView(Gtk.ApplicationWindow):
 
 class PremiumCountries():
     def __init__(self, application):
-        self.__widget = ServerFeaturesView(application)
-        self.__widget.title = "Features"
-        self.__widget_list = []
+        self.__view = ServerFeaturesView(application)
+        self.__view.title = "Features"
+        self.__view_list = []
         self.__create_widgets()
         self.__attach_widgets()
-        self.__widget.display()
+        self.__view.display()
 
     def __create_widgets(self):
         self.__create_p2p_widget()
@@ -73,10 +76,8 @@ class PremiumCountries():
 
     def __attach_widgets(self):
         counter = 0
-        for wiget in self.__widget_list:
-            self.__widget.server_features_container_grid.attach(
-                wiget.widget, 0, counter, 1, 1
-            )
+        for wiget in self.__view_list:
+            self.__view.attach(wiget.widget, row=counter)
             counter += 1
 
     def __create_smart_routing_widget(self):
@@ -108,7 +109,7 @@ class PremiumCountries():
         self.smart_routing.attach_bottom_next_to(
             view_more_link.widget, description.widget, width=2
         )
-        self.__widget_list.append(self.smart_routing)
+        self.__view_list.append(self.smart_routing)
 
     def __create_streaming_widget(self):
         self.streaming = WidgetFactory.grid("default")
@@ -139,7 +140,7 @@ class PremiumCountries():
         self.streaming.attach_bottom_next_to(
             view_more_link.widget, description.widget, width=2
         )
-        self.__widget_list.append(self.streaming)
+        self.__view_list.append(self.streaming)
 
     def __create_p2p_widget(self):
         self.peer2peer = WidgetFactory.grid("default")
@@ -170,7 +171,7 @@ class PremiumCountries():
         self.peer2peer.attach_bottom_next_to(
             view_more_link.widget, description.widget, width=2
         )
-        self.__widget_list.append(self.peer2peer)
+        self.__view_list.append(self.peer2peer)
 
     def __create_tor_widget(self):
         self.tor = WidgetFactory.grid("default")
@@ -201,63 +202,105 @@ class PremiumCountries():
         self.tor.attach_bottom_next_to(
             view_more_link.widget, description.widget, width=2
         )
-        self.__widget_list.append(self.tor)
+        self.__view_list.append(self.tor)
 
 
 class PlusFeatures:
-    def __init__(self, application, country):
-        self.__widget = ServerFeaturesView(application)
-        self.__widget.title = "Features"
-        self.__widget_list = []
-        self.__create_widgets(country)
-        self.__attach_widgets()
-        self.__widget.display()
+    """Plus Features class.
 
-    def __create_widgets(self, country):
-        self.__create_streaming_widget(country)
+    This class should be used when there is need to display multiple features
+    for a given country.
+
+    It stores an internal list with widgets that will be added and displayed to the user
+    (in the order that they are appended to the list inside __generate_widgets(). To add more
+    features to a given country ensure that your class has a public generate_widget() method
+    in which it return an object generated from the widget factory.
+    """
+    def __init__(self, application, country):
+        self.__view = ServerFeaturesView(application)
+        self.__view.title = "Features"
+        self.__view_list = []
+        self.__generate_widgets(application, country)
+        self.__attach_widgets()
+        self.__view.display()
+
+    def __generate_widgets(self, application, country):
+        """Genrates widget and append to internal list.
+
+        Args:
+            application (Gtk.Application): application object
+            country (CountryItem): country object
+        """
+        self.__view_list.append(
+            CountryStreamingWidget(application, country, True).generate_widget()
+        )
 
     def __attach_widgets(self):
+        """Attach widgets to view."""
         counter = 0
-        for wiget in self.__widget_list:
-            self.__widget.server_features_container_grid.attach(
-                wiget.widget, 0, counter, 1, 1
-            )
+        for _widget in self.__view_list:
+            self.__view.attach(_widget.widget, row=counter)
             counter += 1
 
-    def __create_streaming_widget(self, country):
-        self.streaming = WidgetFactory.grid("default")
+
+class CountryStreamingWidget:
+    """Country Streaming widget.
+
+    This widget displays streamig information in relation to the
+    provided country. If this widget belongs in a list of features (is part
+    of PlusFeatures) then parent_widget variable contains the widget
+    created in the parent class, thus it should only instatiate the class and set the internal
+    country and widget variables so that the parent can call generate_widget() whenever needed.
+
+    Otherwise, it behaves as if only streaming information about the specified country
+    is to be displayed.
+    """
+    def __init__(self, application, country, parent_widget=False):
+        self.country = country
+
+        if parent_widget:
+            self.__view = parent_widget
+            return
+
+        self.__view = ServerFeaturesView(application)
+        self.__view.title = "Streaming"
+        self.__view.attach(self.generate_widget(country).widget)
+        self.__view.display()
+
+    def generate_widget(self):
+        _widget = WidgetFactory.grid("default")
         feature_logo = WidgetFactory.image("premium_popover_streaming")
         title = WidgetFactory.label("premium_features_popover_title")
         description = WidgetFactory.label("streaming_description")
 
-        title.content = "Streaming - {}".format(country.country_name)
+        title.content = "Streaming - {}".format(self.country.country_name)
         description.content = "Connect to a Plus server in this country to start streaming." \
             "\n\nNote: Use a new browser tab and/or clear the cache to ensure new content appears."
 
-        supported_services = self.__add_supported_services(country)
-        self.streaming.attach(feature_logo.widget)
-        self.streaming.attach_right_next_to(
+        supported_services = self.__add_supported_services()
+        _widget.attach(feature_logo.widget)
+        _widget.attach_right_next_to(
             title.widget, feature_logo.widget
         )
-        self.streaming.attach_bottom_next_to(
+        _widget.attach_bottom_next_to(
             description.widget, title.widget
         )
-        self.streaming.attach_bottom_next_to(
+        _widget.attach_bottom_next_to(
             supported_services.widget, description.widget
         )
         description = WidgetFactory.label("streaming_description", "and more")
-        self.streaming.attach_bottom_next_to(
+        _widget.attach_bottom_next_to(
             description.widget, supported_services.widget
         )
-        self.__widget_list.append(self.streaming)
+        return _widget
 
-    def __add_supported_services(self, country):
+    def __add_supported_services(self):
         streaming_services = protonvpn.get_session().streaming
         streaming_icons = protonvpn.get_session().streaming_icons
         client_config = protonvpn.get_session().clientconfig
 
         try:
-            services = streaming_services[country.entry_country_code]
+            services = streaming_services[self.country.entry_country_code]
         except KeyError:
             return
 
@@ -268,19 +311,9 @@ class PlusFeatures:
         max_items_per_row = 3
         for service in services:
             if client_config.features.streaming_logos and streaming_icons[service.get("Icon")]:
-                # dummy_img = WidgetFactory.image("dummy")
-                # dummy_img.add_class("margin-y-20px")
-                # pixbuf = dummy_img.create_pixbuf_custom_path(
-                #     streaming_icons[service.get("Icon")],
-                #     width=105, height=105
-                # )
-                # dummy_img.set_from_pixbuf(pixbuf)
-                # dummy_img.show = True
-                # service_widget = dummy_img
                 service_widget = WidgetFactory.image(
                     "streaming_service_icon", streaming_icons[service.get("Icon")]
                 )
-
             else:
                 service_widget = WidgetFactory.label(
                     "streaming_title", service["Name"]
@@ -288,7 +321,7 @@ class PlusFeatures:
 
             services_grid.attach(service_widget.widget, x_pos, y_pos)
 
-            if x_pos == max_items_per_row - 1:
+            if x_pos == (max_items_per_row - 1):
                 y_pos += 1
                 x_pos = 0
             else:
