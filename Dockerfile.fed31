@@ -46,6 +46,7 @@ RUN dnf install -y \
     python3-requests \
     python3-pyOpenSSL \
     python3-bcrypt \
+    python3-systemd \
     python3-gnupg \
     && python3 -m pip install --upgrade sentry-sdk==0.10.2 \
     && useradd -ms /bin/bash user \
