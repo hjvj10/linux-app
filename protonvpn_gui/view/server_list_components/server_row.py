@@ -8,14 +8,15 @@ from .server_load import ServerLoad
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
+from ..server_features import CountryStreamingWidget
 
 
 class ServerRow:
-    def __init__(self, dasbhoard_view, server, display_sc):
+    def __init__(self, dasbhoard_view, country, server, display_sc):
         self.dv = dasbhoard_view
         self.grid = WidgetFactory.grid("server_row")
         self.grid.add_class("server-row")
-        self.left_child = ServerRowLeftGrid(server, display_sc)
+        self.left_child = ServerRowLeftGrid(self.dv, country, server, display_sc)
         self.right_child = ServerRowRightGrid(self.dv, server)
         self.grid.attach(self.left_child.grid.widget)
         self.grid.attach_right_next_to(
@@ -42,9 +43,11 @@ class ServerRow:
 
 
 class ServerRowLeftGrid:
-    def __init__(self, server, display_sc):
-        self.feature_icon_list = []
+    def __init__(self, dv, country, server, display_sc):
+        self.dv = dv
         self.server = server
+        self.country = country
+        self.feature_icon_list = []
         self.display_sc = display_sc
         self.grid = WidgetFactory.grid("left_child_in_server_row")
         self.populate_left_grid()
@@ -132,6 +135,16 @@ class ServerRowLeftGrid:
                 continue
             pixbuf_feature_icon.tooltip = True
             pixbuf_feature_icon.tooltip_text = feature_to_img_dict[feature][1]
+
+            if feature == FeatureEnum.STREAMING:
+                _button = WidgetFactory.button("server_row_streaming_feature")
+                _w = CountryStreamingWidget(self.dv.application, self.country)
+                _button.custom_content(pixbuf_feature_icon.widget)
+                _button.connect(
+                    "clicked", _w.display
+                )
+                pixbuf_feature_icon = _button
+
             self.attach_feature_icon(pixbuf_feature_icon.widget)
 
     def attach_feature_icon(self, pixbuf_feature_icon):
@@ -175,29 +188,23 @@ class ServerRowRightGrid:
         if server_under_maintenance:
             return
 
-        if not server.has_to_upgrade:
-            self.connect_server_button.connect(
-                "clicked", self.connect_to_server,
-                server.name
-            )
-            return
-
-        self.connect_server_button.label = "UPGRADE"
-        self.city_label = WidgetFactory.label(
-            "city", "Upgrade"
-        )
         self.connect_server_button.connect(
-            "clicked", self.display_upgrade
+            "clicked", self.connect_to_server,
+            server.name, server.has_to_upgrade
         )
 
-    def connect_to_server(self, gtk_button_object, servername):
-        self.dv.remove_background_glib(
-            GLibEventSourceEnum.ON_MONITOR_VPN
-        )
-        self.dv.dashboard_view_model.on_servername_connect(servername)
+        if server.has_to_upgrade:
+            self.connect_server_button.label = "UPGRADE"
+            self.city_label.content = "Upgrade"
 
-    def display_upgrade(self, gtk_button_object):
-        ConnectUpgradeDialog(self.dv.application)
+    def connect_to_server(self, gtk_button_object, servername, user_has_to_upgrade):
+        if user_has_to_upgrade:
+            ConnectUpgradeDialog(self.dv.application)
+        else:
+            self.dv.remove_background_glib(
+                GLibEventSourceEnum.ON_MONITOR_VPN
+            )
+            self.dv.dashboard_view_model.on_servername_connect(servername)
 
     def on_server_enter(self, gtk_widget, event_crossing):
         """Show connect button on enter country row."""

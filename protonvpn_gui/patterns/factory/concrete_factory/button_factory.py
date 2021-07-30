@@ -164,22 +164,28 @@ class ButtonFactory(AbstractButtonFactory):
     def connect(self, *args, **kwargs):
         self.__widget.connect(*args, **kwargs)
 
+    def remove_content(self, widget):
+        self.__widget.remove(widget)
+
     def custom_content(self, widget):
         self.__widget.add(widget)
 
 
-class Dummy(ButtonFactory):
-    button = "dummy"
-
-    def __init__(self):
-        super().__init__()
-
-
 class Default(ButtonFactory):
-    button = "gtk_default"
+    button = "default"
 
     def __init__(self):
         super().__init__()
+
+
+class ServerRowStreamingFeature(ButtonFactory):
+    button = "server_row_streaming_feature"
+
+    def __init__(self):
+        super().__init__()
+        self.expand_h = False
+        self.show = True
+        self.add_class("no-default")
 
 
 class HeaderInfo(ButtonFactory):

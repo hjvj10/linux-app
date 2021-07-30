@@ -26,7 +26,12 @@ class ServerListRevealer:
             row_counter += 1 + (1 if add_header else 0)
 
             self.revealer_child_grid.attach(
-                ServerRow(self.dv, server, display_sc).event_box,
+                ServerRow(
+                    self.dv,
+                    country_item,
+                    server,
+                    display_sc
+                ).event_box,
                 row=row_counter
             )
 
