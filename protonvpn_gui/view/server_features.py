@@ -1,5 +1,4 @@
 import os
-from abc import abstractmethod
 from protonvpn_nm_lib.api import protonvpn
 import gi
 
@@ -39,24 +38,23 @@ class ServerFeaturesView(Gtk.ApplicationWindow):
 
     @property
     def title(self):
+        """Get window title"""
         return self.get_title()
 
     def attach(self, widget, column=0, row=0, width=1, height=1):
+        """Shortcut method to add widgets to the grid.
+
+        Instead of always manually having to use:
+        self.server_features_container_grid.attach(widget, 0, 0, 0, 0),
+        this method tries to simplify the attaching process, by setting default
+        values to most non-used params.
+        """
         self.server_features_container_grid.attach(widget, column, row, width, height)
 
     @title.setter
     def title(self, newvalue):
+        """Set window title"""
         return self.set_title(newvalue)
-
-    @abstractmethod
-    def __create_widgets():
-        """Private method that creates widgets"""
-        pass
-
-    @abstractmethod
-    def __attach_widgets():
-        """Private method that attaches widgets to main container grid"""
-        pass
 
 
 class PremiumCountries():
@@ -225,7 +223,7 @@ class PlusFeatures:
         self.__view.display()
 
     def __generate_widgets(self, application, country):
-        """Genrates widget and append to internal list.
+        """Genrate widgets for the various features and appends to internal list.
 
         Args:
             application (Gtk.Application): application object
@@ -264,7 +262,12 @@ class CountryStreamingWidget:
             return
 
     def generate_widget(self):
-        supported_services = self.__add_supported_services()
+        """Generates a widget if any the country has support for streaming services.
+
+        Returns:
+            WidgetFactory.grid or None
+        """
+        supported_services = self.__get_supported_services()
         if not supported_services:
             return
 
@@ -294,6 +297,13 @@ class CountryStreamingWidget:
         return _widget
 
     def display(self, *_):
+        """Display features.
+
+        The widget has to be generated right before being displayed because creating one
+        window per server can make the system to run out of memory, so this behaves as a lazy load,
+        meaning that the window/object will be created on demand, and destroyed when closed.
+        This way it will only need the resources when needed.
+        """
         self.__view = ServerFeaturesView(self.application)
         self.__view.title = "Streaming"
         _w = self.generate_widget()
@@ -304,7 +314,12 @@ class CountryStreamingWidget:
         self.__view.attach(_w.widget)
         self.__view.display()
 
-    def __add_supported_services(self):
+    def __get_supported_services(self):
+        """Get supported streaming services for the specific country.
+
+        Returns:
+            WidgetFactory.grid or None
+        """
         streaming_services = protonvpn.get_session().streaming
         streaming_icons = protonvpn.get_session().streaming_icons
         client_config = protonvpn.get_session().clientconfig
