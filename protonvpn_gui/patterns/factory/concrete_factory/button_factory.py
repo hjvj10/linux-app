@@ -164,19 +164,15 @@ class ButtonFactory(AbstractButtonFactory):
     def connect(self, *args, **kwargs):
         self.__widget.connect(*args, **kwargs)
 
+    def remove_content(self, widget):
+        self.__widget.remove(widget)
+
     def custom_content(self, widget):
         self.__widget.add(widget)
 
 
-class Dummy(ButtonFactory):
-    button = "dummy"
-
-    def __init__(self):
-        super().__init__()
-
-
 class Default(ButtonFactory):
-    button = "gtk_default"
+    button = "default"
 
     def __init__(self):
         super().__init__()

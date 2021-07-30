@@ -32,11 +32,11 @@ class Header:
         self.__button.connect("leave-notify-event", self.__remove_hover)
 
     def __add_hover(self, *_):
-        self.__button.widget.remove(self.__info_icon.widget)
+        self.__button.remove_content(self.__info_icon.widget)
         self.__button.custom_content(self.__info_icon_hovered.widget)
 
     def __remove_hover(self, *_):
-        self.__button.widget.remove(self.__info_icon_hovered.widget)
+        self.__button.remove_content(self.__info_icon_hovered.widget)
         self.__button.custom_content(self.__info_icon.widget)
 
     @property
