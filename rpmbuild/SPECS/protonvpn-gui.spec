@@ -61,11 +61,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Mon Jul 26 2021 Proton Technologies AG <opensource@proton.me> 1.2.0-1
+* Fri Jul 30 2021 Proton Technologies AG <opensource@proton.me> 1.2.0-1
 - Fix: Logs should be using UTC time
 - Fix: Display window icons (minimize, maximize and close)
 - Fix: Unable to update server list after 15min (crash report would appear on certain distros)
-* Thu Jul 30 2021 Proton Technologies AG <opensource@proton.me> 1.1.1-1
+
+* Fri Jul 30 2021 Proton Technologies AG <opensource@proton.me> 1.1.1-1
 - Hotfix: Fix Gio.Task.run_in_thread issue
 
 * Thu Jul 01 2021 Proton Technologies AG <opensource@proton.me> 1.1.0-7
