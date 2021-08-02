@@ -4,7 +4,13 @@ protonvpn-gui (1.2.0-1) unstable; urgency=medium
   * Fix: Display window icons (minimize, maximize and close)
   * Fix: Unable to update server list after 15min (crash report would appear on certain distros)
   
- -- Proton Technologies AG <opensource@proton.me>  Mon, 26 Jul 2021 08:12:00 +0100
+ -- Proton Technologies AG <opensource@proton.me>  Fri, 30 Jul 2021 08:12:00 +0100
+
+protonvpn-gui (1.1.1-1) unstable; urgency=medium
+
+  * Hotfix: Fix Gio.Task.run_in_thread issue
+  
+ -- Proton Technologies AG <opensource@proton.me>  Fri, 30 Jul 2021 19:45:00 +0100
 
 protonvpn-gui (1.1.0-7) unstable; urgency=medium
 

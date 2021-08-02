@@ -6,6 +6,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gio, GObject
 from ...utils import SubclassesMixin
 from abc import abstractmethod
+import subprocess
+from protonvpn_nm_lib.core.subprocess_wrapper import subprocess as _subprocess
 
 
 class BackgroundProcess(SubclassesMixin):
@@ -13,8 +15,14 @@ class BackgroundProcess(SubclassesMixin):
 
     @classmethod
     def factory(cls, threading_backend=None):
+        try:
+            _version = _subprocess.run(["gio", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8')
+        except ValueError:
+            _version = subprocess.run(["gio", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8')
+
+        _version = str(_version).strip("\n")
         subclasses_dict = cls._get_subclasses_dict("threading_backend")
-        if threading_backend is None:
+        if threading_backend is None or _version < "2.63.2":
             return subclasses_dict["python"]()
 
         return subclasses_dict[threading_backend]()
@@ -30,6 +38,20 @@ class BackgroundProcess(SubclassesMixin):
         pass
 
 
+class CustomThread(threading.Thread):
+    """Custom native python thread with callback."""
+    def __init__(self, callback=None, *args, **kwargs):
+        target = kwargs.pop("target")
+        super(CustomThread, self).__init__(target=self.target_with_callback, *args, **kwargs)
+        self.callback = callback
+        self.method = target
+
+    def target_with_callback(self):
+        self.method()
+        if self.callback is not None:
+            self.callback()
+
+
 class PythonThreading(BackgroundProcess):
     threading_backend = "python"
 
@@ -37,9 +59,9 @@ class PythonThreading(BackgroundProcess):
         self.process = None
         self.set_task_data = None
 
-    def setup(self, target, *args, **kwargs):
-        self.process = threading.Thread(
-            target=target, args=args, kwargs=kwargs
+    def setup(self, target, cancellable=None, callback=None, callback_data=None, *args, **kwargs):
+        self.process = CustomThread(
+            target=target, callback=callback, args=args, kwargs=kwargs
         )
         self.process.daemon = True
 
