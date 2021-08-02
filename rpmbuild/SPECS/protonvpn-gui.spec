@@ -23,7 +23,7 @@ BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-Requires: python3-protonvpn-nm-lib >= 3.3.0, python3-protonvpn-nm-lib < 3.4.0
+Requires: python3-protonvpn-nm-lib >= 3.3.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
