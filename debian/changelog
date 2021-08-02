@@ -1,4 +1,4 @@
-protonvpn-gui (1.2.0-1) unstable; urgency=medium
+protonvpn-gui (1.2.0-2) unstable; urgency=medium
 
   * Fix: Logs should be using UTC time
   * Fix: Display window icons (minimize, maximize and close)
