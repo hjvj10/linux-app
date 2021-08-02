@@ -46,8 +46,8 @@ class CustomThread(threading.Thread):
         self.callback = callback
         self.method = target
 
-    def target_with_callback(self):
-        self.method()
+    def target_with_callback(self, *args, **kwargs):
+        self.method(*args, **kwargs)
         if self.callback is not None:
             self.callback()
 
@@ -59,13 +59,13 @@ class PythonThreading(BackgroundProcess):
         self.process = None
         self.set_task_data = None
 
-    def setup(self, target, cancellable=None, callback=None, callback_data=None, *args, **kwargs):
+    def setup(self, target, cancellable=None, callback=None, callback_data=None, *args, **kwargs): # noqa
         self.process = CustomThread(
             target=target, callback=callback, args=args, kwargs=kwargs
         )
         self.process.daemon = True
 
-    def start(self, *args):
+    def start(self):
         self.process.start()
 
 
@@ -89,18 +89,10 @@ class GTaskThreading(BackgroundProcess, GObject.GObject):
 
         self.__task_data = newvalue
 
-    def setup(self, target=None, cancellable=None, callback=None, callback_data=None):
+    def setup(self, target, cancellable=None, callback=None, callback_data=None, *args, **kwargs): # noqa
         self.process = Gio.Task.new(self, cancellable, callback, callback_data)
+        self.process.set_task_data(self.__task_data)
         self.__func_to_run_in_thread = target
 
-    def start(self, func_to_run_in_thread=None):
-        if not func_to_run_in_thread and not self.__func_to_run_in_thread:
-            raise Exception("Threaded function has not been passed")
-
-        self.process.set_task_data(self.__task_data)
-
-        to_run_in_thread = self.__func_to_run_in_thread
-        if func_to_run_in_thread:
-            to_run_in_thread = func_to_run_in_thread
-
-        self.process.run_in_thread(to_run_in_thread)
+    def start(self):
+        self.process.run_in_thread(self.__func_to_run_in_thread)

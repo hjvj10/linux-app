@@ -189,11 +189,15 @@ class ProtonVPNGUI(Gtk.Application):
         )
         process = BackgroundProcess.factory()
         process.setup(
-            self._async_get_logs, dialog
+            self._async_get_logs,
+            None,
+            None,
+            None,
+            dialog,
         )
         process.start()
 
-    def _async_get_logs(self, dialog):
+    def _async_get_logs(self, dialog, _=None):
         bug_report = protonvpn.get_bug_report()
 
         try:
