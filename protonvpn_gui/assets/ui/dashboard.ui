@@ -387,6 +387,9 @@
                             <property name="can-focus">False</property>
                           </object>
                         </child>
+                        <style>
+                          <class name="no-default"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -408,6 +411,9 @@
                             <property name="can-focus">False</property>
                           </object>
                         </child>
+                        <style>
+                          <class name="no-default"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -428,6 +434,9 @@
                             <property name="can-focus">False</property>
                           </object>
                         </child>
+                        <style>
+                          <class name="no-default"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">True</property>

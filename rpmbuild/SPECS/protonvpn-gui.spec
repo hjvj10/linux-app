@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.2.0
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
