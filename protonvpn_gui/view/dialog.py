@@ -325,7 +325,7 @@ class TroubleshootDialog:
         description = WidgetFactory.textview("default", description)
         description.insert_link_at_end(
             learn_more,
-            "http://protonmail.com/blog/anti-censorship-alternative-routing",
+            "https://protonmail.com/blog/anti-censorship-alternative-routing",
             self._open_url
         )
 
@@ -380,7 +380,7 @@ class TroubleshootDialog:
         _description = "Check "
         _end = " for our system status."
         description = WidgetFactory.textview("default", _description)
-        description.insert_link_at_end("Proton Status", "http://protonstatus.com", self._open_url)
+        description.insert_link_at_end("Proton Status", "https://protonstatus.com", self._open_url)
         description.inset_text_at_end(_end)
 
         self.__generate_widget(title, description)
