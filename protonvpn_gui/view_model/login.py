@@ -16,7 +16,7 @@ class LoginState(Enum):
 @dataclass
 class LoginError:
     message: str
-    display_troubleshoot_dialog: bool = True
+    display_troubleshoot_dialog: bool = False
 
 
 class LoginViewModel:
@@ -38,44 +38,47 @@ class LoginViewModel:
 
     def __login(self, *_):
         result = None
+        connection_error = False
+        display_troubleshoot_dialog = False
+
         try:
             protonvpn.login(self.__username, self.__password)
             result = LoginState.SUCCESS
         except exceptions.InsecureConnection as e:
             logger.exception(e)
-            result = LoginError(
-                "Your connection is not secure. "
+            connection_error = "Your connection is not secure. " \
                 "Please change network and attempt a new connection.",
-            )
+            display_troubleshoot_dialog = True
         except exceptions.APITimeoutError as e:
             logger.exception(e)
-            result = LoginError(
-                "Connection to API timed out.",
-            )
+            connection_error = "Connection to API timed out.",
+            display_troubleshoot_dialog = True
+        except exceptions.NetworkConnectionError as e:
+            logger.exception(e)
+            connection_error = "Network Error"
+            display_troubleshoot_dialog = True
         except exceptions.APIError as e:
             logger.exception(e)
-            result = LoginError(
-                "Error in reaching API.",
-            )
+            connection_error = "Error in reaching API.",
+            display_troubleshoot_dialog = True
         except exceptions.UnknownAPIError as e:
             logger.exception(e)
-            result = LoginError(
-                "Unknown API error.",
-            )
+            connection_error = "Unknown API error.",
         except (
             exceptions.API8002Error, exceptions.API5002Error,
             exceptions.API5003Error
         ) as e:
             logger.exception(e)
-            result = LoginError(
-                str(e),
-                False
-            )
+            connection_error = str(e)
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
+            connection_error = "Unknown error occured. If the issue persists, " \
+                "please contact support.",
+
+        if connection_error:
             result = LoginError(
-                "Unknown error occured. If the issue persists, please contact support.",
-                False
+                connection_error,
+                display_troubleshoot_dialog
             )
 
         self.state.on_next(result)
