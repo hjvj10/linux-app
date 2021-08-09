@@ -21,7 +21,7 @@ setup(
     author_email="contact@protonvpn.com",
     long_description=long_description,
     install_requires=[
-        "protonvpn-nm-lib~=3.3", "psutil"
+        "protonvpn-nm-lib~=3.4", "psutil"
     ],
     include_package_data=True,
     license="GPLv3",
