@@ -26,6 +26,7 @@ class Loading:
 @dataclass
 class ConnectError:
     message: str
+    display_troubleshoot_dialog: bool
 
 
 @dataclass
@@ -349,6 +350,7 @@ class DashboardViewModel:
             GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, ConnectPreparingInfo()
         )
         setup_connection_error = False
+        display_troubleshoot_dialog = False
         try:
             if reconnect:
                 server = protonvpn.setup_reconnect()
@@ -363,44 +365,18 @@ class DashboardViewModel:
                 "\nServer cache is missing. " \
                 "Please ensure that you have internet connection to " \
                 "cache servers."
+            display_troubleshoot_dialog = True
         except exceptions.ServernameServerNotFound as e:
             logger.exception(e)
             setup_connection_error = \
                 "\nNo server could be found with the provided servername.\n" \
-                "Either the server is under maintenance or\nyou " \
-                "don't have access to it with your plan."
-        except exceptions.FeatureServerNotFound as e:
-            logger.exception(e)
-            setup_connection_error = \
-                "\nNo servers were found with the provided feature.\n" \
-                "Either the servers with the provided feature are " \
-                "under maintenance or\nyou don't have access to the " \
-                "specified feature with your plan."
-        except exceptions.FastestServerInCountryNotFound as e:
-            logger.exception(e)
-            setup_connection_error = \
-                "\nNo server could be found with the provided country.\n" \
-                "Either the provided country is not available or\n" \
-                "you don't have access to the specified country " \
-                "with your plan."
-        except (
-            exceptions.RandomServerNotFound, exceptions.FastestServerNotFound
-        ) as e:
-            logger.exception(e)
-            setup_connection_error = \
-                "\nNo server could be found.\n" \
-                "Please ensure that you have an active internet connection.\n" \
-                "If the issue persists, please contact support."
+                "Possibly the server went under maintenance"
         except exceptions.DefaultOVPNPortsNotFoundError as e:
             logger.exception(e)
             setup_connection_error = \
                 "\nThere are missing configurations. " \
                 "Please ensure that you have internet connection."
-        except exceptions.IllegalServername as e:
-            logger.exception(e)
-            setup_connection_error = \
-                "\nProvided servername is invalid. Please ensure that you've " \
-                "correctly typed the servername."
+            display_troubleshoot_dialog = True
         except exceptions.DisableConnectivityCheckError as e:
             logger.exception(e)
             setup_connection_error = \
@@ -410,16 +386,46 @@ class DashboardViewModel:
                 "command into terminal:\nbusctl set-property org.freedesktop.NetworkManager " \
                 "/org/freedesktop/NetworkManager org.freedesktop.NetworkManager " \
                 "ConnectivityCheckEnabled 'b' 0"
+        except exceptions.InsecureConnection as e:
+            logger.exception(e)
+            setup_connection_error = "Your connection is not secure. " \
+                "Please change network and attempt a new connection.",
+            display_troubleshoot_dialog = True
+        except exceptions.APITimeoutError as e:
+            logger.exception(e)
+            setup_connection_error = "Connection to API timed out."
+            display_troubleshoot_dialog = True
+        except exceptions.APIError as e:
+            logger.exception(e)
+            setup_connection_error = "Error in reaching API."
+            display_troubleshoot_dialog = True
+        except exceptions.NetworkConnectionError as e:
+            logger.exception(e)
+            setup_connection_error = "Network Error"
+            display_troubleshoot_dialog = True
+        except exceptions.UnknownAPIError as e:
+            logger.exception(e)
+            setup_connection_error = "Unknown API error.",
+            display_troubleshoot_dialog = True
+        except (
+            exceptions.API8002Error, exceptions.API5002Error,
+            exceptions.API5003Error
+        ) as e:
+            logger.exception(e)
+            setup_connection_error = str(e)
+            display_troubleshoot_dialog = True
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
             setup_connection_error = \
                 "\nAn unknown error has occured. Please ensure that you have " \
                 "internet connectivity." \
                 "\nIf the issue persists, please contact support."
+            display_troubleshoot_dialog = True
 
         if setup_connection_error:
             result = ConnectError(
-                setup_connection_error
+                setup_connection_error,
+                display_troubleshoot_dialog
             )
             self.main_context.invoke_full(
                 GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result

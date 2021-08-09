@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.2.0
-%define release 2
+%define version 1.3.0
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -23,7 +23,7 @@ BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-Requires: python3-protonvpn-nm-lib >= 3.3.0
+Requires: python3-protonvpn-nm-lib >= 3.4.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
@@ -61,7 +61,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Fri Jul 30 2021 Proton Technologies AG <opensource@proton.me> 1.2.0-1
+* Mon Aug 09 2021 Proton Technologies AG <opensource@proton.me> 1.3.0-1
+- Feature: Add troubleshooting dialog, including support for alternative routing
+
+* Mon Jul 26 2021 Proton Technologies AG <opensource@proton.me> 1.2.0-1
 - Fix: Logs should be using UTC time
 - Fix: Display window icons (minimize, maximize and close)
 - Fix: Unable to update server list after 15min (crash report would appear on certain distros)

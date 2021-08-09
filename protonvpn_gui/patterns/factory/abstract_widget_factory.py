@@ -13,6 +13,13 @@ class WidgetFactory(SubclassesMixin, metaclass=ABCMeta):
                 return subclass.factory(widget)
 
     @classmethod
+    def switch(cls, widget):
+        subclasses = cls._get_subclasses_with("concrete_factory")
+        for subclass in subclasses:
+            if "switchfactory" == subclass.__name__.lower():
+                return subclass.factory(widget)
+
+    @classmethod
     def grid(cls, widget):
         subclasses = cls._get_subclasses_with("concrete_factory")
         for subclass in subclasses:

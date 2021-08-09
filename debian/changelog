@@ -1,4 +1,10 @@
-protonvpn-gui (1.2.0-2) unstable; urgency=medium
+protonvpn-gui (1.3.0-1) unstable; urgency=medium
+
+  * Feature: Add troubleshooting dialog, including support for alternative routing
+  
+ -- Proton Technologies AG <opensource@proton.me>  Mon, 09 Aug 2021 15:30:00 +0100
+
+protonvpn-gui (1.2.0-1) unstable; urgency=medium
 
   * Fix: Logs should be using UTC time
   * Fix: Display window icons (minimize, maximize and close)

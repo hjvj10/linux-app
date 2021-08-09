@@ -4,7 +4,7 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, Gio
 
 from ..constants import CSS_DIR_PATH, UI_DIR_PATH, protonvpn_logo
 from ..patterns.factory import WidgetFactory
@@ -289,3 +289,165 @@ class DisplayMessageDialog:
 
         if desc:
             self.dialog_view.content_label.content = desc
+
+
+class TroubleshootDialog:
+    """Display troubleshoot dialog."""
+    def __init__(self, application, callback_func=None):
+        self.dialog_view = DialogView(application)
+        self.dialog_view.headerbar_label.set_text("Troubleshooting")
+        self.dialog_view.content_label.show = False
+        self.dialog_view.buttons_visible = False
+        self.__row_counter = 0
+
+        self.additional_context = WidgetFactory.grid("troubleshoot_container")
+        self.__alt_routing_widget()
+        self.__no_connection_widget()
+        self.__isp_problem_widget()
+        self.__gov_block_widget()
+        self.__antivirus_widget()
+        self.__proxy_firewall_widget()
+        self.__proton_is_down_widget()
+        self.__no_solution_widget()
+        self.dialog_view.add_extra_content(self.additional_context.widget)
+
+        self.dialog_view.display_dialog()
+
+    def __alt_routing_widget(self):
+        title = "Allow Alternative Routing"
+        description = "In case Proton sites are blocked, " \
+            "this setting allows the app to try alternative network " \
+            "routing to reach Proton, which can be useful for bypassing " \
+            "firewalls or network issues. We recommend keeping this "\
+            "setting on for greater reliability. "
+        learn_more = "Learn more"
+
+        description = WidgetFactory.textview("default", description)
+        description.insert_link_at_end(
+            learn_more,
+            "https://protonmail.com/blog/anti-censorship-alternative-routing",
+            self._open_url
+        )
+
+        self.__generate_widget(title, description, True)
+
+    def __no_connection_widget(self):
+        title = "No internet connection"
+        _description = "Please make sure that your internet connection " \
+            "is working."
+        description = WidgetFactory.textview("default", _description)
+
+        self.__generate_widget(title, description)
+
+    def __isp_problem_widget(self):
+        title = "Internet Service Provider (ISP) problem"
+        _description = "Try connecting to Proton from a different network " \
+            "(or use "
+        _end = ")."
+        description = WidgetFactory.textview("default", _description)
+        description.insert_link_at_end("Tor", "https://www.torproject.org", self._open_url)
+        description.inset_text_at_end(_end)
+        self.__generate_widget(title, description)
+
+    def __gov_block_widget(self):
+        title = "Government block"
+        _description = "Your country may be blocking access to Proton. " \
+            "Try using "
+        _end = " to access Proton."
+        description = WidgetFactory.textview("default", _description)
+        description.insert_link_at_end("Tor", "https://www.torproject.org", self._open_url)
+        description.inset_text_at_end(_end)
+
+        self.__generate_widget(title, description)
+
+    def __antivirus_widget(self):
+        title = "Antivirus interference"
+        _description = "Temporarly disable or remove your antivirus software."
+        description = WidgetFactory.textview("default", _description)
+
+        self.__generate_widget(title, description)
+
+    def __proxy_firewall_widget(self):
+        title = "Proxy/Firewall interference"
+        _description = "Disable any proxies or firewalls, or contact your " \
+            "your network administrator."
+        description = WidgetFactory.textview("default", _description)
+
+        self.__generate_widget(title, description)
+
+    def __proton_is_down_widget(self):
+        title = "Proton is down"
+        _description = "Check "
+        _end = " for our system status."
+        description = WidgetFactory.textview("default", _description)
+        description.insert_link_at_end("Proton Status", "https://protonstatus.com", self._open_url)
+        description.inset_text_at_end(_end)
+
+        self.__generate_widget(title, description)
+
+    def __no_solution_widget(self):
+        title = "Still can't find a solution"
+        _description = "Contact us directly through our "
+        _middle = ", "
+        _end = " or "
+        description = WidgetFactory.textview("default", _description)
+        description.insert_link_at_end(
+            "support form", "https://protonvpn.com/support-form", self._open_url
+        )
+        description.inset_text_at_end(_middle)
+        description.insert_link_at_end(
+            "email (support@protonmail.com)", "mailto:support@protonvpn.com", self._open_url
+        )
+        description.inset_text_at_end(_end)
+        description.insert_link_at_end("Twitter.", "https://twitter.com/ProtonVPN", self._open_url)
+
+        self.__generate_widget(title, description)
+
+    def __generate_widget(self, _title, description, add_switch=False):
+        """Generate widget.
+
+        Args:
+            _title (string): row title
+            description (TextViewFactory): (Gtk.TextView)
+        """
+        _grid = WidgetFactory.grid("default")
+        title = WidgetFactory.label("troubleshoot_title", _title)
+
+        # Attach content to individual grid
+        _grid.attach(title.widget)
+        _grid.attach_bottom_next_to(description.widget, title.widget)
+
+        if add_switch:
+            from protonvpn_nm_lib.api import protonvpn
+            from protonvpn_nm_lib.enums import UserSettingStatusEnum
+
+            _grid.column_spacing = 40
+            alt_routing_switch = WidgetFactory.switch("troubleshoot_dialog")
+            if protonvpn.get_settings().alternative_routing == UserSettingStatusEnum.ENABLED:
+                alt_routing_switch.widget.set_active(True)
+            else:
+                alt_routing_switch.widget.set_active(False)
+
+            alt_routing_switch.widget.connect("notify::active", self.__update_alternative_routing)
+            _grid.attach_right_next_to(alt_routing_switch.widget, title.widget, height=2)
+
+        # Attach to main grid
+        if not self.__row_counter:
+            self.additional_context.attach(_grid.widget)
+            self.__row_counter += 1
+            return
+
+        self.additional_context.attach(_grid.widget, row=self.__row_counter)
+        self.__row_counter += 1
+
+    def __update_alternative_routing(self, switch, state):
+        from protonvpn_nm_lib.api import protonvpn
+        from protonvpn_nm_lib.enums import UserSettingStatusEnum
+        if state not in [1, 0]:
+            return
+
+        protonvpn.get_settings().alternative_routing = UserSettingStatusEnum(switch.get_state())
+
+    def _open_url(self, tag, textview, gdk_event, textiter, url):
+        if gdk_event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
+            _ = Gio.AppInfo.launch_default_for_uri(url)

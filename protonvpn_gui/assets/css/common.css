@@ -64,6 +64,14 @@ entry:focus{
   border-bottom: 1px solid @green-color;
 }
 
+textview.default-text-view {
+	background: transparent;
+}
+textview.default-text-view text{
+	background: transparent;
+  color: rgb(255, 255, 255)
+}
+
 /* LABELS */
 label{
   text-shadow: none;
@@ -83,6 +91,9 @@ label.warning-color{
 }
 label.dark-text-color{
   color: rgb(156, 160, 170)
+}
+label.bold{
+  font-weight: bold;
 }
 
 /* BUTTONS */

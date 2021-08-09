@@ -125,7 +125,7 @@ class PremiumCountries():
         view_more_link.label = "Learn more"
         view_more_link.url = "https://protonvpn.com/support/streaming-guide/"
 
-        self.streaming.attach(feature_logo.widget,)
+        self.streaming.attach(feature_logo.widget)
         self.streaming.attach_right_next_to(
             title.widget, feature_logo.widget
         )
