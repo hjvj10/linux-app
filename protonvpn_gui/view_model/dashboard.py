@@ -399,6 +399,10 @@ class DashboardViewModel:
             logger.exception(e)
             setup_connection_error = "Error in reaching API."
             display_troubleshoot_dialog = True
+        except exceptions.NetworkConnectionError as e:
+            logger.exception(e)
+            setup_connection_error = "Network Error"
+            display_troubleshoot_dialog = True
         except exceptions.UnknownAPIError as e:
             logger.exception(e)
             setup_connection_error = "Unknown API error.",
