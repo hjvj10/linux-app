@@ -3,8 +3,9 @@ import os
 import gi
 
 gi.require_version('Gtk', '3.0')
+gi.require_version('WebKit2', '4.0')
 
-from gi.repository import Gtk, Gdk, Gio
+from gi.repository import Gtk, Gdk, Gio, WebKit2 as Webkit
 
 from ..constants import CSS_DIR_PATH, UI_DIR_PATH, protonvpn_logo
 from ..patterns.factory import WidgetFactory
@@ -114,6 +115,10 @@ class DialogView(Gtk.ApplicationWindow):
             self.__bottom_grid.widget, self.__content_grid.widget,
             Gtk.PositionType.BOTTOM, 1, 1
         )
+
+    def add_class(self, css_style):
+        style_context = self.dialog_container_grid.get_style_context()
+        style_context.add_class(css_style)
 
     @property
     def buttons_visible(self):
@@ -290,6 +295,29 @@ class DisplayMessageDialog:
 
         if desc:
             self.dialog_view.content_label.content = desc
+
+
+class WebView:
+    """Display message dialog
+
+    This dialog can be used whenever a message should be displayed to the user.
+    """
+    def __init__(self, application, callback_func=None, title=None, description=None):
+        self.__dialog_view = DialogView(application)
+        self.__dialog_view.headerbar_label.set_text(title if title else "ProtonVPN Captcha")
+        self.__dialog_view.content_label.show = False
+        self.__dialog_view.buttons_visible = False
+        self.__webview = Webkit.WebView()
+        self.__webview.set_property("expand", True)
+        self.__webview.set_property("height-request", 500)
+        self.__webview.set_property("width-request", 500)
+        self.__dialog_view.add_extra_content(self.__webview)
+        self.__dialog_view.add_class("no-margin")
+
+    def display(self, url):
+        self.__webview.set_property("visible", True)
+        self.__webview.load_uri(url)
+        self.__dialog_view.display_dialog()
 
 
 class TroubleshootDialog:

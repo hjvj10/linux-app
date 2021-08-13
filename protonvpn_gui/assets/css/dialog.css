@@ -8,6 +8,10 @@
     margin: 20px 30px;
 }
 
+#dialog_container_grid.no-margin > grid.grid-spacing{
+    margin: 0px;
+}
+
 #dialog_container_grid grid.grid-button-bg-color{
     background-color: rgba(18, 22, 31, 0.3);
 }
