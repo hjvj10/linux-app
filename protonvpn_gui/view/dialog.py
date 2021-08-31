@@ -11,6 +11,7 @@ from ..patterns.factory import WidgetFactory
 from ..constants import APP_VERSION
 from protonvpn_nm_lib.constants import APP_VERSION as lib_version
 from proton.constants import VERSION as api_version
+from ..logger import logger
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dialog.ui"))
@@ -294,13 +295,13 @@ class DisplayMessageDialog:
 class TroubleshootDialog:
     """Display troubleshoot dialog."""
     def __init__(self, application, callback_func=None):
-        self.dialog_view = DialogView(application)
-        self.dialog_view.headerbar_label.set_text("Troubleshooting")
-        self.dialog_view.content_label.show = False
-        self.dialog_view.buttons_visible = False
+        self.__dialog_view = DialogView(application)
+        self.__dialog_view.headerbar_label.set_text("Troubleshooting")
+        self.__dialog_view.content_label.show = False
+        self.__dialog_view.buttons_visible = False
         self.__row_counter = 0
 
-        self.additional_context = WidgetFactory.grid("troubleshoot_container")
+        self.__additional_context = WidgetFactory.grid("troubleshoot_container")
         self.__alt_routing_widget()
         self.__no_connection_widget()
         self.__isp_problem_widget()
@@ -309,9 +310,9 @@ class TroubleshootDialog:
         self.__proxy_firewall_widget()
         self.__proton_is_down_widget()
         self.__no_solution_widget()
-        self.dialog_view.add_extra_content(self.additional_context.widget)
+        self.__dialog_view.add_extra_content(self.__additional_context.widget)
 
-        self.dialog_view.display_dialog()
+        self.__dialog_view.display_dialog()
 
     def __alt_routing_widget(self):
         title = "Allow Alternative Routing"
@@ -433,20 +434,23 @@ class TroubleshootDialog:
 
         # Attach to main grid
         if not self.__row_counter:
-            self.additional_context.attach(_grid.widget)
+            self.__additional_context.attach(_grid.widget)
             self.__row_counter += 1
             return
 
-        self.additional_context.attach(_grid.widget, row=self.__row_counter)
+        self.__additional_context.attach(_grid.widget, row=self.__row_counter)
         self.__row_counter += 1
 
     def __update_alternative_routing(self, switch, state):
         from protonvpn_nm_lib.api import protonvpn
         from protonvpn_nm_lib.enums import UserSettingStatusEnum
-        if state not in [1, 0]:
-            return
 
-        protonvpn.get_settings().alternative_routing = UserSettingStatusEnum(switch.get_state())
+        try:
+            protonvpn.get_settings().alternative_routing = UserSettingStatusEnum(
+                int(switch.get_state())
+            )
+        except Exception as e:
+            logger.exception(e)
 
     def _open_url(self, tag, textview, gdk_event, textiter, url):
         if gdk_event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
