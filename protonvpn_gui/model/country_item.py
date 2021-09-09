@@ -35,7 +35,7 @@ class CountryItem:
     it here. Also, this property, after being set, shall be used to
     sort countries in alphabetical order.
     """
-    def __init__(self):
+    def __init__(self, server_filter, user_tier):
         self.__entry_country_code: str = None
         self.__status: ServerStatusEnum = None
         self.__tiers: list = list()
@@ -49,6 +49,8 @@ class CountryItem:
         self.__num_basic_countries: int = None
         self.__num_plus_countries: int = None
         self.__num_internal_countries: int = None
+        self.__server_filter = server_filter
+        self._user_tier = user_tier
 
     def __len__(self):
         return len(self.__servers)
@@ -142,7 +144,7 @@ class CountryItem:
         return self.__num_internal_countries
 
     def create(
-        self, user_tier, servername_list
+        self, servername_list
     ):
         status_collection = set()
         tier_collection = set()
@@ -150,10 +152,10 @@ class CountryItem:
         country_host_collection = list()
 
         for servername in servername_list:
-            logical_server = protonvpn.get_session().servers.filter(
+            logical_server = self.__server_filter(
                 lambda server: server.name.lower() == servername.lower()
             )[0]
-            server_item = ServerItem(logical_server)
+            server_item = ServerItem(logical_server, self._user_tier)
             self.__servers.append(server_item)
             self.__add_feature_to_collection(
                 feature_collection, server_item.features
@@ -176,10 +178,10 @@ class CountryItem:
         self.__can_connect = True\
             if (
                 (
-                    user_tier == ServerTierEnum.FREE
+                    self._user_tier == ServerTierEnum.FREE
                     and ServerTierEnum.FREE in self.__tiers
                 ) or (
-                    user_tier.value > ServerTierEnum.FREE.value
+                    self._user_tier.value > ServerTierEnum.FREE.value
                 )
 
             ) else False

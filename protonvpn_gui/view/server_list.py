@@ -100,6 +100,15 @@ class ServerListView():
             yield country_item
 
     def filter_server_list(self, user_input):
+        """Filter server list based on user input.
+
+        Args:
+            user_input (string): what to search for
+
+        It either hides or shows the grid/row for a specific country.
+
+        06/2021: Search is only possible for country names
+        """
         filtered_country_widgets = [
             country_row
             for country_name, country_row
@@ -107,6 +116,7 @@ class ServerListView():
             if user_input.lower() in country_name.lower()
         ]
 
+        # When searching for a specific country, the headers should be hidden
         self.__show_headers(False)
         if len(user_input) < 1:
             self.__show_headers(True)

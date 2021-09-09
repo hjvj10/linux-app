@@ -245,17 +245,19 @@ class CountryStreamingWidget:
     """Country Streaming widget.
 
     This widget displays streamig information in relation to the
-    provided country. If this widget belongs in a list of features (is part
-    of PlusFeatures) then parent_widget variable contains the widget
-    created in the parent class, thus it should only instatiate the class and set the internal
-    country and widget variables so that the parent can call generate_widget() whenever needed.
-
-    Otherwise, it behaves as if only streaming information about the specified country
-    is to be displayed.
+    provided country. If this widget belongs in a list of features (as in the case of
+    of PlusFeatures) then the parent_widget is the parent class widget. If so,
+    then only the the country needs to be set, as the parent will call
+    generate_widget() whenever needed.
+    Otherwise, if there is no parent class/widget, it behaves as an independent widget
+    that displays streaming information for a specific country.
     """
     def __init__(self, application, country, parent_widget=False):
         self.country = country
         self.application = application
+        self.__streaming_services = protonvpn.get_session().streaming
+        self.__streaming_icons = protonvpn.get_session().streaming_icons
+        self.__client_config = protonvpn.get_session().clientconfig
 
         if parent_widget:
             self.__view = parent_widget
@@ -320,12 +322,9 @@ class CountryStreamingWidget:
         Returns:
             WidgetFactory.grid or None
         """
-        streaming_services = protonvpn.get_session().streaming
-        streaming_icons = protonvpn.get_session().streaming_icons
-        client_config = protonvpn.get_session().clientconfig
 
         try:
-            services = streaming_services[self.country.entry_country_code]
+            services = self.__streaming_services[self.country.entry_country_code]
         except KeyError:
             return
 
@@ -335,9 +334,9 @@ class CountryStreamingWidget:
         y_pos = 0
         max_items_per_row = 3
         for service in services:
-            if client_config.features.streaming_logos and streaming_icons[service.get("Icon")]:
+            if self.__client_config.features.streaming_logos and self.__streaming_icons[service.get("Icon")]: # noqa
                 service_widget = WidgetFactory.image(
-                    "streaming_service_icon", streaming_icons[service.get("Icon")]
+                    "streaming_service_icon", self.__streaming_icons[service.get("Icon")]
                 )
             else:
                 service_widget = WidgetFactory.label(

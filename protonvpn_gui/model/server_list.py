@@ -117,16 +117,15 @@ class ServerList:
         self.__unfiltered_server_list = []
         self.__user_tier = user_tier
         server_list = protonvpn.get_session().servers
+        server_filter = protonvpn.get_session().servers.filter
         country_code_with_matching_servers = self\
             .__get_country_code_with_matching_servers(server_list)
 
         for country_code, servername_list in country_code_with_matching_servers.items(): # noqa
-            country_item = self.country_item()
+            country_item = self.country_item(server_filter, self.__user_tier)
             country_item.entry_country_code = country_code
 
-            country_item.create(
-                self.__user_tier, servername_list
-            )
+            country_item.create(servername_list)
 
             self.__unfiltered_server_list.append(country_item)
 
