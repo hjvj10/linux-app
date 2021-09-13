@@ -73,6 +73,12 @@ class NotConnectedToVPNInfo:
 @dataclass
 class ServerListData:
     server_list: list
+    display_secure_core: bool
+
+
+@dataclass
+class SwitchServerList:
+    display_secure_core: bool
 
 
 @dataclass
@@ -665,19 +671,30 @@ class ServerListViewModel:
         self.server_list = server_list
         self.__updating_update_server_load = False
 
+    def on_switch_server_list_view_async(self):
+        process = BackgroundProcess.factory("gtask")
+        process.setup(self.on_switch_server_list_view_sync)
+        process.start()
+
+    def on_switch_server_list_view_sync(self, *_):
+        state = SwitchServerList(
+            display_secure_core=protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON
+        )
+        self.dashboard_vm.main_context.invoke_full(
+            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.dashboard_vm.state.on_next, state
+        )
+
     def on_load_servers_async(self, *_):
         process = BackgroundProcess.factory("gtask")
         process.setup(self.on_load_servers)
         process.start()
 
     def on_load_servers(self, *_):
-        if not self.server_list.servers:
-            self.__generate_server_list()
-
-        self.server_list.display_secure_core = \
-            protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON
-
-        state = ServerListData(self.server_list)
+        self.__generate_server_list()
+        state = ServerListData(
+            server_list=self.server_list,
+            display_secure_core=protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON
+        )
         self.dashboard_vm.main_context.invoke_full(
             GTKPriorityEnum.PRIORITY_DEFAULT.value, self.dashboard_vm.state.on_next, state
         )
@@ -755,7 +772,7 @@ class QuickSettingsViewModel:
         logger.info("Setting secure core to \"{}\"".format(secure_core_enum))
         protonvpn.get_settings().secure_core = secure_core_enum
 
-        self.dashboard_vm.server_list_view_model.on_load_servers_async()
+        self.dashboard_vm.server_list_view_model.on_switch_server_list_view_async()
 
         self.dashboard_vm.main_context.invoke_full(
             GTKPriorityEnum.PRIORITY_DEFAULT.value,
