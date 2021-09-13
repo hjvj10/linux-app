@@ -388,7 +388,8 @@ class DashboardViewModel:
                 result = ConnectError(
                     self._conn_reason_msg[
                         connect_response[ConnectionStartStatusEnum.REASON]
-                    ]
+                    ],
+                    display_troubleshoot_dialog
                 )
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)

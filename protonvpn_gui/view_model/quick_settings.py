@@ -2,6 +2,7 @@ from ..patterns.factory import BackgroundProcess
 from protonvpn_nm_lib.api import protonvpn
 from ..enums import GTKPriorityEnum
 from ..logger import logger
+from protonvpn_nm_lib.enums import ConnectionMetadataEnum, SecureCoreStatusEnum, ConnectionTypeEnum
 
 
 class QuickSettingsViewModel:
@@ -49,14 +50,13 @@ class QuickSettingsViewModel:
 
         server = None
         if secure_core_enum == SecureCoreStatusEnum.ON:
-            self.dashboard_vm.server_list_view_model.server_list.display_secure_core = True
             servers_list = list(map(
                 lambda country: list(filter(
                     lambda server:
                     server.exit_country_code.lower() == exit_country.lower(),
                     country.servers
                 )),
-                self.dashboard_vm.server_list_view_model.server_list.servers
+                self.dashboard_vm.server_list_view_model.server_list.secure_core.servers
             ))
             flattened_servers = [
                 server for sub in servers_list for server in sub
