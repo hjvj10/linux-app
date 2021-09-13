@@ -43,13 +43,17 @@ class LoginViewModel:
             logger.exception(e)
             connection_error = "Connection to API timed out."
             display_troubleshoot_dialog = True
-        except exceptions.NetworkConnectionError as e:
+        except exceptions.UnreacheableAPIError as e:
             logger.exception(e)
-            connection_error = "Network Error"
+            connection_error = "Unable to reach API"
             display_troubleshoot_dialog = True
         except exceptions.APIError as e:
             logger.exception(e)
             connection_error = "Error in reaching API."
+            display_troubleshoot_dialog = True
+        except exceptions.NetworkConnectionError as e:
+            logger.exception(e)
+            connection_error = "Network Error"
             display_troubleshoot_dialog = True
         except exceptions.UnknownAPIError as e:
             logger.exception(e)
