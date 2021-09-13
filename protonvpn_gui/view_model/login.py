@@ -6,17 +6,7 @@ from ..rx.subject.replaysubject import ReplaySubject
 from ..logger import logger
 from protonvpn_nm_lib.enums import KillswitchStatusEnum
 from ..patterns.factory import BackgroundProcess
-
-
-class LoginState(Enum):
-    IN_PROGRESS = auto()
-    SUCCESS = auto()
-
-
-@dataclass
-class LoginError:
-    message: str
-    display_troubleshoot_dialog: bool = False
+from .dataclass.login import *
 
 
 class LoginViewModel:
