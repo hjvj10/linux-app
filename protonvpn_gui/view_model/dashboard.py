@@ -92,6 +92,7 @@ class DashboardViewModel:
         self.utils = utils
         self.__main_context = None
         self.__none_vpn_ip = None
+        self.__none_vpn_isp = None
         self.__none_vpn_contry_code = None
         self.__quick_settings_vm = QuickSettingsViewModel(self)
         self.__server_list_vm = ServerListViewModel(self, server_list)
@@ -471,19 +472,21 @@ class DashboardViewModel:
         Returns:
             ConnectedToVPNInfo
         """
-        if self.__none_vpn_ip is None and self.__none_vpn_contry_code is None or force:
+        ip = self.__none_vpn_ip
+        isp = self.__none_vpn_isp
+        country_code = self.__none_vpn_contry_code
+
+        if ip is None and isp is None and country_code is None or force:
             try:
                 location = protonvpn.get_session().get_location_data()
                 ip = location.ip
                 isp = location.isp
                 country_code = location.country_code
                 self.__none_vpn_ip = ip
+                self.__none_vpn_isp = isp
                 self.__none_vpn_contry_code = country_code
             except Exception as e:
                 logger.exception(e)
-                ip = None
-                isp = None
-                country_code = None
         
         result = NotConnectedToVPNInfo(
             ip=ip,
