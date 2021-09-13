@@ -228,6 +228,7 @@ class DashboardView(Gtk.ApplicationWindow):
         the instance of this current object and the state, so that the
         UI can be updated accordingly.
         """
+        print("State: ", state)
         if isinstance(state, Loading):
             InitLoadView(self, state)
         elif isinstance(state, NotConnectedToVPNInfo):

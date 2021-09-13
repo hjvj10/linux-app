@@ -544,11 +544,21 @@ class DashboardViewModel:
         Returns:
             ConnectedToVPNInfo
         """
-        location = protonvpn.get_session().get_location_data()
+        try:
+            location = protonvpn.get_session().get_location_data()
+            ip = location.ip
+            isp = location.isp
+            country_code = location.country_code
+        except Exception as e:
+            logger.exception(e)
+            ip = None
+            isp = None
+            country_code = None
+        
         result = NotConnectedToVPNInfo(
-            ip=location.ip,
-            isp=location.isp,
-            country=location.country_code,
+            ip=ip,
+            isp=isp,
+            country=country_code,
             perma_ks_enabled=protonvpn.get_settings().killswitch == KillswitchStatusEnum.HARD
         )
 
