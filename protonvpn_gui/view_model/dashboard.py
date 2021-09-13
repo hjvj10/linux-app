@@ -91,6 +91,8 @@ class DashboardViewModel:
     def __init__(self, utils, server_list):
         self.utils = utils
         self.__main_context = None
+        self.__none_vpn_ip = None
+        self.__none_vpn_contry_code = None
         self.__quick_settings_vm = QuickSettingsViewModel(self)
         self.__server_list_vm = ServerListViewModel(self, server_list)
         self.state = ReplaySubject(buffer_size=1)
@@ -463,22 +465,25 @@ class DashboardViewModel:
 
         return result
 
-    def _get_not_connected_state(self):
+    def _get_not_connected_state(self, force=False):
         """Get not connected state.
 
         Returns:
             ConnectedToVPNInfo
         """
-        try:
-            location = protonvpn.get_session().get_location_data()
-            ip = location.ip
-            isp = location.isp
-            country_code = location.country_code
-        except Exception as e:
-            logger.exception(e)
-            ip = None
-            isp = None
-            country_code = None
+        if self.__none_vpn_ip is None and self.__none_vpn_contry_code is None or force:
+            try:
+                location = protonvpn.get_session().get_location_data()
+                ip = location.ip
+                isp = location.isp
+                country_code = location.country_code
+                self.__none_vpn_ip = ip
+                self.__none_vpn_contry_code = country_code
+            except Exception as e:
+                logger.exception(e)
+                ip = None
+                isp = None
+                country_code = None
         
         result = NotConnectedToVPNInfo(
             ip=ip,
