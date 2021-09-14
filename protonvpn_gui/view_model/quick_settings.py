@@ -2,7 +2,7 @@ from ..patterns.factory import BackgroundProcess
 from protonvpn_nm_lib.api import protonvpn
 from ..enums import GTKPriorityEnum
 from ..logger import logger
-from protonvpn_nm_lib.enums import ConnectionMetadataEnum, SecureCoreStatusEnum, ConnectionTypeEnum
+from protonvpn_nm_lib.enums import ConnectionMetadataEnum, SecureCoreStatusEnum, ConnectionTypeEnum, KillswitchStatusEnum
 
 
 class QuickSettingsViewModel:

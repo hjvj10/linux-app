@@ -569,10 +569,6 @@ class DashboardViewModel:
                     result = self._get_connected_state()
             except (exceptions.ProtonVPNException, Exception) as e:
                 logger.exception(e)
-                result = DisplayDialog(
-                    title="Unable to get Connection Data",
-                    text=str(e)
-                )
 
         self.main_context.invoke_full(
             GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
