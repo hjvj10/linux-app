@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.3.0
-%define release 6
+%define release 7
 
 Prefix: %{_prefix}
 
@@ -61,8 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Mon Aug 09 2021 Proton Technologies AG <opensource@proton.me> 1.3.0-6
+* Mon Aug 09 2021 Proton Technologies AG <opensource@proton.me> 1.3.0-7
 - Feature: Add troubleshooting dialog, including support for alternative routing
+- Imprving server list switching UX to/from Secure Core
 
 * Mon Jul 26 2021 Proton Technologies AG <opensource@proton.me> 1.2.0-1
 - Fix: Logs should be using UTC time

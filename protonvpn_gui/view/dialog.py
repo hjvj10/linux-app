@@ -371,7 +371,7 @@ class TroubleshootDialog:
     def __proxy_firewall_widget(self):
         title = "Proxy/Firewall interference"
         _description = "Disable any proxies or firewalls, or contact your " \
-            "your network administrator."
+            "network administrator."
         description = WidgetFactory.textview("default", _description)
 
         self.__generate_widget(title, description)
