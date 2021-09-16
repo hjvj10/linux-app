@@ -1,6 +1,7 @@
-protonvpn-gui (1.3.0-1) unstable; urgency=medium
+protonvpn-gui (1.3.0-7) unstable; urgency=medium
 
   * Feature: Add troubleshooting dialog, including support for alternative routing
+  * Imprving server list switching UX to/from Secure Core
   
  -- Proton Technologies AG <opensource@proton.me>  Mon, 09 Aug 2021 15:30:00 +0100
 

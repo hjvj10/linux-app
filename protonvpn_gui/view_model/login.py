@@ -6,17 +6,7 @@ from ..rx.subject.replaysubject import ReplaySubject
 from ..logger import logger
 from protonvpn_nm_lib.enums import KillswitchStatusEnum
 from ..patterns.factory import BackgroundProcess
-
-
-class LoginState(Enum):
-    IN_PROGRESS = auto()
-    SUCCESS = auto()
-
-
-@dataclass
-class LoginError:
-    message: str
-    display_troubleshoot_dialog: bool = False
+from .dataclass.login import *
 
 
 class LoginViewModel:
@@ -47,23 +37,27 @@ class LoginViewModel:
         except exceptions.InsecureConnection as e:
             logger.exception(e)
             connection_error = "Your connection is not secure. " \
-                "Please change network and attempt a new connection.",
+                "Please change network and attempt a new connection."
             display_troubleshoot_dialog = True
         except exceptions.APITimeoutError as e:
             logger.exception(e)
-            connection_error = "Connection to API timed out.",
+            connection_error = "Connection to API timed out."
+            display_troubleshoot_dialog = True
+        except exceptions.UnreacheableAPIError as e:
+            logger.exception(e)
+            connection_error = "Unable to reach API"
+            display_troubleshoot_dialog = True
+        except exceptions.APIError as e:
+            logger.exception(e)
+            connection_error = "Error in reaching API."
             display_troubleshoot_dialog = True
         except exceptions.NetworkConnectionError as e:
             logger.exception(e)
             connection_error = "Network Error"
             display_troubleshoot_dialog = True
-        except exceptions.APIError as e:
-            logger.exception(e)
-            connection_error = "Error in reaching API.",
-            display_troubleshoot_dialog = True
         except exceptions.UnknownAPIError as e:
             logger.exception(e)
-            connection_error = "Unknown API error.",
+            connection_error = "Unknown API error."
         except (
             exceptions.API8002Error, exceptions.API5002Error,
             exceptions.API5003Error
@@ -73,7 +67,7 @@ class LoginViewModel:
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
             connection_error = "Unknown error occured. If the issue persists, " \
-                "please contact support.",
+                "please contact support."
 
         if connection_error:
             result = LoginError(

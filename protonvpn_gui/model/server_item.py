@@ -28,7 +28,7 @@ class ServerItem:
         has_to_upgrade: bool
             if a user has to upgrade to access server
     """
-    def __init__(self, logical_server):
+    def __init__(self, logical_server, user_tier):
         self.__name: str = None
         self.__load: int = None
         self.__score: int = None
@@ -41,6 +41,7 @@ class ServerItem:
         self.__entry_country_code: str = None
         self.__has_to_upgrade: bool = None
         self.__host_country: str = None
+        self.__user_tier = user_tier
         self.create(logical_server)
 
     @property
@@ -105,7 +106,7 @@ class ServerItem:
         self.__host_country = logical_server.host_country
         self.__has_to_upgrade = (
             True if self.__tier.value > ServerTierEnum(
-                protonvpn.get_session().vpn_tier
+                self.__user_tier
             ).value else False
         )
 

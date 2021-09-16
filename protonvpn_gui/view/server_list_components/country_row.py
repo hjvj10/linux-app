@@ -12,7 +12,7 @@ from gi.repository import GdkPixbuf, Gtk, Gdk
 
 
 class CountryRow:
-    def __init__(self, country_item, dashboard_view, display_sc):
+    def __init__(self, country_item, dashboard_view, display_sc=None):
         self.country_item = country_item
         self.dv = dashboard_view
         self.server_list_revealer = ServerListRevealer(

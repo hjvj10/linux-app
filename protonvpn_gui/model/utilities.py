@@ -15,30 +15,6 @@ one_megabyte_in_bytes = 1024590.163934
 class Utilities:
 
     @staticmethod
-    def get_ip():
-        logger.debug("Getting IP")
-        try:
-            r = requests.get(
-                "https://api.protonvpn.ch/vpn/location", timeout=1
-            )
-            api_response = r.text
-            api_response = json.loads(api_response)
-        except (Exception, requests.exceptions.BaseHTTPError, requests.exceptions.Timeout) as e:
-            logger.exception(e)
-            api_response = {
-                "IP": None,
-                "Lat": None,
-                "Long": None,
-                "Country": None,
-                "ISP": None
-            }
-
-        logger.debug("IP fetched")
-        vpn_loc = VPNLocation.new(api_response)
-
-        return vpn_loc
-
-    @staticmethod
     def get_network_speed():
         """Get current network speed.
 
@@ -106,21 +82,3 @@ class Utilities:
             ) + " MB/s"
         else:
             return str(int(byte_per_second)) + " B/s"
-
-
-class VPNLocation:
-    IP = None
-    LATITUDE = None
-    LONGITUDE = None
-    COUNTRY_CODE = None
-    ISP = None
-
-    def new(api_response):
-        vpn_loc = VPNLocation()
-        vpn_loc.IP = api_response.get("IP")
-        vpn_loc.LATITUDE = api_response.get("Lat")
-        vpn_loc.LONGITUDE = api_response.get("Long")
-        vpn_loc.COUNTRY_CODE = api_response.get("Country")
-        vpn_loc.ISP = api_response.get("ISP")
-
-        return vpn_loc
