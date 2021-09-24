@@ -2,17 +2,17 @@ import os
 
 import gi
 
-gi.require_version('Gtk', '3.0')
-gi.require_version('WebKit2', '4.0')
+gi.require_version("Gtk", "3.0")
+gi.require_version("WebKit2", "4.0")
 
-from gi.repository import Gtk, Gdk, Gio, WebKit2 as Webkit
-
-from ..constants import CSS_DIR_PATH, UI_DIR_PATH, protonvpn_logo
-from ..patterns.factory import WidgetFactory
-from ..constants import APP_VERSION
-from protonvpn_nm_lib.constants import APP_VERSION as lib_version
+from gi.repository import Gdk, Gio, Gtk
+from gi.repository import WebKit2 as Webkit
 from proton.constants import VERSION as api_version
+from protonvpn_nm_lib.constants import APP_VERSION as lib_version
+
+from ..constants import APP_VERSION, CSS_DIR_PATH, UI_DIR_PATH, protonvpn_logo
 from ..logger import logger
+from ..patterns.factory import WidgetFactory
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dialog.ui"))
@@ -303,21 +303,60 @@ class WebView:
     This dialog can be used whenever a message should be displayed to the user.
     """
     def __init__(self, application, callback_func=None, title=None, description=None):
+        self.__callback = callback_func
         self.__dialog_view = DialogView(application)
         self.__dialog_view.headerbar_label.set_text(title if title else "ProtonVPN Captcha")
         self.__dialog_view.content_label.show = False
         self.__dialog_view.buttons_visible = False
-        self.__webview = Webkit.WebView()
-        self.__webview.set_property("expand", True)
-        self.__webview.set_property("height-request", 500)
-        self.__webview.set_property("width-request", 500)
-        self.__dialog_view.add_extra_content(self.__webview)
         self.__dialog_view.add_class("no-margin")
+        self.__default_webview_height = 100
+
+        # WebView
+        # https://lazka.github.io/pgi-docs/#WebKit2-4.0/classes/UserContentManager.html#WebKit2.UserContentManager.register_script_message_handler
+        # https://lazka.github.io/pgi-docs/index.html#WebKit2-4.0/classes/WebView.html#WebKit2.WebView.new_with_user_content_manager
+        # https://stackoverflow.com/questions/63109260/how-to-connect-javascript-and-python-using-webkit2gtk
+
+        content_manager = Webkit.UserContentManager.new()
+        content_manager.connect(
+            "script-message-received::linuxWebkitWebview",
+            self.receive_post_message
+        )
+
+        if not content_manager.register_script_message_handler("linuxWebkitWebview"):
+            logger.error("Unable to register script message handler")
+            raise Exception("Unable to register script message handler")
+
+        logger.info("registered script message handler")
+
+        self.__webview = Webkit.WebView.new_with_user_content_manager(content_manager)
+
+        self.__webview.set_property("expand", True)
+        self.__webview.set_property("height-request", self.__default_webview_height)
+        self.__webview.set_property("width-request", self.__dialog_view.get_size()[0] + 10)
+
+        # ## Can be helpfull during debugging
+        settings = self.__webview.get_settings()
+        settings.set_enable_developer_extras(True)
+        settings.set_allow_top_navigation_to_data_urls(True)
+        settings.set_enable_frame_flattening(True)
+        self.__webview.set_settings(settings)
+
+        self.__dialog_view.add_extra_content(self.__webview)
 
     def display(self, url):
         self.__webview.set_property("visible", True)
         self.__webview.load_uri(url)
         self.__dialog_view.display_dialog()
+
+    def receive_post_message(self, user_content_manager, js_result):
+        import json
+        response = json.loads(js_result.get_js_value().to_json(0))
+        if response.get("type") == "pm_height":
+            height = response.get("height", self.__default_webview_height)
+            self.__webview.set_property("height-request", height)
+        elif response.get("type") == "pm_captcha":
+            self.__callback(captcha=("captcha", response.get("token")))
+            self.__dialog_view.close_dialog()
 
 
 class TroubleshootDialog:
