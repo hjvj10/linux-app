@@ -12,7 +12,7 @@ from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
                          UI_DIR_PATH, protonvpn_logo)
 from ..enums import IndicatorActionEnum
 from ..patterns.factory import WidgetFactory
-from .dialog import LoginKillSwitchDialog, TroubleshootDialog
+from .dialog import LoginKillSwitchDialog, TroubleshootDialog, WebView
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
@@ -249,6 +249,9 @@ class LoginView(Gtk.ApplicationWindow):
             self.overlay_box.set_property("visible", False)
             if state.display_troubleshoot_dialog:
                 TroubleshootDialog(self.application)
+            elif state.display_human_verification_dialog:
+                webview = WebView(self.application, callback_func=state.callback)
+                webview.display(state.display_human_verification_dialog)
         elif state == LoginState.SUCCESS:
             self.dashboard_window().present()
             self.on_close_window(None, None, True)
