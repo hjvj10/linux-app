@@ -1,12 +1,10 @@
-from dataclasses import dataclass
-from enum import Enum, auto
 from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib import exceptions
 from ..rx.subject.replaysubject import ReplaySubject
 from ..logger import logger
 from protonvpn_nm_lib.enums import KillswitchStatusEnum
 from ..patterns.factory import BackgroundProcess
-from .dataclass.login import *
+from .dataclass.login import LoginState, LoginError
 
 
 class LoginViewModel:
@@ -16,10 +14,14 @@ class LoginViewModel:
         self.state = ReplaySubject(buffer_size=1)
         self.__username = None
         self.__password = None
+        self.__captcha = None
 
-    def login_async(self, username, password):
-        self.__username = username
-        self.__password = password
+    def login_async(self, username=None, password=None, captcha=None):
+        if username and password:
+            self.__username = username
+            self.__password = password
+
+        self.__captcha = captcha
 
         self.state.on_next(LoginState.IN_PROGRESS)
         process = BackgroundProcess.factory("gtask")
@@ -30,9 +32,11 @@ class LoginViewModel:
         result = None
         connection_error = False
         display_troubleshoot_dialog = False
+        display_human_verification_dialog = False
+        callback = None
 
         try:
-            protonvpn.login(self.__username, self.__password)
+            protonvpn.login(self.__username, self.__password, self.__captcha)
             result = LoginState.SUCCESS
         except exceptions.InsecureConnection as e:
             logger.exception(e)
@@ -64,6 +68,11 @@ class LoginViewModel:
         ) as e:
             logger.exception(e)
             connection_error = str(e)
+        except exceptions.API9001Error as e:
+            logger.exception(e)
+            connection_error = str(e)
+            display_human_verification_dialog = protonvpn.get_session().captcha_url
+            callback = self.login_async
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
             connection_error = "Unknown error occured. If the issue persists, " \
@@ -72,8 +81,12 @@ class LoginViewModel:
         if connection_error:
             result = LoginError(
                 connection_error,
-                display_troubleshoot_dialog
+                display_troubleshoot_dialog,
+                display_human_verification_dialog,
+                callback
             )
+
+        self.__captcha = None
 
         self.state.on_next(result)
 
