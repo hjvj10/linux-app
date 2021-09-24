@@ -15,6 +15,8 @@ from .dialog import WebView
 class HumanVerificationView(Gtk.ApplicationWindow):
     """
     Human Verification view. GTK Composite object.
+
+    Currently not used, but will be incorporated in future.
     """
     __gtype_name__ = "HumanVerificationView"
 
@@ -93,7 +95,6 @@ class HumanVerificationView(Gtk.ApplicationWindow):
             type_of_confirmation (string): either `sms` or `email`
         """
         # TO-DO
-        print("HEre: ", type_of_confirmation)
         pass
 
     def __setup_actions(self):
