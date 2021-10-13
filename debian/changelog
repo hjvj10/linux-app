@@ -1,4 +1,10 @@
-protonvpn-gui (1.4.0-1) unstable; urgency=medium
+protonvpn-gui (1.4.1-1) unstable; urgency=medium
+
+  * Hotfix: Add missing dependency for Webkit
+  
+ -- Proton Technologies AG <opensource@proton.me>  Wed, 14 Oct 2021 16:30:00 +0100
+ 
+ protonvpn-gui (1.4.0-1) unstable; urgency=medium
 
   * Handle human verification
   
