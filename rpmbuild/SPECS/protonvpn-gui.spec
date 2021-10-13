@@ -1,7 +1,7 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.4.0
+%define version 1.4.1
 %define release 1
 
 Prefix: %{_prefix}
@@ -27,6 +27,7 @@ Requires: python3-protonvpn-nm-lib >= 3.4.0
 Requires: python3-gobject
 Requires: python3-psutil
 Requires: gtk3
+Requires: webkit2gtk3
 Suggests: libappindicator-gtk3
 Suggests: gnome-tweaks
 Suggests: gnome-shell-extension-appindicator
@@ -61,6 +62,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Oct 14 2021 Proton Technologies AG <opensource@proton.me> 1.4.1-1
+- Hotfix: Add missing dependency for Webkit
+
 * Fri Sep 24 2021 Proton Technologies AG <opensource@proton.me> 1.4.0-1
 - Handle human verification
 
