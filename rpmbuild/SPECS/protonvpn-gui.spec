@@ -1,7 +1,7 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.4.1
+%define version 1.5.0
 %define release 1
 
 Prefix: %{_prefix}
@@ -64,6 +64,8 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Wed Oct 14 2021 Proton Technologies AG <opensource@proton.me> 1.4.1-1
 - Hotfix: Add missing dependency for Webkit
+* Thu Oct 14 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-1
+- Feature: Handle and display events
 
 * Fri Sep 24 2021 Proton Technologies AG <opensource@proton.me> 1.4.0-1
 - Handle human verification
