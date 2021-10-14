@@ -142,6 +142,7 @@ class DashboardViewModel:
         server list.
 
         This needs to be pre-loaded before displaying the dashboard."""
+        protonvpn.get_session().get_all_notifications()
         self.main_context.invoke_full(
             GTKPriorityEnum.PRIORITY_DEFAULT.value,
             self.state.on_next,

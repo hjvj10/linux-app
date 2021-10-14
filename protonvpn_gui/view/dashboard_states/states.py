@@ -2,6 +2,7 @@ from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 from ...enums import GLibEventSourceEnum
+from ...patterns.factory import WidgetFactory
 
 
 class InitLoadView:
@@ -15,6 +16,52 @@ class InitLoadView:
             "Secure Internet Anywhere"
         dv.overlay_spinner.start()
         dv.overlay_box.props.visible = True
+        self.load_events(dv)
+
+    def load_events(self, dv):
+        self.__check_if_need_to_load_black_friday(dv)
+
+    def __check_if_need_to_load_black_friday(self, dv):
+        import gi
+        gi.require_version('Gtk', '3.0')
+        from gi.repository import GLib
+
+        open_black_friday_modal = self.__open_black_friday_modal
+
+        def async_attach_icon(self, *args):
+            dv.connected_label_grid.attach(
+                bf_button.widget, 1, 0, 1, 1
+            )
+            bf_button.connect(
+                "clicked", open_black_friday_modal,
+                dv.application, bf_notification
+            )
+
+        from protonvpn_nm_lib.api import protonvpn
+        from protonvpn_nm_lib.enums import NotificationEnum
+
+        bf_notification = protonvpn.get_session()\
+            .get_notifications_by_type(NotificationEnum.BLACK_FRIDAY)
+
+        if (
+            bf_notification.notification_type != NotificationEnum.BLACK_FRIDAY.value
+        ) or bf_notification.can_be_displayed:
+            return
+
+        icon_path = list(filter(lambda x: "ic-gift.png" in x, bf_notification.icon_paths))
+        if not bool(len(icon_path)):
+            return
+
+        bf_button = WidgetFactory.button("dashboard_event_button")
+        event_icon = WidgetFactory.image("dashboard_event_icon", icon_path.pop())
+        event_icon.tooltip_text = bf_notification.pill
+        bf_button.custom_content(event_icon.widget)
+        GLib.idle_add(async_attach_icon, bf_button)
+
+    def __open_black_friday_modal(self, gtk_button, application, bf_notification):
+        from ..dialog import BlackFridayPromoDialog
+
+        BlackFridayPromoDialog(application, bf_notification)
 
 
 class UpdateNetworkSpeedView:
