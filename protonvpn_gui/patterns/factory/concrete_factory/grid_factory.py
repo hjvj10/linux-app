@@ -291,6 +291,68 @@ class Default(GridFactory):
         self.show = True
 
 
+class DashboardEventMain(GridFactory):
+    grid = "dashboard_event_main_grid"
+
+    def __init__(self):
+        super().__init__()
+        self.row_spacing = 10
+        self.align_h = Gtk.Align.FILL
+        self.show = True
+
+
+class DashboardEventTopGrid(GridFactory):
+    grid = "dashboard_event_top_grid"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.FILL
+        self.show = True
+
+
+class DashboardEventMidGrid(GridFactory):
+    grid = "dashboard_event_mid_grid"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.CENTER
+        self.expand_h = False
+        self.show = True
+
+
+class DashboardEventBottomGrid(GridFactory):
+    grid = "dashboard_event_bottom_grid"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.CENTER
+        self.show = True
+
+
+class BlackFridayFeaturesHolderGrid(GridFactory):
+    grid = "black_friday_features_holder_grid"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.CENTER
+        self.row_spacing = 12
+        self.show = True
+        self.expand_h = False
+        self.add_class("margin-top-10px")
+        self.add_class("margin-bottom-20px")
+
+
+class BlackFridayFeatureGrid(GridFactory):
+    grid = "black_friday_feature_grid"
+
+    def __init__(self):
+        super().__init__()
+        self.align_h = Gtk.Align.START
+        self.column_spacing = 10
+        self.show = True
+        self.expand_h = False
+
+
 class TroubleshootContainer(GridFactory):
     grid = "troubleshoot_container"
 
