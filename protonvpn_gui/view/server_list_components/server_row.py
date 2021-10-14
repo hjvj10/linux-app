@@ -131,7 +131,7 @@ class ServerRowLeftGrid:
 
     def set_server_features(self, dasbhoard_view, country, servername_label):
         feature_to_img_dict = {
-            FeatureEnum.TOR: ["tor_icon", "TOR Server"],
+            FeatureEnum.TOR: ["tor_icon", "Tor Server"],
             FeatureEnum.P2P: ["p2p_icon", "P2P Server"],
             FeatureEnum.STREAMING: ["streaming_icon", "Streaming"],
         }
