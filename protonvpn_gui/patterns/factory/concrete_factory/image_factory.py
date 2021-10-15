@@ -306,6 +306,12 @@ class DashboardEventIcon(ImageFactory):
         self.tooltip = True
         self.show = True
 
+    def add_event_notitication(self, newvalue=True):
+        if newvalue:
+            self.add_class("event-notification")
+        else:
+            self.remove_class("event-notification")
+
 
 class StreamingServiceIcon(ImageFactory):
     image = "streaming_service_icon"

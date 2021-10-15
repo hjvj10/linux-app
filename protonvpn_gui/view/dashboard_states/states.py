@@ -19,12 +19,14 @@ class InitLoadView:
         self.load_events(dv)
 
     def load_events(self, dv):
-        self.__check_if_need_to_load_black_friday(dv)
+        self.__check_if_black_friday_event_should_be_displayed(dv)
 
-    def __check_if_need_to_load_black_friday(self, dv):
+    def __check_if_black_friday_event_should_be_displayed(self, dv):
         import gi
         gi.require_version('Gtk', '3.0')
         from gi.repository import GLib
+        from protonvpn_nm_lib.api import protonvpn
+        from protonvpn_nm_lib.enums import NotificationEnum, NotificationStatusEnum
 
         open_black_friday_modal = self.__open_black_friday_modal
 
@@ -34,32 +36,44 @@ class InitLoadView:
             )
             bf_button.connect(
                 "clicked", open_black_friday_modal,
-                dv.application, bf_notification
+                dv.application, bf_notification,
+                protonvpn.get_settings(), NotificationStatusEnum,
+                event_icon
             )
-
-        from protonvpn_nm_lib.api import protonvpn
-        from protonvpn_nm_lib.enums import NotificationEnum
 
         bf_notification = protonvpn.get_session()\
             .get_notifications_by_type(NotificationEnum.BLACK_FRIDAY)
 
+        # Check if the notifications is of black friday type
+        # also check if it can be displayed and it can be displayed,
+        # If both are false then nothing will be displayed
         if (
             bf_notification.notification_type != NotificationEnum.BLACK_FRIDAY.value
-        ) or bf_notification.can_be_displayed:
+        ) and not bf_notification.can_be_displayed:
             return
 
         icon_path = list(filter(lambda x: "ic-gift.png" in x, bf_notification.icon_paths))
         if not bool(len(icon_path)):
             return
 
+        # Create gift widgets
         bf_button = WidgetFactory.button("dashboard_event_button")
         event_icon = WidgetFactory.image("dashboard_event_icon", icon_path.pop())
         event_icon.tooltip_text = bf_notification.pill
         bf_button.custom_content(event_icon.widget)
+
+        # check if user has already opened event, if not display red dot
+        if protonvpn.get_settings().event_notification == NotificationStatusEnum.NOT_OPENED:
+            event_icon.add_event_notitication()
+
         GLib.idle_add(async_attach_icon, bf_button)
 
-    def __open_black_friday_modal(self, gtk_button, application, bf_notification):
+    def __open_black_friday_modal(self, gtk_button, *args):
         from ..dialog import BlackFridayPromoDialog
+        application, bf_notification, protonvpn_settings, notification_enum, event_icon = args
+
+        protonvpn_settings.event_notification = notification_enum.OPENED
+        event_icon.add_event_notitication(False)
 
         BlackFridayPromoDialog(application, bf_notification)
 

@@ -651,5 +651,4 @@ class BlackFridayPromoDialog:
         return content_grid
 
     def _open_url(self, gtk_button, url):
-        print(url)
         _ = Gio.AppInfo.launch_default_for_uri(url)
