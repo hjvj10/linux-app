@@ -176,6 +176,21 @@ class Default(ButtonFactory):
 
     def __init__(self):
         super().__init__()
+        self.show = True
+
+
+class DashboardEventButton(ButtonFactory):
+    button = "dashboard_event_button"
+
+    def __init__(self):
+        super().__init__()
+        self.expand_h = True
+        self.expand_v = False
+        self.align_h = Gtk.Align.END
+        self.add_class("no-default")
+        self.add_class("margin-y-0px")
+        self.add_class("margin-x-0px")
+        self.show = True
 
 
 class ServerRowStreamingFeature(ButtonFactory):

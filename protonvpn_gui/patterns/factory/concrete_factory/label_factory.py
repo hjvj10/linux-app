@@ -29,6 +29,9 @@ class LabelFactory(WidgetFactory):
     def context(self):
         return self.__widget_context
 
+    def set_content_with_markup(self, str):
+        self.__widget.set_markup(str)
+
     @property
     def content(self):
         """Get widget label."""
@@ -204,6 +207,71 @@ class Default(LabelFactory):
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
+        self.add_class("default-text-color")
+
+
+class BlackFridayIncentive(LabelFactory):
+    """Default class."""
+    label = "black_friday_incentive"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.CENTER
+        self.align_v = Gtk.Align.CENTER
+        self.justify = Gtk.Justification.CENTER
+        self.expand_h = True
+        self.show = True
+        self.add_class("default-text-color")
+        self.line_wrap = True
+        _max_char_width = 45
+        self.width_in_chars = _max_char_width
+        self.max_width_in_chars = _max_char_width
+        # WORD
+        # CHAR
+        # WORD_CHAR
+        self.wrap_mode = Pango.WrapMode.WORD
+
+
+class BlackFridaySaveUpTo(LabelFactory):
+    """Default class."""
+    label = "black_friday_save_up_to"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.CENTER
+        self.align_v = Gtk.Align.CENTER
+        self.expand_h = True
+        self.show = True
+        self.add_class("black-friday-save-up-to")
+
+
+class BlackFridayTitle(LabelFactory):
+    """Default class."""
+    label = "black_friday_title"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.FILL
+        self.align_v = Gtk.Align.CENTER
+        self.expand_h = True
+        self.show = True
+        self.add_class("margin-bottom-10px")
+        self.add_class("default-text-color")
+
+
+class BlackFridayFooter(LabelFactory):
+    """Default class."""
+    label = "black_friday_footer"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.FILL
+        self.align_v = Gtk.Align.CENTER
+        self.expand_h = True
+        self.show = True
+        # self.add_class("default-text-color")
+        self.add_class("dark-text-color")
+        self.add_class("margin-top-10px")
 
 
 class TroubleshootDescription(LabelFactory):

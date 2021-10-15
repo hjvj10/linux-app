@@ -28,3 +28,11 @@
 #dialog_container_grid  button.transparent-white{
     margin: 0px;
 }
+
+label.black-friday-save-up-to{
+    color: rgb(255, 255, 255);
+    background-color: rgb(239, 74, 94);
+    border-radius: 15px;
+    padding: 2px 10px;
+    margin: 10px 0px 0px 0px
+}

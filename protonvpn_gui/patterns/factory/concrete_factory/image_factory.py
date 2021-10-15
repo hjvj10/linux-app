@@ -3,9 +3,9 @@ import os
 import gi
 
 from ....constants import (ICON_DIR_PATH, IMG_DIR_PATH, KILLSWITCH_ICON_SET,
-                          NETSHIELD_ICON_SET, SECURE_CORE_ICON_SET)
+                           NETSHIELD_ICON_SET, SECURE_CORE_ICON_SET)
 from ....enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
-                      DashboardSecureCoreIconEnum)
+                       DashboardSecureCoreIconEnum)
 
 gi.require_version('Gtk', '3.0')
 
@@ -163,7 +163,7 @@ class ImageFactory(WidgetFactory):
         self.__widget.set_from_pixbuf(pixbuf_widget)
 
     def create_pixbuf_custom_path(
-        self, path, width=None, height=None
+        self, path, width=None, height=None, preserve_aspect_ratio=True
     ):
         """Gets the icon pixbuff for the specified filename.
 
@@ -183,7 +183,7 @@ class ImageFactory(WidgetFactory):
                 filename=path,
                 width=width,
                 height=height,
-                preserve_aspect_ratio=True
+                preserve_aspect_ratio=preserve_aspect_ratio
             )
 
         return GdkPixbuf.Pixbuf.new_from_file(
@@ -191,7 +191,7 @@ class ImageFactory(WidgetFactory):
         )
 
     def create_icon_pixbuf_from_name(
-        self, icon_name, width=None, height=None
+        self, icon_name, width=None, height=None, preserve_aspect_ratio=True
     ):
         """Gets the icon pixbuff for the specified filename.
 
@@ -215,7 +215,7 @@ class ImageFactory(WidgetFactory):
                 ),
                 width=width,
                 height=height,
-                preserve_aspect_ratio=True
+                preserve_aspect_ratio=preserve_aspect_ratio
             )
 
         return GdkPixbuf.Pixbuf.new_from_file(
@@ -226,7 +226,7 @@ class ImageFactory(WidgetFactory):
         )
 
     def create_image_pixbuf_from_name(
-        self, image_name, width=None, height=None
+        self, image_name, width=None, height=None, preserve_aspect_ratio=True
     ):
         """Gets the icon pixbuff for the specified filename.
 
@@ -249,7 +249,7 @@ class ImageFactory(WidgetFactory):
                 ),
                 width=width,
                 height=height,
-                preserve_aspect_ratio=True
+                preserve_aspect_ratio=preserve_aspect_ratio
             )
 
         return GdkPixbuf.Pixbuf.new_from_file(
@@ -268,17 +268,62 @@ class Dummy(ImageFactory):
         super().__init__()
 
 
+class DashboardEventMainIcon(ImageFactory):
+    image = "dashboard_event_main_icon"
+
+    def __init__(self, icon_path):
+        super().__init__()
+        self.align_h = Gtk.Align.CENTER
+        self.expand_h = True
+        self.expand_v = False
+        self.add_class("margin-y-0px")
+        self.add_class("margin-x-0px")
+        self.set_from_pixbuf(
+            self.create_pixbuf_custom_path(
+                path=icon_path,
+                width=350, height=350
+            )
+        )
+        self.show = True
+
+
+class DashboardEventIcon(ImageFactory):
+    image = "dashboard_event_icon"
+
+    def __init__(self, icon_path):
+        super().__init__()
+        self.align_h = Gtk.Align.START
+        self.expand_h = False
+        self.expand_v = False
+        self.add_class("margin-y-0px")
+        self.add_class("margin-x-0px")
+        self.set_from_pixbuf(
+            self.create_pixbuf_custom_path(
+                path=icon_path,
+                width=25, height=25
+            )
+        )
+        self.tooltip = True
+        self.show = True
+
+    def add_event_notitication(self, newvalue=True):
+        if newvalue:
+            self.add_class("event-notification")
+        else:
+            self.remove_class("event-notification")
+
+
 class StreamingServiceIcon(ImageFactory):
     image = "streaming_service_icon"
 
-    def __init__(self, service_path):
+    def __init__(self, icon_path):
         super().__init__()
         self.align_v = Gtk.Align.CENTER
         self.add_class("margin-y-20px")
         self.add_class("margin-x-5px")
         self.set_from_pixbuf(
             self.create_pixbuf_custom_path(
-                path=service_path,
+                path=icon_path,
                 width=98, height=98
             )
         )

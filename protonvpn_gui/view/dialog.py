@@ -522,3 +522,133 @@ class TroubleshootDialog:
     def _open_url(self, tag, textview, gdk_event, textiter, url):
         if gdk_event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
             _ = Gio.AppInfo.launch_default_for_uri(url)
+
+
+class BlackFridayPromoDialog:
+    def __init__(self, application, bf_notification):
+        dialog_view = DialogView(application)
+        dialog_view.headerbar_label.set_text("Black Friday")
+        dialog_view.content_label.show = False
+        dialog_view.buttons_visible = False
+
+        additional_context = WidgetFactory.grid("dashboard_event_main_grid")
+        top_grid = self.__generate_top_content(bf_notification)
+        mid_grid = self.__generate_mid_content(bf_notification)
+        bottom_grid = self.__generate_bottom_content(bf_notification)
+
+        additional_context.attach(top_grid.widget)
+        additional_context.attach_bottom_next_to(mid_grid.widget, top_grid.widget)
+        additional_context.attach_bottom_next_to(bottom_grid.widget, mid_grid.widget)
+
+        dialog_view.add_extra_content(additional_context.widget)
+
+        dialog_view.display_dialog()
+
+    def __generate_top_content(self, bf_notification):
+        content_grid = WidgetFactory.grid("dashboard_event_top_grid")
+
+        _incentive = bf_notification.incentive
+        if not _incentive:
+            _incentive = "None"
+
+        incentive_text = _incentive[0:bf_notification.incentive_template_index_start - 1]
+        incentive_price = _incentive[bf_notification.incentive_template_index_start:len(_incentive)]
+
+        incentive_price = incentive_price.replace(
+            "%IncentivePrice%",
+            "<span size=\"x-large\" weight=\"bold\">{}</span>".format(
+                bf_notification.incentive_price
+            )
+        )
+        incentive = "<span size=\"medium\">{}</span>\r{}".format(incentive_text, incentive_price)
+
+        upgrade_to_label = WidgetFactory.label("black_friday_incentive")
+        upgrade_to_label.set_content_with_markup(incentive)
+
+        save_up_to_label = WidgetFactory.label("black_friday_save_up_to", bf_notification.pill)
+
+        content_grid.attach(upgrade_to_label.widget)
+        content_grid.attach_bottom_next_to(save_up_to_label.widget, upgrade_to_label.widget)
+
+        return content_grid
+
+    def __generate_mid_content(self, bf_notification):
+        import re
+        pattern = re.compile(r"[\/]{1}([a-zA-Z0-9-]+\.(png|jpeg|jpg))")
+        pattern_result = pattern.search(bf_notification.picture_url)
+
+        icon_path = \
+            self.__get_icon_path(pattern_result.group(1)) \
+            if pattern_result \
+            else None
+
+        content_grid = WidgetFactory.grid("dashboard_event_mid_grid")
+        gift_box = WidgetFactory.image("dashboard_event_main_icon", icon_path)
+        title = WidgetFactory.label("black_friday_title")
+        title.set_content_with_markup(
+            "<span font_weight=\"heavy\" size=\"large\">{}</span>".format(
+                bf_notification.title
+            )
+        )
+
+        content_grid.attach(gift_box.widget)
+        content_grid.attach_bottom_next_to(title.widget, gift_box.widget)
+
+        features_holder_grid = self.__generate_features_list(bf_notification.features, pattern)
+        content_grid.attach_bottom_next_to(features_holder_grid.widget, title.widget)
+        return content_grid
+
+    def __generate_features_list(self, bf_notification_features, pattern):
+        features_holder_grid = WidgetFactory.grid("black_friday_features_holder_grid")
+        previous_feature_grid = None
+
+        for text, icon_url in bf_notification_features:
+            feature_grid = WidgetFactory.grid("black_friday_feature_grid")
+            pattern_result = pattern.search(icon_url)
+            icon = WidgetFactory.image(
+                "dashboard_event_icon",
+                self.__get_icon_path(pattern_result.group(1))
+            ) if pattern_result else WidgetFactory.image("dummy")
+
+            label = WidgetFactory.label("default", text)
+
+            # Add icon and text to feature grid
+            feature_grid.attach(icon.widget)
+            feature_grid.attach_right_next_to(label.widget, icon.widget)
+
+            # Check if there is a previous feature grid, if yes then attach below it
+            if not previous_feature_grid:
+                features_holder_grid.attach(feature_grid.widget)
+            else:
+                features_holder_grid.attach_bottom_next_to(
+                    feature_grid.widget, previous_feature_grid.widget
+                )
+
+            previous_feature_grid = feature_grid
+
+        return features_holder_grid
+
+    def __get_icon_path(self, icon_name):
+        import os
+        from protonvpn_nm_lib.constants import PROTON_XDG_CACHE_HOME_NOTIFICATION_ICONS
+
+        return os.path.join(PROTON_XDG_CACHE_HOME_NOTIFICATION_ICONS, icon_name)
+
+    def __generate_bottom_content(self, bf_notification):
+        content_grid = WidgetFactory.grid("dashboard_event_bottom_grid")
+        button = WidgetFactory.button("dialog_main")
+        button.label = bf_notification.button_text
+        under_text = WidgetFactory.label("black_friday_footer")
+        under_text.set_content_with_markup(
+            "<span size=\"small\">{}</span>".format(bf_notification.page_footer)
+        )
+
+        button.connect("clicked", self._open_url, bf_notification.button_url)
+
+        content_grid.attach(button.widget)
+        content_grid.attach_bottom_next_to(under_text.widget, button.widget)
+
+        return content_grid
+
+    def _open_url(self, gtk_button, url):
+        _ = Gio.AppInfo.launch_default_for_uri(url)
