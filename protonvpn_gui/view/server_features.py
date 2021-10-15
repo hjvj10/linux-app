@@ -230,7 +230,12 @@ class PlusFeatures:
             country (CountryItem): country object
         """
         self.__view_list.append(
-            CountryStreamingWidget(application, country, True).generate_widget()
+            CountryStreamingWidget(
+                application,
+                country.country_name,
+                country.entry_country_code,
+                True
+            ).generate_widget()
         )
 
     def __attach_widgets(self):
@@ -252,9 +257,10 @@ class CountryStreamingWidget:
     Otherwise, if there is no parent class/widget, it behaves as an independent widget
     that displays streaming information for a specific country.
     """
-    def __init__(self, application, country, parent_widget=False):
-        self.country = country
+    def __init__(self, application, country_name, entry_country_code, parent_widget=False):
         self.application = application
+        self.country_name = country_name
+        self.entry_country_code = entry_country_code
         self.__streaming_services = protonvpn.get_session().streaming
         self.__streaming_icons = protonvpn.get_session().streaming_icons
         self.__client_config = protonvpn.get_session().clientconfig
@@ -278,7 +284,7 @@ class CountryStreamingWidget:
         title = WidgetFactory.label("premium_features_popover_title")
         description = WidgetFactory.label("streaming_description")
 
-        title.content = "Streaming - {}".format(self.country.country_name)
+        title.content = "Streaming - {}".format(self.country_name)
         description.content = "Connect to a Plus server in this country to start streaming." \
             "\n\nNote: Use a new browser tab and/or clear the cache to ensure new content appears."
 
@@ -324,7 +330,7 @@ class CountryStreamingWidget:
         """
 
         try:
-            services = self.__streaming_services[self.country.entry_country_code]
+            services = self.__streaming_services[self.entry_country_code]
         except KeyError:
             return
 

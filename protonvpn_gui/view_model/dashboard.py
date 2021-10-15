@@ -5,18 +5,17 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     ConnectionStatusEnum, ConnectionTypeEnum,
                                     FeatureEnum, KillswitchStatusEnum,
                                     NetshieldTranslationEnum,
-                                    SecureCoreStatusEnum, ServerTierEnum,
+                                    SecureCoreStatusEnum,
                                     VPNConnectionReasonEnum,
                                     VPNConnectionStateEnum)
 
 from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
-                     DashboardSecureCoreIconEnum, GTKPriorityEnum)
+                     DashboardSecureCoreIconEnum)
 from ..logger import logger
 from ..rx.subject.replaysubject import ReplaySubject
 from ..patterns.factory import BackgroundProcess
-from .quick_settings import QuickSettingsViewModel
-from .server_list import ServerListViewModel
-from .dataclass.dashboard import *
+from .dataclass import dashboard as dt
+from ..module import Module
 
 
 class DashboardViewModel:
@@ -88,25 +87,18 @@ class DashboardViewModel:
         VPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
-    def __init__(self, utils, server_list):
-        self.utils = utils
-        self.__main_context = None
+    def __init__(self):
+        self.utils = Module().utility
         self.__none_vpn_ip = None
         self.__none_vpn_isp = None
         self.__none_vpn_contry_code = None
-        self.__quick_settings_vm = QuickSettingsViewModel(self)
-        self.__server_list_vm = ServerListViewModel(self, server_list)
+        self.__quick_settings_vm = Module().quick_settings_view_model
+        self.__server_list_vm = Module().server_list_view_model
+
+        self.__quick_settings_vm.dashboard_view_model = self
+        self.__server_list_vm.dashboard_view_model = self
+
         self.state = ReplaySubject(buffer_size=1)
-
-    @property
-    def main_context(self):
-        if not self.__main_context:
-            import gi
-            gi.require_version('Gtk', '3.0')
-            from gi.repository import GLib
-            self.__main_context = GLib.main_context_default()
-
-        return self.__main_context
 
     @property
     def quick_settings_view_model(self):
@@ -132,7 +124,7 @@ class DashboardViewModel:
     def on_startup_preload_resources_async(self):
         """Async load initial UI components such as quick settings and
         server list."""
-        self.state.on_next(Loading())
+        self.state.on_next(dt.Loading())
         process = BackgroundProcess.factory("gtask")
         process.setup(self.__on_startup)
         process.start()
@@ -143,24 +135,17 @@ class DashboardViewModel:
 
         This needs to be pre-loaded before displaying the dashboard."""
         protonvpn.get_session().get_all_notifications()
-
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value,
-            self.state.on_next,
-            self.get_quick_settings_state()
-        )
+        self.state.on_next(self.get_quick_settings_state())
 
         try:
             self.__server_list_vm.on_load_servers()
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
-            result = DisplayDialog(
+            result = dt.DisplayDialog(
                 title="Error Loading Servers",
                 text=str(e)
             )
-            self.main_context.invoke_full(
-                GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
-            )
+            self.state.on_next(result)
 
     def on_startup_load_dashboard_resources_async(self, *_):
         """Async load dashboard resources."""
@@ -177,7 +162,7 @@ class DashboardViewModel:
             protonvpn.ensure_connectivity()
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
-            result = NotConnectedToVPNInfo(
+            result = dt.NotConnectedToVPNInfo(
                 ip=None,
                 isp=None,
                 country=None,
@@ -191,14 +176,12 @@ class DashboardViewModel:
                     result = self._get_connected_state()
             except (exceptions.ProtonVPNException, Exception) as e:
                 logger.exception(e)
-                result = DisplayDialog(
+                result = dt.DisplayDialog(
                     title="Error Getting VPN State",
                     text=str(e)
                 )
 
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
-        )
+        self.state.on_next(result)
 
     def on_quick_connect(self):
         """Quick connect to ProtonVPN.
@@ -282,9 +265,8 @@ class DashboardViewModel:
                 or ConnectionTypeEnum.SERVERNAME.
         """
         logger.info("Setting up connection")
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, ConnectPreparingInfo()
-        )
+        self.state.on_next(dt.ConnectPreparingInfo())
+
         setup_connection_error = False
         display_troubleshoot_dialog = False
         try:
@@ -363,13 +345,11 @@ class DashboardViewModel:
             display_troubleshoot_dialog = True
 
         if setup_connection_error:
-            result = ConnectError(
+            result = dt.ConnectError(
                 setup_connection_error,
                 display_troubleshoot_dialog
             )
-            self.main_context.invoke_full(
-                GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
-            )
+            self.state.on_next(result)
             return
 
         logger.info("Connection was setup")
@@ -387,7 +367,7 @@ class DashboardViewModel:
             if state == VPNConnectionStateEnum.IS_ACTIVE:
                 result = self._get_connected_state()
             else:
-                result = ConnectError(
+                result = dt.ConnectError(
                     self._conn_reason_msg[
                         connect_response[ConnectionStartStatusEnum.REASON]
                     ],
@@ -395,19 +375,17 @@ class DashboardViewModel:
                 )
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
-            result = DisplayDialog(
+            result = dt.DisplayDialog(
                 title="Unable to get Connection Data",
                 text=str(e)
             )
 
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
-        )
+        self.state.on_next(result)
 
     def __display_connection_information_during_connect(self, server):
         connection_metadata = protonvpn.get_connection_metadata()
         protocol = connection_metadata[ConnectionMetadataEnum.PROTOCOL.value]
-        result = ConnectInProgressInfo(
+        result = dt.ConnectInProgressInfo(
             entry_country=protonvpn.get_country().get_country_name(
                 server.entry_country
             ),
@@ -421,9 +399,7 @@ class DashboardViewModel:
         )
 
         logger.info("Displaying connection information")
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
-        )
+        self.state.on_next(result)
 
     def on_disconnect(self):
         """On disconnect method.
@@ -432,18 +408,15 @@ class DashboardViewModel:
         within a python thread, but is not done so due to
         the reasons specified in class docstring.
         """
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, Loading()
-        )
+        self.state.on_next(dt.Loading())
         result = self._get_not_connected_state()
+
         try:
             protonvpn.disconnect()
         except (exceptions.ConnectionNotFound, AttributeError):
             pass
 
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
-        )
+        self.state.on_next(result)
         return False
 
     def _get_connected_state(self):
@@ -460,7 +433,7 @@ class DashboardViewModel:
         if FeatureEnum.SECURE_CORE in server.features:
             countries.append(server.entry_country)
 
-        result = ConnectedToVPNInfo(
+        result = dt.ConnectedToVPNInfo(
             protocol=connection_status[ConnectionStatusEnum.PROTOCOL],
             servername=server.name,
             countries=countries,
@@ -494,8 +467,8 @@ class DashboardViewModel:
                 self.__none_vpn_contry_code = country_code
             except Exception as e:
                 logger.exception(e)
-        
-        result = NotConnectedToVPNInfo(
+
+        result = dt.NotConnectedToVPNInfo(
             ip=ip,
             isp=isp,
             country=country_code,
@@ -524,7 +497,7 @@ class DashboardViewModel:
             SecureCoreStatusEnum.ON: DashboardSecureCoreIconEnum.ON_ACTIVE
         }
 
-        state = QuickSettingsStatus(
+        state = dt.QuickSettingsStatus(
             secure_core=sc_quick_setting[settings.secure_core],
             netshield=ns_quick_setting[settings.netshield],
             killswitch=ks_quick_setting[settings.killswitch],
@@ -572,9 +545,7 @@ class DashboardViewModel:
             except (exceptions.ProtonVPNException, Exception) as e:
                 logger.exception(e)
 
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
-        )
+        self.state.on_next(result)
 
     def on_update_speed_async(self):
         """Update network speed.
@@ -602,10 +573,8 @@ class DashboardViewModel:
         up, dl = "-", "-"
         if len(speed_result) == 2:
             up, dl = str(speed_result[0]), str(speed_result[1])
-        result = NetworkSpeed(
+        result = dt.NetworkSpeed(
             download=dl,
             upload=up
         )
-        self.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value, self.state.on_next, result
-        )
+        self.state.on_next(result)

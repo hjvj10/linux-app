@@ -13,55 +13,54 @@ from ..server_features import CountryStreamingWidget
 
 class ServerRow:
     def __init__(self, dasbhoard_view, country, server, display_sc):
-        self.dv = dasbhoard_view
-        self.grid = WidgetFactory.grid("server_row")
-        self.grid.add_class("server-row")
-        self.left_child = ServerRowLeftGrid(self.dv, country, server, display_sc)
-        self.right_child = ServerRowRightGrid(self.dv, server)
-        self.grid.attach(self.left_child.grid.widget)
-        self.grid.attach_right_next_to(
-            self.right_child.grid.widget,
-            self.left_child.grid.widget,
+        grid = WidgetFactory.grid("server_row")
+        grid.add_class("server-row")
+        left_child = ServerRowLeftGrid(dasbhoard_view, country, server, display_sc)
+        right_child = ServerRowRightGrid(dasbhoard_view, server)
+        grid.attach(left_child.grid.widget)
+        grid.attach_right_next_to(
+            right_child.grid.widget,
+            left_child.grid.widget,
         )
-        self.create_event_box(server)
+        self.create_event_box(server, grid, right_child)
 
-    def create_event_box(self, server):
+
+    def create_event_box(self, server, grid, right_child):
         self.event_box = Gtk.EventBox()
         self.event_box.set_visible_window(True)
-        self.event_box.add(self.grid.widget)
+        self.event_box.add(grid.widget)
         self.event_box.props.visible = True
 
         if server.status == ServerStatusEnum.UNDER_MAINTENANCE:
             return
 
         self.event_box.connect(
-            "enter-notify-event", self.right_child.on_server_enter
+            "enter-notify-event", right_child.on_server_enter
         )
         self.event_box.connect(
-            "leave-notify-event", self.right_child.on_server_leave
+            "leave-notify-event", right_child.on_server_leave
         )
 
 
 class ServerRowLeftGrid:
-    def __init__(self, dv, country, server, display_sc):
-        self.dv = dv
+    def __init__(self, dasbhoard_view, country, server, display_sc):
+        self.grid = WidgetFactory.grid("left_child_in_server_row")
         self.server = server
-        self.country = country
         self.feature_icon_list = []
         self.display_sc = display_sc
-        self.grid = WidgetFactory.grid("left_child_in_server_row")
-        self.populate_left_grid()
+        self.populate_left_grid(dasbhoard_view, country)
 
         if not server.status.value:
             self.servername_label.add_class("disabled-label")
 
-    def populate_left_grid(self):
+
+    def populate_left_grid(self, dasbhoard_view, country):
         self.create_load_icon()
         self.create_exit_flag()
         self.create_servername_label()
         self.create_secure_core_chevron()
         if not self.display_sc:
-            self.set_server_features()
+            self.set_server_features(dasbhoard_view, country)
 
     def create_load_icon(self):
         self.load_icon = ServerLoad(self.server.load)
@@ -112,7 +111,7 @@ class ServerRowLeftGrid:
         )
         self.sc_chevron.show = True if self.display_sc else False
 
-    def set_server_features(self):
+    def set_server_features(self, dasbhoard_view, country):
         feature_to_img_dict = {
             FeatureEnum.TOR: ["tor_icon", "TOR Server"],
             FeatureEnum.P2P: ["p2p_icon", "P2P Server"],
@@ -138,7 +137,11 @@ class ServerRowLeftGrid:
 
             if feature == FeatureEnum.STREAMING:
                 _button = WidgetFactory.button("server_row_streaming_feature")
-                _w = CountryStreamingWidget(self.dv.application, self.country)
+                _w = CountryStreamingWidget(
+                    dasbhoard_view.application,
+                    country.country_name,
+                    country.entry_country_code
+                )
                 _button.custom_content(pixbuf_feature_icon.widget)
                 _button.connect(
                     "clicked", _w.display

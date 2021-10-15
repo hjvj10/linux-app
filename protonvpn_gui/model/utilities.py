@@ -1,9 +1,6 @@
-import requests
-from ..logger import logger
 import time
 import psutil
 from protonvpn_nm_lib.constants import VIRTUAL_DEVICE_NAME
-import json
 
 
 one_byte_in_kBs = 0.000976

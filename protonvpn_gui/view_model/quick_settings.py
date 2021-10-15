@@ -1,14 +1,22 @@
-from ..patterns.factory import BackgroundProcess
 from protonvpn_nm_lib.api import protonvpn
-from ..enums import GTKPriorityEnum
+from protonvpn_nm_lib.enums import (ConnectionMetadataEnum, ConnectionTypeEnum,
+                                    KillswitchStatusEnum, SecureCoreStatusEnum)
+
 from ..logger import logger
-from protonvpn_nm_lib.enums import ConnectionMetadataEnum, SecureCoreStatusEnum, ConnectionTypeEnum, KillswitchStatusEnum
 
 
 class QuickSettingsViewModel:
 
-    def __init__(self, dashboard_view_model):
-        self.dashboard_vm = dashboard_view_model
+    def __init__(self):
+        self.dashboard_vm = None
+
+    @property
+    def dashboard_view_model(self):
+        return self.dashboard_vm
+
+    @dashboard_view_model.setter
+    def dashboard_view_model(self, newvalue):
+        self.dashboard_vm = newvalue
 
     def on_switch_secure_core_button(self, secure_core_enum):
         """On reconnect Secure Core."""
@@ -17,10 +25,7 @@ class QuickSettingsViewModel:
 
         self.dashboard_vm.server_list_view_model.on_switch_server_list_view_async()
 
-        self.dashboard_vm.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value,
-            self.dashboard_vm.state.on_next, self.dashboard_vm.get_quick_settings_state()
-        )
+        self.dashboard_vm.state.on_next(self.dashboard_vm.get_quick_settings_state())
 
         if protonvpn.get_active_protonvpn_connection():
             logger.info("Preparing reconnect with \"{}\"".format(
@@ -81,10 +86,7 @@ class QuickSettingsViewModel:
     def on_switch_netshield_button(self, netshield_enum):
         logger.info("Setting netshield to \"{}\"".format(netshield_enum))
         protonvpn.get_settings().netshield = netshield_enum
-        self.dashboard_vm.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value,
-            self.dashboard_vm.state.on_next, self.dashboard_vm.get_quick_settings_state()
-        )
+        self.dashboard_vm.state.on_next(self.dashboard_vm.get_quick_settings_state())
 
         if protonvpn.get_active_protonvpn_connection():
             logger.info("Preparing reconnect with \"{}\"".format(
@@ -96,10 +98,7 @@ class QuickSettingsViewModel:
         logger.info("Setting killswitch to \"{}\"".format(ks_enum))
         protonvpn.get_settings().killswitch = ks_enum
         active_connection = protonvpn.get_active_protonvpn_connection()
-        self.dashboard_vm.main_context.invoke_full(
-            GTKPriorityEnum.PRIORITY_DEFAULT.value,
-            self.dashboard_vm.state.on_next, self.dashboard_vm.get_quick_settings_state()
-        )
+        self.dashboard_vm.state.on_next(self.dashboard_vm.get_quick_settings_state())
 
         if active_connection and ks_enum == KillswitchStatusEnum.SOFT:
             logger.info("Preparing reconnect with \"{}\"".format(

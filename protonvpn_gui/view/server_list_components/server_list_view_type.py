@@ -1,12 +1,11 @@
 from abc import abstractmethod
 
+
 class ServerListViewType:
 
-    def __init__(self, dashboard_view, server_list):
-        self.dv = dashboard_view
+    def __init__(self):
         self.header_tracker = []
         self.country_rows = 0
-        self.server_list = server_list
         self.widget_position_tracker = {}
 
     @property
@@ -17,6 +16,10 @@ class ServerListViewType:
     @abstractmethod
     def generate():
         pass
+
+    def update_server_list(self, server_list):
+        self.server_list = None
+        self.server_list = server_list
 
     def yield_countries(self):
         for country_item in self.server_list.servers:

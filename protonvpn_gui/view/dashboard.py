@@ -11,20 +11,23 @@ from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
 from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
                      DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
                      GLibEventSourceEnum, IndicatorActionEnum)
-from ..patterns.factory import WidgetFactory
 from ..logger import logger
-from ..view_model.dashboard import (ConnectedToVPNInfo, ConnectError,
-                                    ConnectInProgressInfo,
-                                    ConnectPreparingInfo, Loading,
-                                    NetworkSpeed, NotConnectedToVPNInfo,
-                                    QuickSettingsStatus, DisplayDialog)
+from ..module import Module
+from ..patterns.factory import WidgetFactory
+from ..view_model.dataclass.dashboard import (ConnectedToVPNInfo, ConnectError,
+                                              ConnectInProgressInfo,
+                                              ConnectPreparingInfo,
+                                              DisplayDialog, Loading,
+                                              NetworkSpeed,
+                                              NotConnectedToVPNInfo,
+                                              QuickSettingsStatus)
 from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
                                ConnectVPNInProgressView,
                                ConnectVPNPreparingView, InitLoadView,
                                NotConnectedVPNView, UpdateNetworkSpeedView)
+from .dialog import DisplayMessageDialog
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
-from .dialog import DisplayMessageDialog
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -144,11 +147,11 @@ class DashboardView(Gtk.ApplicationWindow):
     def __init__(self, **kwargs):
         self.application = kwargs.pop("application")
         super().__init__(application=self.application)
-        self.dashboard_view_model = kwargs.pop("view_model")
+        self.dashboard_view_model = Module().dashboard_view_model
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
-        self.server_list_view = ServerListView(self, self.dashboard_view_model)
+        self.server_list_view = ServerListView(self)
         self.application.indicator.setup_reply_subject()
         try:
             self.application.indicator.dashboard_action.subscribe(

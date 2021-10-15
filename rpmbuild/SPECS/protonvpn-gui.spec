@@ -62,11 +62,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Thu Oct 15 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-1
+- Feature: Handle and display events
+- Fix: Memory leak
+
 * Wed Oct 14 2021 Proton Technologies AG <opensource@proton.me> 1.4.1-1
 - Hotfix: Add missing dependency for Webkit
-
-* Thu Oct 14 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-1
-- Feature: Handle and display events
 
 * Fri Sep 24 2021 Proton Technologies AG <opensource@proton.me> 1.4.0-1
 - Handle human verification
