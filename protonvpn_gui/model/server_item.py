@@ -1,8 +1,81 @@
-from protonvpn_nm_lib.api import protonvpn
+from abc import abstractmethod, ABCMeta
 from protonvpn_nm_lib.enums import ServerStatusEnum, ServerTierEnum
+from ..utils import SubclassesMixin
 
 
-class ServerItem:
+class ServerItemFactory(SubclassesMixin, metaclass=ABCMeta):
+
+    @classmethod
+    def factory(cls, type="default"):
+        subclasses_dict = cls._get_subclasses_dict("server_item")
+        return subclasses_dict[type]
+
+    @property
+    @abstractmethod
+    def name():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def load():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def score():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def city():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def features():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def tier():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def is_plus():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def status():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def exit_country_code():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def entry_country_code():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def has_to_upgrade():
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def host_country():
+        raise NotImplementedError()
+
+    @abstractmethod
+    def create():
+        raise NotImplementedError()
+
+
+class ServerItem(ServerItemFactory):
     """ServerItem class.
 
     Represents a server item in the list of servers. This object stores
@@ -28,7 +101,9 @@ class ServerItem:
         has_to_upgrade: bool
             if a user has to upgrade to access server
     """
-    def __init__(self, logical_server, user_tier):
+    server_item = "default"
+
+    def __init__(self):
         self.__name: str = None
         self.__load: int = None
         self.__score: int = None
@@ -41,8 +116,18 @@ class ServerItem:
         self.__entry_country_code: str = None
         self.__has_to_upgrade: bool = None
         self.__host_country: str = None
-        self.__user_tier = user_tier
-        self.create(logical_server)
+
+    @staticmethod
+    def init():
+        return ServerItem()
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "{} || {} ({})".format(
+            type(self), self.__name, self.__features
+        )
 
     @property
     def name(self):
@@ -92,7 +177,7 @@ class ServerItem:
     def host_country(self):
         return self.__host_country
 
-    def create(self, logical_server):
+    def create(self, logical_server, user_tier):
         self.__name = logical_server.name
         self.__load = str(int(logical_server.load))
         self.__score = int(logical_server.score)
@@ -106,7 +191,7 @@ class ServerItem:
         self.__host_country = logical_server.host_country
         self.__has_to_upgrade = (
             True if self.__tier.value > ServerTierEnum(
-                self.__user_tier
+                user_tier
             ).value else False
         )
 

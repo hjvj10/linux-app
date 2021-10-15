@@ -13,6 +13,7 @@ from ..constants import (CSS_DIR_PATH, ICON_DIR_PATH, IMG_DIR_PATH,
 from ..enums import IndicatorActionEnum
 from ..patterns.factory import WidgetFactory
 from .dialog import LoginKillSwitchDialog, TroubleshootDialog, WebView
+from ..module import Module
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "login.ui"))
@@ -60,7 +61,7 @@ class LoginView(Gtk.ApplicationWindow):
     string_min_length = 0
 
     def __init__(self, **kwargs):
-        self.login_view_model = kwargs.pop("view_model")
+        self.login_view_model = Module().login_view_model
         self.dashboard_window = kwargs.pop("dashboard_window")
         self.application = kwargs.pop("application")
 

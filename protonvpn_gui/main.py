@@ -1,6 +1,5 @@
 import os
 import sys
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -21,16 +20,11 @@ from .enums import GTKPriorityEnum
 from .constants import APP_VERSION
 from .logger import logger
 from .patterns.factory import BackgroundProcess
-from .model.country_item import CountryItem
-from .model.server_list import ServerList
-from .model.utilities import Utilities
 from .view.dashboard import DashboardView
 from .view.dialog import (AboutDialog, DisplayMessageDialog, LogoutDialog,
                           QuitDialog)
 from .view.indicator import generate_protonvpn_indicator
 from .view.login import LoginView
-from .view_model.dashboard import DashboardViewModel
-from .view_model.login import LoginViewModel
 
 
 class ProtonVPNGUI(Gtk.Application):
@@ -261,10 +255,8 @@ class ProtonVPNGUI(Gtk.Application):
         Returns:
             LoginView
         """
-        login_view_model = LoginViewModel()
         return LoginView(
             application=self,
-            view_model=login_view_model,
             dashboard_window=self.get_dashboard_window
         )
 
@@ -274,16 +266,7 @@ class ProtonVPNGUI(Gtk.Application):
         Returns:
             DashboardView
         """
-        server_list = ServerList(
-            country_item=CountryItem
-        )
-        dashboard_view_model = DashboardViewModel(
-            Utilities, server_list
-        )
-        return DashboardView(
-            application=self,
-            view_model=dashboard_view_model
-        )
+        return DashboardView(application=self)
 
     def setup_actions(self):
         quit_app = Gio.SimpleAction.new("quit", None)
