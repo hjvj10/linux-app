@@ -64,7 +64,8 @@ class LoginViewModel:
             connection_error = "Unknown API error."
         except (
             exceptions.API8002Error, exceptions.API5002Error,
-            exceptions.API5003Error
+            exceptions.API5003Error, exceptions.API85031Error,
+            exceptions.API12087Error
         ) as e:
             logger.exception(e)
             connection_error = str(e)

@@ -65,6 +65,7 @@ rm -rf $RPM_BUILD_ROOT
 * Thu Oct 15 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-1
 - Feature: Handle and display events
 - Fix: Memory leak
+- Improve: Exception handling
 
 * Wed Oct 14 2021 Proton Technologies AG <opensource@proton.me> 1.4.1-1
 - Hotfix: Add missing dependency for Webkit

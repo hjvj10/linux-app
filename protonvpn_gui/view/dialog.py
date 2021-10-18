@@ -335,11 +335,11 @@ class WebView:
         self.__webview.set_property("width-request", self.__dialog_view.get_size()[0] + 10)
 
         # ## Can be helpfull during debugging
-        settings = self.__webview.get_settings()
-        settings.set_enable_developer_extras(True)
-        settings.set_allow_top_navigation_to_data_urls(True)
-        settings.set_enable_frame_flattening(True)
-        self.__webview.set_settings(settings)
+        # settings = self.__webview.get_settings()
+        # settings.set_enable_developer_extras(True)
+        # settings.set_allow_top_navigation_to_data_urls(True)
+        # settings.set_enable_frame_flattening(True)
+        # self.__webview.set_settings(settings)
 
         self.__dialog_view.add_extra_content(self.__webview)
 

@@ -2,6 +2,7 @@ protonvpn-gui (1.5.0-1) unstable; urgency=medium
 
   * Feature: Handle and display events
   * Fix: Memory leak
+  * Improve: Exception handling
   
  -- Proton Technologies AG <opensource@proton.me>  Thu, 15 Oct 2021 13:30:00 +0100
 
