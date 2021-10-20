@@ -237,6 +237,7 @@ class QuickSettingButton:
     killswitch_button_collection = []
 
     def __init__(self, popover_widget, img_factory_name, text):
+        self.__vpn_tier = None
         self.__popover_widget = popover_widget
         self.__session = self.__popover_widget.protonvpn.get_session()
         self.__settings = self.__popover_widget.protonvpn.get_settings()
@@ -275,6 +276,16 @@ class QuickSettingButton:
     @property
     def popover(self):
         return self.__popover_widget
+
+    @property
+    def vpn_tier(self):
+        if self.__vpn_tier is None:
+            try:
+                self.__vpn_tier = self.vpn_tier
+            except: # noqa
+                self.__vpn_tier = ServerTierEnum.FREE.value
+
+        return self.__vpn_tier
 
     @property
     def session(self):
@@ -416,7 +427,7 @@ class SecureCoreOn(QuickSettingButton):
         self.set_unavailable()
         self.display_upgrade_label = True
 
-        if self.session.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value:
+        if self.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value:
             self.display_upgrade_label = False
             if self.settings.secure_core == SecureCoreStatusEnum.ON:
                 self.set_selected()
@@ -426,7 +437,7 @@ class SecureCoreOn(QuickSettingButton):
         self.secure_core_button_collection.append(self)
 
     def on_button_click(self, gtk_button):
-        if self.session.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value:
+        if self.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value:
             for button in self.secure_core_button_collection:
                 if button == self:
                     self.set_selected()
@@ -449,13 +460,13 @@ class NetshieldOff(QuickSettingButton):
         )
         self.display_upgrade_label = False
         if (
-            self.session.vpn_tier < ServerTierEnum.BASIC.value
+            self.vpn_tier < ServerTierEnum.BASIC.value
             and (
                 self.settings.netshield != NetshieldTranslationEnum.DISABLED
                 or self.settings.netshield == NetshieldTranslationEnum.DISABLED
             )
         ) or (
-            self.session.vpn_tier >= ServerTierEnum.BASIC.value
+            self.vpn_tier >= ServerTierEnum.BASIC.value
             and self.settings.netshield == NetshieldTranslationEnum.DISABLED
         ):
             self.set_selected()
@@ -493,7 +504,7 @@ class NetshieldMalware(QuickSettingButton):
         self.set_unavailable()
         self.display_upgrade_label = True
 
-        if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
+        if self.vpn_tier >= ServerTierEnum.BASIC.value:
             self.display_upgrade_label = False
             self.set_available()
             if self.settings.netshield == NetshieldTranslationEnum.MALWARE:
@@ -502,7 +513,7 @@ class NetshieldMalware(QuickSettingButton):
         self.netshield_button_collection.append(self)
 
     def on_button_click(self, gtk_button):
-        if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
+        if self.vpn_tier >= ServerTierEnum.BASIC.value:
             for button in self.netshield_button_collection:
                 if button == self:
                     self.set_selected()
@@ -530,7 +541,7 @@ class NetshieldAdsMalware(QuickSettingButton):
         self.set_unavailable()
         self.display_upgrade_label = True
         self.set_char_width(20)
-        if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
+        if self.vpn_tier >= ServerTierEnum.BASIC.value:
             self.display_upgrade_label = False
             self.set_char_width(30)
             self.set_available()
@@ -540,7 +551,7 @@ class NetshieldAdsMalware(QuickSettingButton):
         self.netshield_button_collection.append(self)
 
     def on_button_click(self, gtk_button):
-        if self.session.vpn_tier >= ServerTierEnum.BASIC.value:
+        if self.vpn_tier >= ServerTierEnum.BASIC.value:
             for button in self.netshield_button_collection:
                 if button == self:
                     self.set_selected()

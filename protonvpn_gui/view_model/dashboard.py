@@ -98,7 +98,21 @@ class DashboardViewModel:
         self.__quick_settings_vm.dashboard_view_model = self
         self.__server_list_vm.dashboard_view_model = self
 
-        self.state = ReplaySubject(buffer_size=1)
+        self.__state = ReplaySubject(buffer_size=1)
+
+    @property
+    def state(self):
+        from protonvpn_gui.rx.internal.exceptions import DisposedException
+        try:
+            self.__state.check_disposed()
+        except DisposedException:
+            self.__state = ReplaySubject(buffer_size=1)
+
+        return self.__state
+
+    @state.deleter
+    def state(self):
+        self.__state.dispose()
 
     @property
     def quick_settings_view_model(self):

@@ -11,10 +11,24 @@ class LoginViewModel:
 
     def __init__(self):
         self.user_settings = protonvpn.get_settings()
-        self.state = ReplaySubject(buffer_size=1)
+        self.__state = ReplaySubject(buffer_size=1)
         self.__username = None
         self.__password = None
         self.__captcha = None
+
+    @property
+    def state(self):
+        from protonvpn_gui.rx.internal.exceptions import DisposedException
+        try:
+            self.__state.check_disposed()
+        except DisposedException:
+            self.__state = ReplaySubject(buffer_size=1)
+
+        return self.__state
+
+    @state.deleter
+    def state(self):
+        self.__state.dispose()
 
     def login_async(self, username=None, password=None, captcha=None):
         if username and password:

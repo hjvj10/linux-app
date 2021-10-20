@@ -42,6 +42,21 @@ class ProtonVPNGUI(Gtk.Application):
         self.indicator = None
         self.is_logging_out = False
         self.__main_context = None
+        self.__is_app_being_held = False
+        self.register()
+
+    @property
+    def hold_app(self):
+        return self.__is_app_being_held
+
+    @hold_app.setter
+    def hold_app(self, newvalue):
+        if newvalue and not self.__is_app_being_held:
+            self.hold()
+            self.__is_app_being_held = True
+        elif not newvalue and self.__is_app_being_held:
+            self.release()
+            self.__is_app_being_held = False
 
     @property
     def main_context(self):
@@ -112,7 +127,7 @@ class ProtonVPNGUI(Gtk.Application):
 
     def display_login_window(self, *_):
         self.is_logging_out = False
-        self.get_login_window().present()
+        self.get_login_window().display_view()
 
     def on_logout(self, *_):
         if self.is_logging_out:
@@ -122,6 +137,8 @@ class ProtonVPNGUI(Gtk.Application):
                 description="You're currently being logged out, please wait..."
             )
             return
+
+        self.hold_app = True
 
         self.is_logging_out = True
         dialog = DisplayMessageDialog(
@@ -247,7 +264,7 @@ class ProtonVPNGUI(Gtk.Application):
                 win = self.get_dashboard_window()
 
         logger.info("Window to display {}".format(win))
-        win.present()
+        win.display_view()
 
     def get_login_window(self):
         """Get login window.

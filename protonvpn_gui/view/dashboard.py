@@ -209,6 +209,9 @@ class DashboardView(Gtk.ApplicationWindow):
         self.setup_actions()
         self._preload_ui_resources()
 
+    def display_view(self):
+        self.present()
+
     def _preload_ui_resources(self):
         self.dashboard_view_model.on_startup_preload_resources_async()
 
@@ -661,6 +664,7 @@ class DashboardView(Gtk.ApplicationWindow):
             ] = None
 
     def prepare_for_app_shutdown(self):
+        self.dashboard_view_model.state.dispose()
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.remove_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         self.remove_background_glib(
