@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+
 from ...enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
-                     DashboardSecureCoreIconEnum)
+                      DashboardSecureCoreIconEnum)
+
 
 @dataclass
 class Loading:

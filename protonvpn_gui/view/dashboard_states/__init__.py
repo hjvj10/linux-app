@@ -1,8 +1,8 @@
 from .states import InitLoadView, UpdateNetworkSpeedView, NotConnectedVPNView, ConnectedVPNView, \
-    ConnectVPNPreparingView, ConnectVPNInProgressView, ConnectVPNErrorView
+    ConnectVPNPreparingView, ConnectVPNInProgressView, ConnectVPNErrorView, UpdateQuickSettings # noqa
 
 __all_ = [
     "InitLoadView", "UpdateNetworkSpeedView", "NotConnectedVPNView",
     "ConnectedVPNView", "ConnectVPNPreparingView", "ConnectVPNInProgressView",
-    "ConnectVPNErrorView"
+    "ConnectVPNErrorView", "UpdateQuickSettings"
 ]

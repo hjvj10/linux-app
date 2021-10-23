@@ -1,7 +1,7 @@
 from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
-from ...enums import GLibEventSourceEnum
+from ...enums import GLibEventSourceEnum, DashboardFeaturesEnum
 from ...patterns.factory import WidgetFactory
 
 
@@ -221,7 +221,6 @@ class ConnectVPNErrorView:
     during attempt to connect.
     """
     def __init__(self, dashboard_view, state):
-        dv = dashboard_view
         dashboard_view.connecting_to_label.set_text(
             state.message
         )
@@ -232,3 +231,59 @@ class ConnectVPNErrorView:
         dashboard_view.cancel_connect_overlay_button.set_label("Close")
         dashboard_view.connecting_overlay_spinner.props.visible = False
         dashboard_view.connecting_progress_bar.props.visible = False
+
+
+class UpdateQuickSettings:
+    """UI class.
+
+    Update quick settings.
+    """
+    def __init__(self, dashboard_view, state):
+        self.update_quick_settings(dashboard_view, state)
+
+    def update_quick_settings(self, dashboard_view, state):
+        """Updates quick settings icons based on state.
+
+        Args:
+            state (QuickSettingsStatus)
+
+        QuickSettingsStatus of three different properties:
+            secure_core (DashboardSecureCoreIconEnum)
+            netshield (DashboardNetshieldIconEnum)
+            killswitch (DashboardKillSwitchIconEnum)
+        """
+        dummy_object = WidgetFactory.image("dummy")
+        feature_button_secure_core_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                dashboard_view.features_icon_set_dict[
+                    DashboardFeaturesEnum.SECURE_CORE
+                ][state.secure_core],
+                width=dashboard_view.feature_button_icon_width,
+                height=dashboard_view.feature_button_icon_height
+            )
+        feature_button_netshield_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                dashboard_view.features_icon_set_dict[
+                    DashboardFeaturesEnum.NETSHIELD
+                ][state.netshield],
+                width=dashboard_view.feature_button_icon_width,
+                height=dashboard_view.feature_button_icon_height
+            )
+        feature_button_killswitch_pixbuf = dummy_object \
+            .create_icon_pixbuf_from_name(
+                dashboard_view.features_icon_set_dict[
+                    DashboardFeaturesEnum.KILLSWITCH
+                ][state.killswitch],
+                width=dashboard_view.feature_button_icon_width,
+                height=dashboard_view.feature_button_icon_height
+            )
+
+        dashboard_view.dashboard_secure_core_button_image.set_from_pixbuf(
+            feature_button_secure_core_pixbuf
+        )
+        dashboard_view.dashboard_netshield_button_image.set_from_pixbuf(
+            feature_button_netshield_pixbuf
+        )
+        dashboard_view.dashboard_killswitch_button_image.set_from_pixbuf(
+            feature_button_killswitch_pixbuf
+        )

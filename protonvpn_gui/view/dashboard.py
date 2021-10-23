@@ -24,7 +24,8 @@ from ..view_model.dataclass.dashboard import (ConnectedToVPNInfo, ConnectError,
 from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
                                ConnectVPNInProgressView,
                                ConnectVPNPreparingView, InitLoadView,
-                               NotConnectedVPNView, UpdateNetworkSpeedView)
+                               NotConnectedVPNView, UpdateNetworkSpeedView,
+                               UpdateQuickSettings)
 from .dialog import DisplayMessageDialog
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
@@ -196,60 +197,13 @@ class DashboardView(Gtk.ApplicationWindow):
         elif isinstance(state, NetworkSpeed):
             UpdateNetworkSpeedView(self, state)
         elif isinstance(state, QuickSettingsStatus):
-            self.update_quick_settings(state)
+            UpdateQuickSettings(self, state)
         elif isinstance(state, DisplayDialog):
             DisplayMessageDialog(
                 self.application,
                 title=state.title,
                 description=state.text
             )
-
-    def update_quick_settings(self, state):
-        """Updates quick settings icons based on state.
-
-        Args:
-            state (QuickSettingsStatus)
-
-        QuickSettingsStatus of three different properties:
-            secure_core (DashboardSecureCoreIconEnum)
-            netshield (DashboardNetshieldIconEnum)
-            killswitch (DashboardKillSwitchIconEnum)
-        """
-        dummy_object = WidgetFactory.image("dummy")
-        feature_button_secure_core_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.SECURE_CORE
-                ][state.secure_core],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-        feature_button_netshield_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.NETSHIELD
-                ][state.netshield],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-        feature_button_killswitch_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.KILLSWITCH
-                ][state.killswitch],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-
-        self.dashboard_secure_core_button_image.set_from_pixbuf(
-            feature_button_secure_core_pixbuf
-        )
-        self.dashboard_netshield_button_image.set_from_pixbuf(
-            feature_button_netshield_pixbuf
-        )
-        self.dashboard_killswitch_button_image.set_from_pixbuf(
-            feature_button_killswitch_pixbuf
-        )
 
     def on_click_disconnect(self, gkt_simple_action, _):
         """On click on Disconnect event handler.
