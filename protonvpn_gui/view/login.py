@@ -258,7 +258,7 @@ class LoginView(Gtk.ApplicationWindow):
                 webview = WebView(self.application, callback_func=state.callback)
                 webview.display(state.display_human_verification_dialog)
         elif state == LoginState.SUCCESS:
-            self.dashboard_window().present()
+            self.dashboard_window().display_view()
             self.login_view_model.state.dispose()
             self.on_close_window(None, None, True)
 
