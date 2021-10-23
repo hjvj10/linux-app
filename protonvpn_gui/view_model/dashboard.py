@@ -4,7 +4,8 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     ConnectionStartStatusEnum,
                                     ConnectionStatusEnum, ConnectionTypeEnum,
                                     FeatureEnum, KillswitchStatusEnum,
-                                    NetshieldTranslationEnum,
+                                    NetshieldTranslationEnum, NotificationEnum,
+                                    NotificationStatusEnum,
                                     SecureCoreStatusEnum,
                                     VPNConnectionReasonEnum,
                                     VPNConnectionStateEnum)
@@ -12,10 +13,10 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
 from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                      DashboardSecureCoreIconEnum)
 from ..logger import logger
-from ..rx.subject.replaysubject import ReplaySubject
-from ..patterns.factory import BackgroundProcess
-from .dataclass import dashboard as dt
 from ..module import Module
+from ..patterns.factory import BackgroundProcess
+from ..rx.subject.replaysubject import ReplaySubject
+from .dataclass import dashboard as dt
 
 
 class DashboardViewModel:
@@ -165,7 +166,7 @@ class DashboardViewModel:
         server list.
 
         This needs to be pre-loaded before displaying the dashboard."""
-        protonvpn.get_session().get_all_notifications()
+        self.check_if_events_should_be_displayed()
         self.state.on_next(self.get_quick_settings_state())
 
         try:
@@ -177,6 +178,41 @@ class DashboardViewModel:
                 text=str(e)
             )
             self.state.on_next(result)
+
+    def async_check_if_events_should_be_displayed(self):
+        """Async check if events should be displayed."""
+        process = BackgroundProcess.factory("gtask")
+        process.setup(self.check_if_events_should_be_displayed)
+        process.start()
+
+        return True
+
+    def check_if_events_should_be_displayed(self, *_):
+        """Sync check if events should be displayed."""
+        all_notitications = protonvpn.get_session().get_all_notifications()
+        if not isinstance(all_notitications, list):
+            return
+
+        for event in all_notitications:
+            # Check if the notifications is of black friday type
+            # also check if it can be displayed and it can be displayed,
+            # If both are false then nothing will be displayed
+            if event.notification_type == NotificationEnum.BLACK_FRIDAY.value:
+                self.state.on_next(
+                    dt.DisplayEvent(
+                        dt.BlackFridayEvent(event),
+                        (
+                            True
+                            if protonvpn.get_settings().event_notification == NotificationStatusEnum.OPENED # noqa
+                            else False
+                        ),
+                        self.set_notification_as_read
+                    )
+                )
+
+    def set_notification_as_read(self):
+        from protonvpn_nm_lib.enums import NotificationStatusEnum
+        protonvpn.get_settings().event_notification = NotificationStatusEnum.OPENED
 
     def on_startup_load_dashboard_resources_async(self, *_):
         """Async load dashboard resources."""

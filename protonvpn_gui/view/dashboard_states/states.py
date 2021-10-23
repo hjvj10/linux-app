@@ -3,6 +3,7 @@ from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 from ...enums import GLibEventSourceEnum, DashboardFeaturesEnum
 from ...patterns.factory import WidgetFactory
+from ...view_model.dataclass.dashboard import BlackFridayEvent
 
 
 class InitLoadView:
@@ -15,66 +16,6 @@ class InitLoadView:
             "Secure Internet Anywhere"
         dashboard_view.overlay_spinner.start()
         dashboard_view.overlay_box.props.visible = True
-        self.load_events(dashboard_view)
-
-    def load_events(self, dashboard_view):
-        self.__check_if_black_friday_event_should_be_displayed(dashboard_view)
-
-    def __check_if_black_friday_event_should_be_displayed(self, dashboard_view):
-        import gi
-        gi.require_version('Gtk', '3.0')
-        from gi.repository import GLib
-        from protonvpn_nm_lib.api import protonvpn
-        from protonvpn_nm_lib.enums import NotificationEnum, NotificationStatusEnum
-
-        open_black_friday_modal = self.__open_black_friday_modal
-
-        def async_attach_icon(self, *args):
-            dashboard_view.connected_label_grid.attach(
-                bf_button.widget, 1, 0, 1, 1
-            )
-            bf_button.connect(
-                "clicked", open_black_friday_modal,
-                dashboard_view.application, bf_notification,
-                protonvpn.get_settings(), NotificationStatusEnum,
-                event_icon
-            )
-
-        bf_notification = protonvpn.get_session()\
-            .get_notifications_by_type(NotificationEnum.BLACK_FRIDAY)
-
-        # Check if the notifications is of black friday type
-        # also check if it can be displayed and it can be displayed,
-        # If both are false then nothing will be displayed
-        if (
-            bf_notification.notification_type != NotificationEnum.BLACK_FRIDAY.value
-        ) and not bf_notification.can_be_displayed:
-            return
-
-        icon_path = list(filter(lambda x: "ic-gift.png" in x, bf_notification.icon_paths))
-        if not bool(len(icon_path)):
-            return
-
-        # Create gift widgets
-        bf_button = WidgetFactory.button("dashboard_event_button")
-        event_icon = WidgetFactory.image("dashboard_event_icon", icon_path.pop())
-        event_icon.tooltip_text = bf_notification.pill
-        bf_button.custom_content(event_icon.widget)
-
-        # check if user has already opened event, if not display red dot
-        if protonvpn.get_settings().event_notification == NotificationStatusEnum.NOT_OPENED:
-            event_icon.add_event_notitication()
-
-        GLib.idle_add(async_attach_icon, bf_button)
-
-    def __open_black_friday_modal(self, gtk_button, *args):
-        from ..dialog import BlackFridayPromoDialog
-        application, bf_notification, protonvpn_settings, notification_enum, event_icon = args
-
-        protonvpn_settings.event_notification = notification_enum.OPENED
-        event_icon.add_event_notitication(False)
-
-        BlackFridayPromoDialog(application, bf_notification)
 
 
 class UpdateNetworkSpeedView:
@@ -127,6 +68,8 @@ class NotConnectedVPNView:
         dashboard_view.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dashboard_view.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         dashboard_view.gtk_property_setter(dashboard_view.SET_UI_NOT_CONNECTED)
+        if not dashboard_view.glib_source_tracker[GLibEventSourceEnum.ON_EVENT]:
+            dashboard_view.add_background_glib(GLibEventSourceEnum.ON_EVENT)
 
 
 class ConnectedVPNView:
@@ -177,6 +120,8 @@ class ConnectedVPNView:
         dashboard_view.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dashboard_view.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         dashboard_view.gtk_property_setter(dashboard_view.SET_UI_CONNECTED)
+        if not dashboard_view.glib_source_tracker[GLibEventSourceEnum.ON_EVENT]:
+            dashboard_view.add_background_glib(GLibEventSourceEnum.ON_EVENT)
 
 
 class ConnectVPNPreparingView:
@@ -287,3 +232,60 @@ class UpdateQuickSettings:
         dashboard_view.dashboard_killswitch_button_image.set_from_pixbuf(
             feature_button_killswitch_pixbuf
         )
+
+
+class EventNotification:
+    def __init__(self, dashboard_view, state):
+        self.load_events(dashboard_view, state)
+
+    def load_events(self, dashboard_view, state):
+        if isinstance(state.event_dataclass, BlackFridayEvent):
+            self.__check_if_black_friday_event_should_be_displayed(
+                dashboard_view, state.event_dataclass.class_instance,
+                state.has_notification_been_opened, state.set_notification_as_read
+            )
+
+    def __check_if_black_friday_event_should_be_displayed(self, *args):
+        dashboard_view, bf_notification, has_notification_been_opened, set_as_read = args
+
+        icon_path = list(filter(lambda x: "ic-gift.png" in x, bf_notification.icon_paths))
+
+        if not bf_notification.can_be_displayed or not bool(len(icon_path)):
+            child = dashboard_view.connected_label_grid.get_child_at(1, 0)
+            if dashboard_view.event_notification or child:
+                try:
+                    child.destroy()
+                except AttributeError:
+                    pass
+                dashboard_view.event_notification = None
+
+            return
+
+        # Create "gift" widgets
+        bf_button = WidgetFactory.button("dashboard_event_button")
+        event_icon = WidgetFactory.image("dashboard_event_icon", icon_path.pop())
+        event_icon.tooltip_text = bf_notification.pill
+        bf_button.custom_content(event_icon.widget)
+
+        # check if user has already opened event, if not display red dot
+        if not has_notification_been_opened:
+            event_icon.add_event_notitication()
+
+        dashboard_view.connected_label_grid.attach(
+            bf_button.widget, 1, 0, 1, 1
+        )
+        dashboard_view.event_notification = bf_button
+        bf_button.connect(
+            "clicked", self.__open_black_friday_modal,
+            dashboard_view.application, bf_notification,
+            set_as_read, event_icon
+        )
+
+    def __open_black_friday_modal(self, gtk_button, *args):
+        from ..dialog import BlackFridayPromoDialog
+        application, bf_notification, set_as_read, event_icon = args
+
+        event_icon.add_event_notitication(False)
+        set_as_read()
+
+        BlackFridayPromoDialog(application, bf_notification)

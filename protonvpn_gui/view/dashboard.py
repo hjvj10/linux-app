@@ -20,12 +20,12 @@ from ..view_model.dataclass.dashboard import (ConnectedToVPNInfo, ConnectError,
                                               DisplayDialog, Loading,
                                               NetworkSpeed,
                                               NotConnectedToVPNInfo,
-                                              QuickSettingsStatus)
+                                              QuickSettingsStatus, DisplayEvent)
 from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
                                ConnectVPNInProgressView,
                                ConnectVPNPreparingView, InitLoadView,
                                NotConnectedVPNView, UpdateNetworkSpeedView,
-                               UpdateQuickSettings)
+                               UpdateQuickSettings, EventNotification)
 from .dialog import DisplayMessageDialog
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
@@ -118,17 +118,21 @@ class DashboardView(Gtk.ApplicationWindow):
     overlay_box = Gtk.Template.Child()
     connecting_overlay_box = Gtk.Template.Child()
 
+    # UI Updates in seconds constants
+    on_network_speed_update_seconds = 1
+    on_vpn_monitor_update_seconds = 3
+    on_server_load_update_seconds = 900  # every 15min
+    on_event_update_seconds = 720  # every 12min
+
     # Other Constants
     feature_button_icon_width = 20
     feature_button_icon_height = 20
-    on_network_speed_update_seconds = 1
-    on_vpn_monitor_update_seconds = 3
-    on_server_load_update_seconds = 900
 
     glib_source_tracker = {
         GLibEventSourceEnum.ON_MONITOR_VPN: None,
         GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED: None,
         GLibEventSourceEnum.ON_SERVER_LOAD: None,
+        GLibEventSourceEnum.ON_EVENT: None,
     }
     glib_source_updated_time = {
         GLibEventSourceEnum.ON_MONITOR_VPN:
@@ -137,6 +141,8 @@ class DashboardView(Gtk.ApplicationWindow):
             on_network_speed_update_seconds,
         GLibEventSourceEnum.ON_SERVER_LOAD:
             on_server_load_update_seconds,
+        GLibEventSourceEnum.ON_EVENT:
+            on_event_update_seconds
     }
 
     features_icon_set_dict = {
@@ -198,6 +204,8 @@ class DashboardView(Gtk.ApplicationWindow):
             UpdateNetworkSpeedView(self, state)
         elif isinstance(state, QuickSettingsStatus):
             UpdateQuickSettings(self, state)
+        elif isinstance(state, DisplayEvent):
+            EventNotification(self, state)
         elif isinstance(state, DisplayDialog):
             DisplayMessageDialog(
                 self.application,
@@ -301,6 +309,7 @@ class DashboardView(Gtk.ApplicationWindow):
         # Other views
         self.server_list_view = ServerListView(self)
         self.quick_settings_popover = QuickSettingsPopoverView(self.dashboard_view_model)
+        self.event_notification = None
 
         # Other UI properties
         self.overlay_spinner.set_property("width-request", 200)
@@ -343,6 +352,8 @@ class DashboardView(Gtk.ApplicationWindow):
                 self.dashboard_view_model.on_update_speed_async,
             GLibEventSourceEnum.ON_SERVER_LOAD:
                 self.dashboard_view_model.on_update_server_load,
+            GLibEventSourceEnum.ON_EVENT:
+                self.dashboard_view_model.async_check_if_events_should_be_displayed
         }
 
     def set_windows_resize_restrictions(self):
@@ -629,6 +640,7 @@ class DashboardView(Gtk.ApplicationWindow):
 
     def prepare_for_app_shutdown(self):
         self.dashboard_view_model.state.dispose()
+        self.remove_background_glib(GLibEventSourceEnum.ON_EVENT)
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.remove_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         self.remove_background_glib(
