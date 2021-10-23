@@ -87,6 +87,24 @@ class DashboardViewModel:
         VPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
+    ks_quick_setting = {
+        KillswitchStatusEnum.DISABLED: DashboardKillSwitchIconEnum.OFF,
+        KillswitchStatusEnum.SOFT: DashboardKillSwitchIconEnum.ON_ACTIVE,
+        KillswitchStatusEnum.HARD:
+        DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE
+    }
+    ns_quick_setting = {
+        NetshieldTranslationEnum.DISABLED: DashboardNetshieldIconEnum.OFF,
+        NetshieldTranslationEnum.MALWARE:
+        DashboardNetshieldIconEnum.MALWARE_ACTIVE,
+        NetshieldTranslationEnum.ADS_MALWARE:
+        DashboardNetshieldIconEnum.MALWARE_ADS_ACTIVE
+    }
+    sc_quick_setting = {
+        SecureCoreStatusEnum.OFF: DashboardSecureCoreIconEnum.OFF,
+        SecureCoreStatusEnum.ON: DashboardSecureCoreIconEnum.ON_ACTIVE
+    }
+
     def __init__(self):
         self.utils = Module().utility
         self.__none_vpn_ip = None
@@ -138,7 +156,6 @@ class DashboardViewModel:
     def on_startup_preload_resources_async(self):
         """Async load initial UI components such as quick settings and
         server list."""
-        self.state.on_next(dt.Loading())
         process = BackgroundProcess.factory("gtask")
         process.setup(self.__on_startup)
         process.start()
@@ -494,28 +511,10 @@ class DashboardViewModel:
 
     def get_quick_settings_state(self):
         settings = protonvpn.get_settings()
-        ks_quick_setting = {
-            KillswitchStatusEnum.DISABLED: DashboardKillSwitchIconEnum.OFF,
-            KillswitchStatusEnum.SOFT: DashboardKillSwitchIconEnum.ON_ACTIVE,
-            KillswitchStatusEnum.HARD:
-            DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE
-        }
-        ns_quick_setting = {
-            NetshieldTranslationEnum.DISABLED: DashboardNetshieldIconEnum.OFF,
-            NetshieldTranslationEnum.MALWARE:
-            DashboardNetshieldIconEnum.MALWARE_ACTIVE,
-            NetshieldTranslationEnum.ADS_MALWARE:
-            DashboardNetshieldIconEnum.MALWARE_ADS_ACTIVE
-        }
-        sc_quick_setting = {
-            SecureCoreStatusEnum.OFF: DashboardSecureCoreIconEnum.OFF,
-            SecureCoreStatusEnum.ON: DashboardSecureCoreIconEnum.ON_ACTIVE
-        }
-
         state = dt.QuickSettingsStatus(
-            secure_core=sc_quick_setting[settings.secure_core],
-            netshield=ns_quick_setting[settings.netshield],
-            killswitch=ks_quick_setting[settings.killswitch],
+            secure_core=self.sc_quick_setting[settings.secure_core],
+            netshield=self.ns_quick_setting[settings.netshield],
+            killswitch=self.ks_quick_setting[settings.killswitch],
         )
 
         return state

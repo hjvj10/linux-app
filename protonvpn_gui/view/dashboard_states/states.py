@@ -11,17 +11,16 @@ class InitLoadView:
     Setup the UI to an initial loading state (app start).
     """
     def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        dv.overlay_bottom_label.props.label = ""\
+        dashboard_view.overlay_bottom_label.props.label = ""\
             "Secure Internet Anywhere"
-        dv.overlay_spinner.start()
-        dv.overlay_box.props.visible = True
-        self.load_events(dv)
+        dashboard_view.overlay_spinner.start()
+        dashboard_view.overlay_box.props.visible = True
+        self.load_events(dashboard_view)
 
-    def load_events(self, dv):
-        self.__check_if_black_friday_event_should_be_displayed(dv)
+    def load_events(self, dashboard_view):
+        self.__check_if_black_friday_event_should_be_displayed(dashboard_view)
 
-    def __check_if_black_friday_event_should_be_displayed(self, dv):
+    def __check_if_black_friday_event_should_be_displayed(self, dashboard_view):
         import gi
         gi.require_version('Gtk', '3.0')
         from gi.repository import GLib
@@ -31,12 +30,12 @@ class InitLoadView:
         open_black_friday_modal = self.__open_black_friday_modal
 
         def async_attach_icon(self, *args):
-            dv.connected_label_grid.attach(
+            dashboard_view.connected_label_grid.attach(
                 bf_button.widget, 1, 0, 1, 1
             )
             bf_button.connect(
                 "clicked", open_black_friday_modal,
-                dv.application, bf_notification,
+                dashboard_view.application, bf_notification,
                 protonvpn.get_settings(), NotificationStatusEnum,
                 event_icon
             )
@@ -84,9 +83,8 @@ class UpdateNetworkSpeedView:
     Updates network speeds labels.
     """
     def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        dv.upload_speed_label.props.label = state.upload
-        dv.download_speed_label.props.label = state.download
+        dashboard_view.upload_speed_label.props.label = state.upload
+        dashboard_view.download_speed_label.props.label = state.download
 
 
 class NotConnectedVPNView:
@@ -95,14 +93,13 @@ class NotConnectedVPNView:
     Setup the UI to not connected state.
     """
     def __init__(self, dashboard_view, state):
-        dv = dashboard_view
         label = "You are not connected"
         ip = state.ip
 
         if state.perma_ks_enabled:
             label = "Kill Switch activated!"
             ip = ""
-            dv.application.indicator.set_error_state()
+            dashboard_view.application.indicator.set_error_state()
         elif all(
             attr is None
             for attr
@@ -110,27 +107,26 @@ class NotConnectedVPNView:
         ):
             label = "Network issues detected."
             ip = ""
-            dv.application.indicator.set_error_state()
+            dashboard_view.application.indicator.set_error_state()
         else:
-            dv.application.indicator.set_disconnected_state()
+            dashboard_view.application.indicator.set_disconnected_state()
 
-        dv.quick_connect_button.props.sensitive = True
+        dashboard_view.quick_connect_button.props.sensitive = True
 
-        dv.connected_protocol_label.props.label = ""
-        dv.country_servername_label.props.label = \
+        dashboard_view.connected_protocol_label.props.label = ""
+        dashboard_view.country_servername_label.props.label = \
             label
-        dv.ip_label.props.label = ip
-        label_ctx = dv.country_servername_label.get_style_context()
-        dv.quick_connect_button.props.visible = True
-        dv.main_disconnect_button.props.visible = False
+        dashboard_view.ip_label.props.label = ip
+        label_ctx = dashboard_view.country_servername_label.get_style_context()
+        dashboard_view.quick_connect_button.props.visible = True
+        dashboard_view.main_disconnect_button.props.visible = False
+
         if not label_ctx.has_class("warning-color"):
             label_ctx.add_class("warning-color")
 
-        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
-        dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
-        dv.gtk_property_setter(
-            dv.SET_UI_NOT_CONNECTED
-        )
+        dashboard_view.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        dashboard_view.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
+        dashboard_view.gtk_property_setter(dashboard_view.SET_UI_NOT_CONNECTED)
 
 
 class ConnectedVPNView:
@@ -139,7 +135,6 @@ class ConnectedVPNView:
     Setup the UI to connected state.
     """
     def __init__(self, dashboard_view, state):
-        dv = dashboard_view
         country = protonvpn.get_country()
         country_string = "{}".format(
             country.get_country_name(state.countries[0])
@@ -155,11 +150,11 @@ class ConnectedVPNView:
         else:
             country_string = country_string + " {}".format(state.servername)
 
-        dv.on_connect_load_sidebar_flag(state.exit_country_code)
+        dashboard_view.on_connect_load_sidebar_flag(state.exit_country_code)
         country_servername = country_string
-        dv.country_servername_label.props.label = country_servername
-        dv.ip_label.props.label = state.ip
-        dv.serverload_label.props.label = state.load + "% " + "Load"
+        dashboard_view.country_servername_label.props.label = country_servername
+        dashboard_view.ip_label.props.label = state.ip
+        dashboard_view.serverload_label.props.label = state.load + "% " + "Load"
         protocol = state.protocol
         if state.protocol in SUPPORTED_PROTOCOLS[
             ProtocolImplementationEnum.OPENVPN
@@ -167,21 +162,21 @@ class ConnectedVPNView:
             protocol = "OpenVPN ({})".format(
                 state.protocol.value.upper()
             )
-        dv.connected_protocol_label.props.label = protocol
-        dv.quick_connect_button.props.visible = False
-        dv.main_disconnect_button.props.visible = True
-        dv.main_disconnect_button.props.sensitive = True
-        label_ctx = dv.country_servername_label.get_style_context()
+        dashboard_view.connected_protocol_label.props.label = protocol
+        dashboard_view.quick_connect_button.props.visible = False
+        dashboard_view.main_disconnect_button.props.visible = True
+        dashboard_view.main_disconnect_button.props.sensitive = True
+        label_ctx = dashboard_view.country_servername_label.get_style_context()
 
         if label_ctx.has_class("warning-color"):
             label_ctx.remove_class("warning-color")
 
-        dv.application.indicator.set_connected_state()
+        dashboard_view.application.indicator.set_connected_state()
 
-        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED)
-        dv.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
-        dv.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
-        dv.gtk_property_setter(dv.SET_UI_CONNECTED)
+        dashboard_view.add_background_glib(GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED)
+        dashboard_view.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
+        dashboard_view.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
+        dashboard_view.gtk_property_setter(dashboard_view.SET_UI_CONNECTED)
 
 
 class ConnectVPNPreparingView:
@@ -190,13 +185,12 @@ class ConnectVPNPreparingView:
     Setup the UI during VPN prepare state.
     """
     def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        dv.connecting_overlay_spinner.props.visible = True
-        dv.connecting_progress_bar.props.visible = True
-        dv.connecting_progress_bar.set_fraction(0.2)
-        dv.connecting_to_label.props.label = "Preparing ProtonVPN Connection"
-        dv.cancel_connect_overlay_button.props.visible = False
-        dv.connecting_overlay_box.props.visible = True
+        dashboard_view.connecting_overlay_spinner.props.visible = True
+        dashboard_view.connecting_progress_bar.props.visible = True
+        dashboard_view.connecting_progress_bar.set_fraction(0.2)
+        dashboard_view.connecting_to_label.props.label = "Preparing ProtonVPN Connection"
+        dashboard_view.cancel_connect_overlay_button.props.visible = False
+        dashboard_view.connecting_overlay_box.props.visible = True
 
 
 class ConnectVPNInProgressView:
@@ -205,16 +199,15 @@ class ConnectVPNInProgressView:
     Setup the UI during VPN connection in progress state.
     """
     def __init__(self, dashboard_view, state):
-        dv = dashboard_view
-        new_value = dv.connecting_progress_bar.get_fraction() + 0.5
-        dv.connecting_progress_bar.set_fraction(new_value)
+        new_value = dashboard_view.connecting_progress_bar.get_fraction() + 0.5
+        dashboard_view.connecting_progress_bar.set_fraction(new_value)
         var_1 = state.exit_country
         var_2 = state.servername
         if state.is_secure_core:
             var_1 = state.entry_country
             var_2 = state.exit_country
 
-        dv.connecting_to_label.set_markup(
+        dashboard_view.connecting_to_label.set_markup(
             "Connecting <span weight='bold'>{} >> {}</span>".format(
                 var_1, var_2,
             )
@@ -229,13 +222,13 @@ class ConnectVPNErrorView:
     """
     def __init__(self, dashboard_view, state):
         dv = dashboard_view
-        dv.connecting_to_label.set_text(
+        dashboard_view.connecting_to_label.set_text(
             state.message
         )
-        dv.quick_connect_button.props.sensitive = True
-        dv.main_disconnect_button.props.sensitive = False
-        dv.connecting_to_label.props.visible = False
-        dv.cancel_connect_overlay_button.props.visible = True
-        dv.cancel_connect_overlay_button.set_label("Close")
-        dv.connecting_overlay_spinner.props.visible = False
-        dv.connecting_progress_bar.props.visible = False
+        dashboard_view.quick_connect_button.props.sensitive = True
+        dashboard_view.main_disconnect_button.props.sensitive = False
+        dashboard_view.connecting_to_label.props.visible = False
+        dashboard_view.cancel_connect_overlay_button.props.visible = True
+        dashboard_view.cancel_connect_overlay_button.set_label("Close")
+        dashboard_view.connecting_overlay_spinner.props.visible = False
+        dashboard_view.connecting_progress_bar.props.visible = False
