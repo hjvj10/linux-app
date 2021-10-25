@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.5.0
-%define release 5
+%define release 6
 
 Prefix: %{_prefix}
 
@@ -62,7 +62,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Thu Oct 15 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-5
+* Thu Oct 15 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-6
 - Feature: Handle and display events
 - Fix: Memory leak
 - Improve: Exception handling

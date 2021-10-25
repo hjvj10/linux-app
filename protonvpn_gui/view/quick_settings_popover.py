@@ -281,7 +281,7 @@ class QuickSettingButton:
     def vpn_tier(self):
         if self.__vpn_tier is None:
             try:
-                self.__vpn_tier = self.vpn_tier
+                self.__vpn_tier = protonvpn.get_session().vpn_tier
             except: # noqa
                 self.__vpn_tier = ServerTierEnum.FREE.value
 
