@@ -61,7 +61,7 @@ class QuickSettingsViewModel:
                     server.exit_country_code.lower() == exit_country.lower(),
                     country.servers
                 )),
-                self.dashboard_vm.server_list_view_model.server_list.secure_core.servers
+                self.dashboard_vm.server_list_view_model.server_list_model.secure_core.servers
             ))
             flattened_servers = [
                 server for sub in servers_list for server in sub

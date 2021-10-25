@@ -1,4 +1,4 @@
-protonvpn-gui (1.5.0-6) unstable; urgency=medium
+protonvpn-gui (1.5.0-7) unstable; urgency=medium
 
   * Feature: Handle and display events
   * Fix: Memory leak

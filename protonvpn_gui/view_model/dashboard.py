@@ -581,6 +581,7 @@ class DashboardViewModel:
         a thread. It is mainly used to track when a VPN connection
         is stopped and/or removed.
         """
+        result = None
         try:
             protonvpn_connection = protonvpn\
                 .get_active_protonvpn_connection()
@@ -595,7 +596,8 @@ class DashboardViewModel:
             except (exceptions.ProtonVPNException, Exception) as e:
                 logger.exception(e)
 
-        self.state.on_next(result)
+        if result:
+            self.state.on_next(result)
 
     def on_update_speed_async(self):
         """Update network speed.
