@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from enum import auto
+
 from ...enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
-                     DashboardSecureCoreIconEnum)
+                      DashboardSecureCoreIconEnum)
+
 
 @dataclass
 class Loading:
@@ -76,3 +79,15 @@ class QuickSettingsStatus:
 class DisplayDialog:
     title: str
     text: str
+
+
+@dataclass
+class DisplayEvent:
+    event_dataclass: auto()
+    has_notification_been_opened: bool
+    set_notification_as_read: auto()  # method callback
+
+
+@dataclass
+class BlackFridayEvent:
+    class_instance: auto()

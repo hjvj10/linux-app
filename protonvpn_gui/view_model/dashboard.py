@@ -4,7 +4,8 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     ConnectionStartStatusEnum,
                                     ConnectionStatusEnum, ConnectionTypeEnum,
                                     FeatureEnum, KillswitchStatusEnum,
-                                    NetshieldTranslationEnum,
+                                    NetshieldTranslationEnum, NotificationEnum,
+                                    NotificationStatusEnum,
                                     SecureCoreStatusEnum,
                                     VPNConnectionReasonEnum,
                                     VPNConnectionStateEnum)
@@ -12,10 +13,10 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
 from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                      DashboardSecureCoreIconEnum)
 from ..logger import logger
-from ..rx.subject.replaysubject import ReplaySubject
-from ..patterns.factory import BackgroundProcess
-from .dataclass import dashboard as dt
 from ..module import Module
+from ..patterns.factory import BackgroundProcess
+from ..rx.subject.replaysubject import ReplaySubject
+from .dataclass import dashboard as dt
 
 
 class DashboardViewModel:
@@ -87,6 +88,24 @@ class DashboardViewModel:
         VPNConnectionReasonEnum.UNKNOWN_ERROR: "Unknown reason occured."
     }
 
+    ks_quick_setting = {
+        KillswitchStatusEnum.DISABLED: DashboardKillSwitchIconEnum.OFF,
+        KillswitchStatusEnum.SOFT: DashboardKillSwitchIconEnum.ON_ACTIVE,
+        KillswitchStatusEnum.HARD:
+        DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE
+    }
+    ns_quick_setting = {
+        NetshieldTranslationEnum.DISABLED: DashboardNetshieldIconEnum.OFF,
+        NetshieldTranslationEnum.MALWARE:
+        DashboardNetshieldIconEnum.MALWARE_ACTIVE,
+        NetshieldTranslationEnum.ADS_MALWARE:
+        DashboardNetshieldIconEnum.MALWARE_ADS_ACTIVE
+    }
+    sc_quick_setting = {
+        SecureCoreStatusEnum.OFF: DashboardSecureCoreIconEnum.OFF,
+        SecureCoreStatusEnum.ON: DashboardSecureCoreIconEnum.ON_ACTIVE
+    }
+
     def __init__(self):
         self.utils = Module().utility
         self.__none_vpn_ip = None
@@ -98,7 +117,21 @@ class DashboardViewModel:
         self.__quick_settings_vm.dashboard_view_model = self
         self.__server_list_vm.dashboard_view_model = self
 
-        self.state = ReplaySubject(buffer_size=1)
+        self.__state = ReplaySubject(buffer_size=1)
+
+    @property
+    def state(self):
+        from protonvpn_gui.rx.internal.exceptions import DisposedException
+        try:
+            self.__state.check_disposed()
+        except DisposedException:
+            self.__state = ReplaySubject(buffer_size=1)
+
+        return self.__state
+
+    @state.deleter
+    def state(self):
+        self.__state.dispose()
 
     @property
     def quick_settings_view_model(self):
@@ -124,7 +157,6 @@ class DashboardViewModel:
     def on_startup_preload_resources_async(self):
         """Async load initial UI components such as quick settings and
         server list."""
-        self.state.on_next(dt.Loading())
         process = BackgroundProcess.factory("gtask")
         process.setup(self.__on_startup)
         process.start()
@@ -134,7 +166,7 @@ class DashboardViewModel:
         server list.
 
         This needs to be pre-loaded before displaying the dashboard."""
-        protonvpn.get_session().get_all_notifications()
+        self.check_if_events_should_be_displayed()
         self.state.on_next(self.get_quick_settings_state())
 
         try:
@@ -146,6 +178,41 @@ class DashboardViewModel:
                 text=str(e)
             )
             self.state.on_next(result)
+
+    def async_check_if_events_should_be_displayed(self):
+        """Async check if events should be displayed."""
+        process = BackgroundProcess.factory("gtask")
+        process.setup(self.check_if_events_should_be_displayed)
+        process.start()
+
+        return True
+
+    def check_if_events_should_be_displayed(self, *_):
+        """Sync check if events should be displayed."""
+        all_notitications = protonvpn.get_session().get_all_notifications()
+        if not isinstance(all_notitications, list):
+            return
+
+        for event in all_notitications:
+            # Check if the notifications is of black friday type
+            # also check if it can be displayed and it can be displayed,
+            # If both are false then nothing will be displayed
+            if event.notification_type == NotificationEnum.BLACK_FRIDAY.value:
+                self.state.on_next(
+                    dt.DisplayEvent(
+                        dt.BlackFridayEvent(event),
+                        (
+                            True
+                            if protonvpn.get_settings().event_notification == NotificationStatusEnum.OPENED # noqa
+                            else False
+                        ),
+                        self.set_notification_as_read
+                    )
+                )
+
+    def set_notification_as_read(self):
+        from protonvpn_nm_lib.enums import NotificationStatusEnum
+        protonvpn.get_settings().event_notification = NotificationStatusEnum.OPENED
 
     def on_startup_load_dashboard_resources_async(self, *_):
         """Async load dashboard resources."""
@@ -480,28 +547,10 @@ class DashboardViewModel:
 
     def get_quick_settings_state(self):
         settings = protonvpn.get_settings()
-        ks_quick_setting = {
-            KillswitchStatusEnum.DISABLED: DashboardKillSwitchIconEnum.OFF,
-            KillswitchStatusEnum.SOFT: DashboardKillSwitchIconEnum.ON_ACTIVE,
-            KillswitchStatusEnum.HARD:
-            DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE
-        }
-        ns_quick_setting = {
-            NetshieldTranslationEnum.DISABLED: DashboardNetshieldIconEnum.OFF,
-            NetshieldTranslationEnum.MALWARE:
-            DashboardNetshieldIconEnum.MALWARE_ACTIVE,
-            NetshieldTranslationEnum.ADS_MALWARE:
-            DashboardNetshieldIconEnum.MALWARE_ADS_ACTIVE
-        }
-        sc_quick_setting = {
-            SecureCoreStatusEnum.OFF: DashboardSecureCoreIconEnum.OFF,
-            SecureCoreStatusEnum.ON: DashboardSecureCoreIconEnum.ON_ACTIVE
-        }
-
         state = dt.QuickSettingsStatus(
-            secure_core=sc_quick_setting[settings.secure_core],
-            netshield=ns_quick_setting[settings.netshield],
-            killswitch=ks_quick_setting[settings.killswitch],
+            secure_core=self.sc_quick_setting[settings.secure_core],
+            netshield=self.ns_quick_setting[settings.netshield],
+            killswitch=self.ks_quick_setting[settings.killswitch],
         )
 
         return state
@@ -532,6 +581,7 @@ class DashboardViewModel:
         a thread. It is mainly used to track when a VPN connection
         is stopped and/or removed.
         """
+        result = None
         try:
             protonvpn_connection = protonvpn\
                 .get_active_protonvpn_connection()
@@ -546,7 +596,8 @@ class DashboardViewModel:
             except (exceptions.ProtonVPNException, Exception) as e:
                 logger.exception(e)
 
-        self.state.on_next(result)
+        if result:
+            self.state.on_next(result)
 
     def on_update_speed_async(self):
         """Update network speed.

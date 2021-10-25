@@ -8,17 +8,17 @@ from ..module import Module
 
 class ServerListViewModel:
     def __init__(self):
-        self.dashboard_vm = None
+        self.__dashboard_vm = None
         self.__update_server_load = False
         self.server_list_model = Module().server_list_model
 
     @property
     def dashboard_view_model(self):
-        return self.dashboard_vm
+        return self.__dashboard_vm
 
     @dashboard_view_model.setter
     def dashboard_view_model(self, newvalue):
-        self.dashboard_vm = newvalue
+        self.__dashboard_vm = newvalue
 
     def on_switch_server_list_view_async(self):
         process = BackgroundProcess.factory("gtask")
@@ -29,7 +29,7 @@ class ServerListViewModel:
         state = SwitchServerList(
             display_secure_core=protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON
         )
-        self.dashboard_vm.state.on_next(state)
+        self.__dashboard_vm.state.on_next(state)
 
     def on_load_servers_async(self, *_):
         process = BackgroundProcess.factory("gtask")
@@ -42,7 +42,7 @@ class ServerListViewModel:
             server_list=self.server_list_model,
             display_secure_core=protonvpn.get_settings().secure_core == SecureCoreStatusEnum.ON
         )
-        self.dashboard_vm.state.on_next(state)
+        self.__dashboard_vm.state.on_next(state)
 
     def __generate_server_list(self):
         self.server_list_model.generate_list(

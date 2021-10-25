@@ -20,11 +20,12 @@ from ..view_model.dataclass.dashboard import (ConnectedToVPNInfo, ConnectError,
                                               DisplayDialog, Loading,
                                               NetworkSpeed,
                                               NotConnectedToVPNInfo,
-                                              QuickSettingsStatus)
+                                              QuickSettingsStatus, DisplayEvent)
 from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
                                ConnectVPNInProgressView,
                                ConnectVPNPreparingView, InitLoadView,
-                               NotConnectedVPNView, UpdateNetworkSpeedView)
+                               NotConnectedVPNView, UpdateNetworkSpeedView,
+                               UpdateQuickSettings, EventNotification)
 from .dialog import DisplayMessageDialog
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
@@ -55,7 +56,7 @@ class DashboardView(Gtk.ApplicationWindow):
     """
     __gtype_name__ = 'DashboardView'
 
-    # Other objects
+    # UI Constants - Other objects
     headerbar = Gtk.Template.Child()
 
     overlay_spinner = Gtk.Template.Child()
@@ -65,10 +66,10 @@ class DashboardView(Gtk.ApplicationWindow):
     server_list_scrolled_window = Gtk.Template.Child()
     server_list_view_port = Gtk.Template.Child()
 
-    # Popover menus
+    # UI Constants - Popover menus
     dashboard_popover_menu = Gtk.Template.Child()
 
-    # Buttons
+    # UI Constants - Buttons
     # The button below is not used and is left only for
     # reference that it exists and can be used if wished.
     # headerbar_menu_button = Gtk.Template.Child()
@@ -81,7 +82,7 @@ class DashboardView(Gtk.ApplicationWindow):
     server_search_entry = Gtk.Template.Child()
     servers_info_icon_button = Gtk.Template.Child()
 
-    # Labels
+    # UI Constants - Labels
     country_servername_label = Gtk.Template.Child()
     ip_label = Gtk.Template.Child()
     serverload_label = Gtk.Template.Child()
@@ -92,7 +93,7 @@ class DashboardView(Gtk.ApplicationWindow):
     overlay_bottom_label = Gtk.Template.Child()
     connecting_to_label = Gtk.Template.Child()
 
-    # Images/Icons
+    # UI Constants - Images/Icons
     headerbar_sign_icon = Gtk.Template.Child()
     overlay_logo_image = Gtk.Template.Child()
     server_load_image = Gtk.Template.Child()
@@ -104,7 +105,7 @@ class DashboardView(Gtk.ApplicationWindow):
     dashboard_netshield_button_image = Gtk.Template.Child()
     dashboard_killswitch_button_image = Gtk.Template.Child()
 
-    # Grids
+    # UI Constants - Grids
     connected_label_grid = Gtk.Template.Child()
     ip_label_grid = Gtk.Template.Child()
     ip_server_load_labels_grid = Gtk.Template.Child()
@@ -113,21 +114,25 @@ class DashboardView(Gtk.ApplicationWindow):
     top_sever_locations_grid = Gtk.Template.Child()
     server_list_grid = Gtk.Template.Child()
 
-    # Boxes
+    # UI Constants - Boxes
     overlay_box = Gtk.Template.Child()
     connecting_overlay_box = Gtk.Template.Child()
 
-    # Constants
-    feature_button_icon_width = 20
-    feature_button_icon_height = 20
+    # UI Updates in seconds constants
     on_network_speed_update_seconds = 1
     on_vpn_monitor_update_seconds = 3
-    on_server_load_update_seconds = 900
+    on_server_load_update_seconds = 900  # every 15min
+    on_event_update_seconds = 720  # every 12min
+
+    # Other Constants
+    feature_button_icon_width = 20
+    feature_button_icon_height = 20
 
     glib_source_tracker = {
         GLibEventSourceEnum.ON_MONITOR_VPN: None,
         GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED: None,
         GLibEventSourceEnum.ON_SERVER_LOAD: None,
+        GLibEventSourceEnum.ON_EVENT: None,
     }
     glib_source_updated_time = {
         GLibEventSourceEnum.ON_MONITOR_VPN:
@@ -136,6 +141,8 @@ class DashboardView(Gtk.ApplicationWindow):
             on_network_speed_update_seconds,
         GLibEventSourceEnum.ON_SERVER_LOAD:
             on_server_load_update_seconds,
+        GLibEventSourceEnum.ON_EVENT:
+            on_event_update_seconds
     }
 
     features_icon_set_dict = {
@@ -147,67 +154,17 @@ class DashboardView(Gtk.ApplicationWindow):
     def __init__(self, **kwargs):
         self.application = kwargs.pop("application")
         super().__init__(application=self.application)
-        self.dashboard_view_model = Module().dashboard_view_model
-        self.dashboard_view_model.state.subscribe(
-            lambda state: GLib.idle_add(self.render_view_state, state)
-        )
-        self.server_list_view = ServerListView(self)
-        self.application.indicator.setup_reply_subject()
-        try:
-            self.application.indicator.dashboard_action.subscribe(
-                lambda indicator_state: self.indicator_action(indicator_state)
-            )
-        except AttributeError:
-            pass
-        self.quick_settings_popover = QuickSettingsPopoverView(
-            self.dashboard_view_model
-        )
-        self.overlay_spinner.set_property("width-request", 200)
-        self.overlay_spinner.set_property("height-request", 200)
-        self.connecting_overlay_spinner.set_property("width-request", 200)
-        self.connecting_overlay_spinner.set_property("height-request", 200)
-        self.SET_UI_NOT_CONNECTED = {
-            "property": "visible",
-            "objects": [
-                (self.download_speed_label, False),
-                (self.download_speed_image, False),
-                (self.upload_speed_image, False),
-                (self.upload_speed_label, False),
-                (self.serverload_label, False),
-                (self.sidebar_country_image, False),
-                (self.server_load_image, False),
-                (self.connecting_overlay_box, False),
-                (self.overlay_box, False),
-            ]
-        }
-        self.SET_UI_CONNECTED = {
-            "property": "visible",
-            "objects": [
-                (self.download_speed_label, True),
-                (self.download_speed_image, True),
-                (self.upload_speed_image, True),
-                (self.upload_speed_label, True),
-                (self.serverload_label, True),
-                (self.sidebar_country_image, True),
-                (self.server_load_image, False),
-                (self.connecting_overlay_box, False),
-                (self.overlay_box, False),
-            ]
-        }
-        self.overlay_box_context = self.overlay_box.get_style_context()
-        self.glib_source_updated_method = {
-            GLibEventSourceEnum.ON_MONITOR_VPN:
-                self.dashboard_view_model.on_monitor_vpn_async,
-            GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED:
-                self.dashboard_view_model.on_update_speed_async,
-            GLibEventSourceEnum.ON_SERVER_LOAD:
-                self.dashboard_view_model.on_update_server_load,
-        }
+
+        self.setup_properties()
         self.set_windows_resize_restrictions()
         self.setup_icons_images()
         self.setup_css()
         self.setup_actions()
         self._preload_ui_resources()
+
+    def display_view(self):
+        self.render_view_state(Loading())
+        self.present()
 
     def _preload_ui_resources(self):
         self.dashboard_view_model.on_startup_preload_resources_async()
@@ -246,60 +203,15 @@ class DashboardView(Gtk.ApplicationWindow):
         elif isinstance(state, NetworkSpeed):
             UpdateNetworkSpeedView(self, state)
         elif isinstance(state, QuickSettingsStatus):
-            self.update_quick_settings(state)
+            UpdateQuickSettings(self, state)
+        elif isinstance(state, DisplayEvent):
+            EventNotification(self, state)
         elif isinstance(state, DisplayDialog):
             DisplayMessageDialog(
                 self.application,
                 title=state.title,
                 description=state.text
             )
-
-    def update_quick_settings(self, state):
-        """Updates quick settings icons based on state.
-
-        Args:
-            state (QuickSettingsStatus)
-
-        QuickSettingsStatus of three different properties:
-            secure_core (DashboardSecureCoreIconEnum)
-            netshield (DashboardNetshieldIconEnum)
-            killswitch (DashboardKillSwitchIconEnum)
-        """
-        dummy_object = WidgetFactory.image("dummy")
-        feature_button_secure_core_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.SECURE_CORE
-                ][state.secure_core],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-        feature_button_netshield_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.NETSHIELD
-                ][state.netshield],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-        feature_button_killswitch_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.KILLSWITCH
-                ][state.killswitch],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-
-        self.dashboard_secure_core_button_image.set_from_pixbuf(
-            feature_button_secure_core_pixbuf
-        )
-        self.dashboard_netshield_button_image.set_from_pixbuf(
-            feature_button_netshield_pixbuf
-        )
-        self.dashboard_killswitch_button_image.set_from_pixbuf(
-            feature_button_killswitch_pixbuf
-        )
 
     def on_click_disconnect(self, gkt_simple_action, _):
         """On click on Disconnect event handler.
@@ -377,6 +289,72 @@ class DashboardView(Gtk.ApplicationWindow):
 
         """
         self.dashboard_popover_menu.popup()
+
+    def setup_properties(self):
+        # ViewModel
+        self.dashboard_view_model = Module().dashboard_view_model
+        self.dashboard_view_model.state.subscribe(
+            lambda state: GLib.idle_add(self.render_view_state, state)
+        )
+
+        # Indicator
+        self.application.indicator.setup_reply_subject()
+        try:
+            self.application.indicator.dashboard_action.subscribe(
+                lambda indicator_state: self.indicator_action(indicator_state)
+            )
+        except AttributeError:
+            pass
+
+        # Other views
+        self.server_list_view = ServerListView(self)
+        self.quick_settings_popover = QuickSettingsPopoverView(self.dashboard_view_model)
+        self.event_notification = None
+
+        # Other UI properties
+        self.overlay_spinner.set_property("width-request", 200)
+        self.overlay_spinner.set_property("height-request", 200)
+        self.connecting_overlay_spinner.set_property("width-request", 200)
+        self.connecting_overlay_spinner.set_property("height-request", 200)
+        self.SET_UI_NOT_CONNECTED = {
+            "property": "visible",
+            "objects": [
+                (self.download_speed_label, False),
+                (self.download_speed_image, False),
+                (self.upload_speed_image, False),
+                (self.upload_speed_label, False),
+                (self.serverload_label, False),
+                (self.sidebar_country_image, False),
+                (self.server_load_image, False),
+                (self.connecting_overlay_box, False),
+                (self.overlay_box, False),
+            ]
+        }
+        self.SET_UI_CONNECTED = {
+            "property": "visible",
+            "objects": [
+                (self.download_speed_label, True),
+                (self.download_speed_image, True),
+                (self.upload_speed_image, True),
+                (self.upload_speed_label, True),
+                (self.serverload_label, True),
+                (self.sidebar_country_image, True),
+                (self.server_load_image, False),
+                (self.connecting_overlay_box, False),
+                (self.overlay_box, False),
+            ]
+        }
+        self.overlay_box_context = self.overlay_box.get_style_context()
+        self.glib_source_updated_method = {
+            GLibEventSourceEnum.ON_MONITOR_VPN:
+                self.dashboard_view_model.on_monitor_vpn_async,
+            GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED:
+                self.dashboard_view_model.on_update_speed_async,
+            GLibEventSourceEnum.ON_SERVER_LOAD:
+                self.dashboard_view_model.on_update_server_load,
+            GLibEventSourceEnum.ON_EVENT:
+                self.dashboard_view_model.async_check_if_events_should_be_displayed
+        }
 
     def set_windows_resize_restrictions(self):
         geometry = Gdk.Geometry()
@@ -661,6 +639,8 @@ class DashboardView(Gtk.ApplicationWindow):
             ] = None
 
     def prepare_for_app_shutdown(self):
+        self.dashboard_view_model.state.dispose()
+        self.remove_background_glib(GLibEventSourceEnum.ON_EVENT)
         self.remove_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         self.remove_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
         self.remove_background_glib(

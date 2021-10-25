@@ -1,8 +1,11 @@
-from .states import InitLoadView, UpdateNetworkSpeedView, NotConnectedVPNView, ConnectedVPNView, \
-    ConnectVPNPreparingView, ConnectVPNInProgressView, ConnectVPNErrorView
+from .states import (ConnectedVPNView, ConnectVPNErrorView, # noqa
+                     ConnectVPNInProgressView, ConnectVPNPreparingView,
+                     EventNotification, InitLoadView,
+                     NotConnectedVPNView, UpdateNetworkSpeedView,
+                     UpdateQuickSettings)
 
 __all_ = [
     "InitLoadView", "UpdateNetworkSpeedView", "NotConnectedVPNView",
     "ConnectedVPNView", "ConnectVPNPreparingView", "ConnectVPNInProgressView",
-    "ConnectVPNErrorView"
+    "ConnectVPNErrorView", "UpdateQuickSettings", "EventNotification"
 ]

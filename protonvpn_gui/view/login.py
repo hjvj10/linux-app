@@ -97,6 +97,10 @@ class LoginView(Gtk.ApplicationWindow):
         self.set_killswitch_revealer_status()
         self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()  # noqa
 
+    def display_view(self):
+        self.present()
+        self.application.hold_app = False
+
     def indicator_action(self, indicator_state):
         if indicator_state == IndicatorActionEnum.SHOW_GUI:
             self.set_visible(True)
@@ -254,7 +258,8 @@ class LoginView(Gtk.ApplicationWindow):
                 webview = WebView(self.application, callback_func=state.callback)
                 webview.display(state.display_human_verification_dialog)
         elif state == LoginState.SUCCESS:
-            self.dashboard_window().present()
+            self.dashboard_window().display_view()
+            self.login_view_model.state.dispose()
             self.on_close_window(None, None, True)
 
     def set_windows_resize_restrictions(self):

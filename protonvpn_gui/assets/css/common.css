@@ -107,6 +107,10 @@ button.enabled, button.disabled, button.transparent, button.transparent-white, b
   background-color: transparent;
 }
 
+button.no-default {
+  box-shadow: none;
+}
+
 button.enabled, button.disabled, button.transparent, button.transparent-white{
   text-shadow: none;
   color: rgb(255,255,255);

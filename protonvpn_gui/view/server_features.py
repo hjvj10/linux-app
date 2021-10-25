@@ -120,7 +120,7 @@ class PremiumCountries():
         view_more_link.add_class("margin-left-10px")
 
         title.content = "Streaming"
-        description.content = "PLUS server support streaming (Netflix, Disney+, etc) " \
+        description.content = "PLUS servers support streaming (Netflix, Disney+, etc) " \
             "from anywhere in the world."
         view_more_link.label = "Learn more"
         view_more_link.url = "https://protonvpn.com/support/streaming-guide/"

@@ -560,7 +560,7 @@ class BlackFridayPromoDialog:
                 bf_notification.incentive_price
             )
         )
-        incentive = "<span size=\"medium\">{}</span>\r{}".format(incentive_text, incentive_price)
+        incentive = "<span size=\"medium\">{}</span> {}".format(incentive_text, incentive_price)
 
         upgrade_to_label = WidgetFactory.label("black_friday_incentive")
         upgrade_to_label.set_content_with_markup(incentive)
