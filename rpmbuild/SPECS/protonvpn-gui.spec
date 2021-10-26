@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.5.0
-%define release 7
+%define version 1.5.1
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -62,6 +62,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Oct 26 2021 Proton Technologies AG <opensource@proton.me> 1.5.1-1
+- Hotfix: Fixed issue with search not working
+
 * Thu Oct 15 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-7
 - Feature: Handle and display events
 - Fix: Memory leak
