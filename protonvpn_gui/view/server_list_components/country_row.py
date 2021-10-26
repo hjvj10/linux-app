@@ -9,24 +9,30 @@ from .revealer import ServerListRevealer
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import GdkPixbuf, Gtk, Gdk
+import weakref
 
 
 class CountryRow:
     def __init__(self, country_item, dashboard_view, display_sc=None):
         self.__num_locations = len(country_item.servers)
-        server_list_revealer = ServerListRevealer(
+        _server_list_revealer = ServerListRevealer(
             dashboard_view,
             country_item,
             display_sc
         )
+        server_list_revealer = weakref.proxy(_server_list_revealer)
+
         self.row_grid = WidgetFactory.grid("country_row")
-        left_child = CountryRowLeftGrid(country_item, display_sc)
-        right_child = CountryRowRightGrid(
+        _left_child = CountryRowLeftGrid(country_item, display_sc)
+        left_child = weakref.proxy(_left_child)
+
+        _right_child = CountryRowRightGrid(
             country_item,
             server_list_revealer.revealer,
             dashboard_view,
             display_sc
         )
+        right_child = weakref.proxy(_right_child)
 
         self.row_grid.attach(left_child.grid.widget)
         self.row_grid.attach_right_next_to(
@@ -67,8 +73,6 @@ class CountryRow:
 class CountryRowLeftGrid:
     def __init__(self, country_item, display_sc):
         self.grid = WidgetFactory.grid("left_child_in_country_row")
-        self.grid.add_class("server-list-country-margin-left")
-        self.grid.add_class("country-elements")
         try:
             country_flag = WidgetFactory.image(
                 "small_flag", country_item.entry_country_code
@@ -99,8 +103,6 @@ class CountryRowRightGrid:
         self.feature_icon_list = []
         country_under_maintenance = country_item.status == ServerStatusEnum.UNDER_MAINTENANCE
         self.grid = WidgetFactory.grid("right_child_in_country_row")
-        self.grid.add_class("server-list-country-margin-right")
-        self.grid.add_class("country-elements")
 
         maintenance_icon = WidgetFactory.image("maintenance_icon")
         self.connect_country_button = WidgetFactory.button("connect_country")

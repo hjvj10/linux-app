@@ -49,6 +49,10 @@ class ServerLoad(Gtk.Frame):
         self.area.connect("draw", self.on_draw)
         self.area.connect('configure-event', self.on_configure)
 
+    @property
+    def widget(self):
+        return self
+
     def init_surface(self, area):
         # Destroy previous buffer
         if self.surface is not None:

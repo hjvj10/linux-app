@@ -1,14 +1,19 @@
 from ...patterns.factory import WidgetFactory
 from .server_row import ServerRow
 from .server_header import ServerHeader
+import weakref
 
 
 class ServerListRevealer:
     def __init__(self, dasbhoard_view, country_item, display_sc):
         self.revealer = WidgetFactory.revealer("server_list")
-        revealer_child_grid = WidgetFactory.grid("revealer_child")
+
+        _revealer_child_grid = WidgetFactory.grid("revealer_child")
+        revealer_child_grid = weakref.proxy(_revealer_child_grid)
         revealer_child_grid.add_class("server-names-grid")
-        server_header = ServerHeader(dasbhoard_view.application)
+
+        _server_header = ServerHeader(dasbhoard_view.application)
+        server_header = weakref.proxy(_server_header)
 
         row_counter = 0
         for server in country_item.servers:
@@ -23,14 +28,16 @@ class ServerListRevealer:
                 )
 
             row_counter += 1 + (1 if add_header else 0)
+            _server_row = ServerRow(
+                dasbhoard_view,
+                country_item,
+                server,
+                display_sc
+            )
+            server_row = weakref.proxy(_server_row)
 
             revealer_child_grid.attach(
-                ServerRow(
-                    dasbhoard_view,
-                    country_item,
-                    server,
-                    display_sc
-                ).event_box,
+                server_row.event_box,
                 row=row_counter
             )
 
