@@ -1,3 +1,9 @@
+protonvpn-gui (1.5.1-1) unstable; urgency=medium
+
+  * Hotfix: Fixed issue with search not working
+  
+ -- Proton Technologies AG <opensource@proton.me>  Tue, 26 Oct 2021 10:00:00 +0100
+
 protonvpn-gui (1.5.0-7) unstable; urgency=medium
 
   * Feature: Handle and display events
