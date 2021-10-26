@@ -2,7 +2,6 @@ from ...patterns.factory import WidgetFactory
 from .country_row import CountryRow
 from .country_header import CountryHeader
 from .server_list_view_type import ServerListViewType
-from ...logger import logger
 
 
 class NoneSecureCoreListView(ServerListViewType):
@@ -64,15 +63,15 @@ class NoneSecureCoreListView(ServerListViewType):
         for _widget in self.header_tracker:
             try:
                 _widget.__delete__()
-            except Exception as e:
-                logger.exception(e)
+            except Exception:
+                pass
             _widget = None
 
         for _, widget in self.widget_position_tracker.items():
             try:
                 widget.__delete__()
-            except Exception as e:
-                logger.exception(e)
+            except Exception:
+                pass
             widget = None
 
         self.__grid = None

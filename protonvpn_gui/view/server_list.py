@@ -14,7 +14,7 @@ class ServerListView():
     """
     def __init__(self, dashboard_view):
         self.dv = dashboard_view
-        self.dashboard_view_model = dashboard_view.dashboard_view_model
+        self.dashboard_view_model = self.dv.dashboard_view_model
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )

@@ -4,6 +4,7 @@ from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 from ...enums import GLibEventSourceEnum, DashboardFeaturesEnum
 from ...patterns.factory import WidgetFactory
 from ...view_model.dataclass.dashboard import BlackFridayEvent
+import weakref
 
 
 class InitLoadView:
@@ -197,7 +198,9 @@ class UpdateQuickSettings:
             netshield (DashboardNetshieldIconEnum)
             killswitch (DashboardKillSwitchIconEnum)
         """
-        dummy_object = WidgetFactory.image("dummy")
+        _dummy_object = WidgetFactory.image("dummy")
+        dummy_object = weakref.proxy(_dummy_object)
+
         feature_button_secure_core_pixbuf = dummy_object \
             .create_icon_pixbuf_from_name(
                 dashboard_view.features_icon_set_dict[

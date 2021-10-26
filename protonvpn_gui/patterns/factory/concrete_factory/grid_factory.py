@@ -443,6 +443,8 @@ class CountryRowLeftChild(GridFactory):
         self.align_h = Gtk.Align.START
         self.align_v = Gtk.Align.CENTER
         self.show = True
+        self.add_class("server-list-country-margin-left")
+        self.add_class("country-elements")
 
 
 class CountryRowRightChild(GridFactory):
@@ -454,7 +456,8 @@ class CountryRowRightChild(GridFactory):
         self.align_h = Gtk.Align.END
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        # self.add_class("test-class5")
+        self.add_class("server-list-country-margin-right")
+        self.add_class("country-elements")
 
 
 class ServerRow(GridFactory):

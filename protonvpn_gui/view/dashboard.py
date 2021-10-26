@@ -29,6 +29,7 @@ from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
 from .dialog import DisplayMessageDialog
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
+import weakref
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -269,7 +270,8 @@ class DashboardView(Gtk.ApplicationWindow):
             country_code (string): country IS code
         """
         try:
-            dummy_object = WidgetFactory.image("dummy")
+            _dummy_object = WidgetFactory.image("dummy")
+            dummy_object = weakref.proxy(_dummy_object)
             sidebar_flag_pixbuff = dummy_object.create_image_pixbuf_from_name(
                 "flags/large/" + country_code.lower() + ".jpg",
                 width=400, height=400,
@@ -307,8 +309,10 @@ class DashboardView(Gtk.ApplicationWindow):
             pass
 
         # Other views
-        self.server_list_view = ServerListView(self)
-        self.quick_settings_popover = QuickSettingsPopoverView(self.dashboard_view_model)
+        self.server_list_view = ServerListView(weakref.proxy(self))
+        self.quick_settings_popover = QuickSettingsPopoverView(
+            weakref.proxy(self.dashboard_view_model)
+        )
         self.event_notification = None
 
         # Other UI properties
@@ -376,7 +380,8 @@ class DashboardView(Gtk.ApplicationWindow):
         of the sidebar flag.
         """
         logger.info("Setting up dashboard images and icons")
-        dummy_object = WidgetFactory.image("dummy")
+        _dummy_object = WidgetFactory.image("dummy")
+        dummy_object = weakref.proxy(_dummy_object)
 
         # Get pixbuf objects
         protonvpn_headerbar_pixbuf = dummy_object.create_icon_pixbuf_from_name(

@@ -9,21 +9,27 @@ from .server_load import ServerLoad
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 from ..server_features import CountryStreamingWidget
+import weakref
 
 
 class ServerRow:
     def __init__(self, dasbhoard_view, country, server, display_sc):
-        grid = WidgetFactory.grid("server_row")
+        _grid = WidgetFactory.grid("server_row")
+        grid = weakref.proxy(_grid)
         grid.add_class("server-row")
-        left_child = ServerRowLeftGrid(dasbhoard_view, country, server, display_sc)
-        right_child = ServerRowRightGrid(dasbhoard_view, server)
+
+        _left_child = ServerRowLeftGrid(dasbhoard_view, country, server, display_sc)
+        left_child = weakref.proxy(_left_child)
+
+        _right_child = ServerRowRightGrid(dasbhoard_view, server)
+        right_child = weakref.proxy(_right_child)
+
         grid.attach(left_child.grid.widget)
         grid.attach_right_next_to(
             right_child.grid.widget,
             left_child.grid.widget,
         )
         self.create_event_box(server, grid, right_child)
-
 
     def create_event_box(self, server, grid, right_child):
         self.event_box = Gtk.EventBox()
@@ -50,45 +56,63 @@ class ServerRowLeftGrid:
         self.display_sc = display_sc
         self.populate_left_grid(dasbhoard_view, country)
 
-        if not server.status.value:
-            self.servername_label.add_class("disabled-label")
-
-
     def populate_left_grid(self, dasbhoard_view, country):
-        self.create_load_icon()
-        self.create_exit_flag()
-        self.create_servername_label()
-        self.create_secure_core_chevron()
+        _load_icon = self.create_load_icon()
+        load_icon = weakref.proxy(_load_icon)
+
+        _country_flag = self.create_exit_flag()
+        country_flag = weakref.proxy(_country_flag)
+
+        _servername_label = self.create_servername_label()
+        servername_label = weakref.proxy(_servername_label)
+
+        _secure_core_chevron = self.create_secure_core_chevron()
+        secure_core_chevron = weakref.proxy(_secure_core_chevron)
+
+        self.grid.attach(load_icon.widget)
+        self.grid.attach_right_next_to(
+            country_flag.widget,
+            load_icon.widget,
+        )
+        self.grid.attach_right_next_to(
+            servername_label.widget,
+            country_flag.widget,
+        )
+        self.grid.attach_right_next_to(
+            secure_core_chevron.widget,
+            servername_label.widget,
+        )
         if not self.display_sc:
-            self.set_server_features(dasbhoard_view, country)
+            self.set_server_features(dasbhoard_view, country, servername_label)
 
     def create_load_icon(self):
-        self.load_icon = ServerLoad(self.server.load)
-        self.load_icon.show_all()
-        self.grid.attach(self.load_icon)
+        load_icon = ServerLoad(self.server.load)
+        load_icon.show_all()
+        return load_icon
 
     def create_exit_flag(self):
         try:
-            self.country_flag = WidgetFactory.image(
+            country_flag = WidgetFactory.image(
                 "small_flag", self.server.entry_country_code
             )
-            self.country_flag.remove_class("country-flag")
-            self.country_flag.add_class("margin-left-10px")
-            self.country_flag.add_class("margin-right-10px")
+            country_flag.remove_class("country-flag")
+            country_flag.add_class("margin-left-10px")
+            country_flag.add_class("margin-right-10px")
         except gi.repository.GLib.Error:
-            self.country_flag = WidgetFactory.image("dummy_small_flag")
+            country_flag = WidgetFactory.image("dummy_small_flag")
 
-        self.grid.attach_right_next_to(
-            self.country_flag.widget,
-            self.load_icon,
-        )
+        country_flag.show = True if self.display_sc else False
 
-        self.country_flag.show = True if self.display_sc else False
+        return country_flag
 
     def create_servername_label(self):
-        self.servername_label = WidgetFactory.label(
+        servername_label = WidgetFactory.label(
             "server", self.server.name
         )
+
+        if not self.server.status.value:
+            servername_label.add_class("disabled-label")
+
         if self.display_sc:
             from protonvpn_nm_lib.country_codes import country_codes
 
@@ -96,22 +120,16 @@ class ServerRowLeftGrid:
                 self.server.entry_country_code,
                 self.server.entry_country_code
             )
-            self.servername_label.content = "via {}".format(country_name)
+            servername_label.content = "via {}".format(country_name)
 
-        self.grid.attach_right_next_to(
-            self.servername_label.widget,
-            self.country_flag.widget,
-        )
+        return servername_label
 
     def create_secure_core_chevron(self):
-        self.sc_chevron = WidgetFactory.image("secure_core_chevron")
-        self.grid.attach_right_next_to(
-            self.sc_chevron.widget,
-            self.servername_label.widget,
-        )
-        self.sc_chevron.show = True if self.display_sc else False
+        sc_chevron = WidgetFactory.image("secure_core_chevron")
+        sc_chevron.show = True if self.display_sc else False
+        return sc_chevron
 
-    def set_server_features(self, dasbhoard_view, country):
+    def set_server_features(self, dasbhoard_view, country, servername_label):
         feature_to_img_dict = {
             FeatureEnum.TOR: ["tor_icon", "TOR Server"],
             FeatureEnum.P2P: ["p2p_icon", "P2P Server"],
@@ -127,34 +145,37 @@ class ServerRowLeftGrid:
 
         for feature in features:
             try:
-                pixbuf_feature_icon = WidgetFactory.image(
+                _pixbuf_feature_icon = WidgetFactory.image(
                     feature_to_img_dict[feature][0]
                 )
+                pixbuf_feature_icon = weakref.proxy(_pixbuf_feature_icon)
             except KeyError:
                 continue
             pixbuf_feature_icon.tooltip = True
             pixbuf_feature_icon.tooltip_text = feature_to_img_dict[feature][1]
 
             if feature == FeatureEnum.STREAMING:
-                _button = WidgetFactory.button("server_row_streaming_feature")
-                _w = CountryStreamingWidget(
+                _button_ = WidgetFactory.button("server_row_streaming_feature")
+                _button = weakref.proxy(_button_)
+                _w_ = CountryStreamingWidget(
                     dasbhoard_view.application,
                     country.country_name,
                     country.entry_country_code
                 )
+                _w = weakref.proxy(_w_)
                 _button.custom_content(pixbuf_feature_icon.widget)
                 _button.connect(
                     "clicked", _w.display
                 )
                 pixbuf_feature_icon = _button
 
-            self.attach_feature_icon(pixbuf_feature_icon.widget)
+            self.attach_feature_icon(pixbuf_feature_icon.widget, servername_label)
 
-    def attach_feature_icon(self, pixbuf_feature_icon):
+    def attach_feature_icon(self, pixbuf_feature_icon, servername_label):
         if len(self.feature_icon_list) < 1:
             self.grid.attach_right_next_to(
                 pixbuf_feature_icon,
-                self.servername_label.widget
+                servername_label.widget
             )
         else:
             gtk_image = self.feature_icon_list[-1]
@@ -167,17 +188,20 @@ class ServerRowRightGrid:
     def __init__(self, dasbhoard_view, server):
         self.dv = dasbhoard_view
         self.grid = WidgetFactory.grid("right_child_in_server_row")
-        self.maintenance_icon = WidgetFactory.image("maintenance_icon")
+
+        _maintenance_icon = WidgetFactory.image("maintenance_icon")
+        maintenance_icon = weakref.proxy(_maintenance_icon)
+
         self.connect_server_button = WidgetFactory.button("connect_server")
         self.city_label = WidgetFactory.label("city", server.city)
-        self.maintenance_icon.tooltip = True
-        self.maintenance_icon.tooltip_text = "Under maintenance"
+        maintenance_icon.tooltip = True
+        maintenance_icon.tooltip_text = "Under maintenance"
         server_under_maintenance = server.status == ServerStatusEnum.UNDER_MAINTENANCE
 
-        self.maintenance_icon.show = server_under_maintenance
+        maintenance_icon.show = server_under_maintenance
         self.city_label.show = not server_under_maintenance
         object_to_attach = (
-            self.maintenance_icon
+            maintenance_icon
             if server_under_maintenance
             else self.connect_server_button
         )
