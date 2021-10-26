@@ -19,7 +19,7 @@ class CountryRow:
             country_item,
             display_sc
         )
-        row_grid = WidgetFactory.grid("country_row")
+        self.row_grid = WidgetFactory.grid("country_row")
         left_child = CountryRowLeftGrid(country_item, display_sc)
         right_child = CountryRowRightGrid(
             country_item,
@@ -28,17 +28,17 @@ class CountryRow:
             display_sc
         )
 
-        row_grid.attach(left_child.grid.widget)
-        row_grid.attach_right_next_to(
+        self.row_grid.attach(left_child.grid.widget)
+        self.row_grid.attach_right_next_to(
             right_child.grid.widget,
             left_child.grid.widget,
         )
-        self.create_event_box(country_item, row_grid, right_child)
+        self.create_event_box(country_item, right_child)
 
         if country_item.status == ServerStatusEnum.UNDER_MAINTENANCE:
             return
 
-        row_grid.attach(
+        self.row_grid.attach(
             server_list_revealer.revealer.widget,
             row=1, width=2
         )
@@ -47,10 +47,10 @@ class CountryRow:
     def total_of_existing_servers(self):
         return self.__num_locations
 
-    def create_event_box(self, country_item, row_grid, right_child):
+    def create_event_box(self, country_item, right_child):
         self.event_box = Gtk.EventBox()
         self.event_box.set_visible_window(True)
-        self.event_box.add(row_grid.widget)
+        self.event_box.add(self.row_grid.widget)
         self.event_box.props.visible = True
 
         if country_item.status == ServerStatusEnum.UNDER_MAINTENANCE:
