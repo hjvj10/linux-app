@@ -524,17 +524,17 @@ class TroubleshootDialog:
             _ = Gio.AppInfo.launch_default_for_uri(url)
 
 
-class BlackFridayPromoDialog:
-    def __init__(self, application, bf_notification):
+class GenericEventDialog:
+    def __init__(self, application, generic_event):
         dialog_view = DialogView(application)
-        dialog_view.headerbar_label.set_text("Black Friday")
+        dialog_view.headerbar_label.set_text(generic_event.label)
         dialog_view.content_label.show = False
         dialog_view.buttons_visible = False
 
         additional_context = WidgetFactory.grid("dashboard_event_main_grid")
-        top_grid = self.__generate_top_content(bf_notification)
-        mid_grid = self.__generate_mid_content(bf_notification)
-        bottom_grid = self.__generate_bottom_content(bf_notification)
+        top_grid = self.__generate_top_content(generic_event)
+        mid_grid = self.__generate_mid_content(generic_event)
+        bottom_grid = self.__generate_bottom_content(generic_event)
 
         additional_context.attach(top_grid.widget)
         additional_context.attach_bottom_next_to(mid_grid.widget, top_grid.widget)
@@ -544,38 +544,38 @@ class BlackFridayPromoDialog:
 
         dialog_view.display_dialog()
 
-    def __generate_top_content(self, bf_notification):
+    def __generate_top_content(self, generic_event):
         content_grid = WidgetFactory.grid("dashboard_event_top_grid")
 
-        _incentive = bf_notification.incentive
+        _incentive = generic_event.incentive
         if not _incentive:
             _incentive = "None"
 
-        incentive_text = _incentive[0:bf_notification.incentive_template_index_start - 1]
-        incentive_price = _incentive[bf_notification.incentive_template_index_start:len(_incentive)]
+        incentive_text = _incentive[0:generic_event.incentive_template_index_start - 1]
+        incentive_price = _incentive[generic_event.incentive_template_index_start:len(_incentive)]
 
         incentive_price = incentive_price.replace(
             "%IncentivePrice%",
             "<span size=\"x-large\" weight=\"bold\">{}</span>".format(
-                bf_notification.incentive_price
+                generic_event.incentive_price
             )
         )
         incentive = "<span size=\"medium\">{}</span> {}".format(incentive_text, incentive_price)
 
-        upgrade_to_label = WidgetFactory.label("black_friday_incentive")
+        upgrade_to_label = WidgetFactory.label("generic_event_incentive")
         upgrade_to_label.set_content_with_markup(incentive)
 
-        save_up_to_label = WidgetFactory.label("black_friday_save_up_to", bf_notification.pill)
+        save_up_to_label = WidgetFactory.label("generic_event_save_up_to", generic_event.pill)
 
         content_grid.attach(upgrade_to_label.widget)
         content_grid.attach_bottom_next_to(save_up_to_label.widget, upgrade_to_label.widget)
 
         return content_grid
 
-    def __generate_mid_content(self, bf_notification):
+    def __generate_mid_content(self, generic_event):
         import re
         pattern = re.compile(r"[\/]{1}([a-zA-Z0-9-]+\.(png|jpeg|jpg))")
-        pattern_result = pattern.search(bf_notification.picture_url)
+        pattern_result = pattern.search(generic_event.picture_url)
 
         icon_path = \
             self.__get_icon_path(pattern_result.group(1)) \
@@ -584,26 +584,26 @@ class BlackFridayPromoDialog:
 
         content_grid = WidgetFactory.grid("dashboard_event_mid_grid")
         gift_box = WidgetFactory.image("dashboard_event_main_icon", icon_path)
-        title = WidgetFactory.label("black_friday_title")
+        title = WidgetFactory.label("generic_event_title")
         title.set_content_with_markup(
             "<span font_weight=\"heavy\" size=\"large\">{}</span>".format(
-                bf_notification.title
+                generic_event.title
             )
         )
 
         content_grid.attach(gift_box.widget)
         content_grid.attach_bottom_next_to(title.widget, gift_box.widget)
 
-        features_holder_grid = self.__generate_features_list(bf_notification.features, pattern)
+        features_holder_grid = self.__generate_features_list(generic_event.features, pattern)
         content_grid.attach_bottom_next_to(features_holder_grid.widget, title.widget)
         return content_grid
 
-    def __generate_features_list(self, bf_notification_features, pattern):
-        features_holder_grid = WidgetFactory.grid("black_friday_features_holder_grid")
+    def __generate_features_list(self, generic_event_features, pattern):
+        features_holder_grid = WidgetFactory.grid("generic_event_features_holder_grid")
         previous_feature_grid = None
 
-        for text, icon_url in bf_notification_features:
-            feature_grid = WidgetFactory.grid("black_friday_feature_grid")
+        for text, icon_url in generic_event_features:
+            feature_grid = WidgetFactory.grid("generic_event_feature_grid")
             pattern_result = pattern.search(icon_url)
             icon = WidgetFactory.image(
                 "dashboard_event_icon",
@@ -634,16 +634,16 @@ class BlackFridayPromoDialog:
 
         return os.path.join(PROTON_XDG_CACHE_HOME_NOTIFICATION_ICONS, icon_name)
 
-    def __generate_bottom_content(self, bf_notification):
+    def __generate_bottom_content(self, generic_event):
         content_grid = WidgetFactory.grid("dashboard_event_bottom_grid")
         button = WidgetFactory.button("dialog_main")
-        button.label = bf_notification.button_text
-        under_text = WidgetFactory.label("black_friday_footer")
+        button.label = generic_event.button_text
+        under_text = WidgetFactory.label("generic_event_footer")
         under_text.set_content_with_markup(
-            "<span size=\"small\">{}</span>".format(bf_notification.page_footer)
+            "<span size=\"small\">{}</span>".format(generic_event.page_footer)
         )
 
-        button.connect("clicked", self._open_url, bf_notification.button_url)
+        button.connect("clicked", self._open_url, generic_event.button_url)
 
         content_grid.attach(button.widget)
         content_grid.attach_bottom_next_to(under_text.widget, button.widget)

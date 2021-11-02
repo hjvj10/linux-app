@@ -330,8 +330,8 @@ class DashboardEventBottomGrid(GridFactory):
         self.show = True
 
 
-class BlackFridayFeaturesHolderGrid(GridFactory):
-    grid = "black_friday_features_holder_grid"
+class GenericEventFeaturesHolderGrid(GridFactory):
+    grid = "generic_event_features_holder_grid"
 
     def __init__(self):
         super().__init__()
@@ -343,8 +343,8 @@ class BlackFridayFeaturesHolderGrid(GridFactory):
         self.add_class("margin-bottom-20px")
 
 
-class BlackFridayFeatureGrid(GridFactory):
-    grid = "black_friday_feature_grid"
+class GenericEventFeatureGrid(GridFactory):
+    grid = "generic_event_feature_grid"
 
     def __init__(self):
         super().__init__()

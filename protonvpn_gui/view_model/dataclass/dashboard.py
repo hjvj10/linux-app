@@ -89,5 +89,5 @@ class DisplayEvent:
 
 
 @dataclass
-class BlackFridayEvent:
+class GenericEvent:
     class_instance: auto()

@@ -210,9 +210,9 @@ class Default(LabelFactory):
         self.add_class("default-text-color")
 
 
-class BlackFridayIncentive(LabelFactory):
+class GenericEventIncentive(LabelFactory):
     """Default class."""
-    label = "black_friday_incentive"
+    label = "generic_event_incentive"
 
     def __init__(self, label_text):
         super().__init__(label_text)
@@ -232,9 +232,9 @@ class BlackFridayIncentive(LabelFactory):
         self.wrap_mode = Pango.WrapMode.WORD
 
 
-class BlackFridaySaveUpTo(LabelFactory):
+class GenericEventSaveUpTo(LabelFactory):
     """Default class."""
-    label = "black_friday_save_up_to"
+    label = "generic_event_save_up_to"
 
     def __init__(self, label_text):
         super().__init__(label_text)
@@ -242,12 +242,12 @@ class BlackFridaySaveUpTo(LabelFactory):
         self.align_v = Gtk.Align.CENTER
         self.expand_h = True
         self.show = True
-        self.add_class("black-friday-save-up-to")
+        self.add_class("generic-event-save-up-to")
 
 
-class BlackFridayTitle(LabelFactory):
+class GenericEventTitle(LabelFactory):
     """Default class."""
-    label = "black_friday_title"
+    label = "generic_event_title"
 
     def __init__(self, label_text):
         super().__init__(label_text)
@@ -259,9 +259,9 @@ class BlackFridayTitle(LabelFactory):
         self.add_class("default-text-color")
 
 
-class BlackFridayFooter(LabelFactory):
+class GenericEventFooter(LabelFactory):
     """Default class."""
-    label = "black_friday_footer"
+    label = "generic_event_footer"
 
     def __init__(self, label_text):
         super().__init__(label_text)
@@ -269,7 +269,6 @@ class BlackFridayFooter(LabelFactory):
         self.align_v = Gtk.Align.CENTER
         self.expand_h = True
         self.show = True
-        # self.add_class("default-text-color")
         self.add_class("dark-text-color")
         self.add_class("margin-top-10px")
 
@@ -283,11 +282,9 @@ class TroubleshootDescription(LabelFactory):
         self.justify = Gtk.Justification.FILL
         self.align_h = Gtk.Align.FILL
         self.expand_h = True
-        # self.align_v = Gtk.Align.CENTER
         self.show = True
         self.add_class("dark-text-color")
         self.add_class("quick-settings-title")
-        # self.add_class("margin-left-10px")
         self.line_wrap = True
         self.ident_h = 0
         self.width_in_chars = 60

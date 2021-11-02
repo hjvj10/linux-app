@@ -64,6 +64,8 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Oct 26 2021 Proton Technologies AG <opensource@proton.me> 1.6.0-1
 - Improve: Further improve memory management to avoid potential leaks
+* Tue Nov 02 2021 Proton Technologies AG <opensource@proton.me> 1.5.2-1
+- Hotfix: Update event dialog and fix typo
 
 * Tue Oct 26 2021 Proton Technologies AG <opensource@proton.me> 1.5.1-1
 - Hotfix: Fixed issue with search not working
