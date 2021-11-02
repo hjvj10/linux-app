@@ -1,3 +1,9 @@
+protonvpn-gui (1.5.2-1) unstable; urgency=medium
+
+  * Hotfix: Update event dialog and fix typo
+  
+ -- Proton Technologies AG <opensource@proton.me>  Tue, 02 Nov 2021 12:30:00 +0000
+
 protonvpn-gui (1.5.1-1) unstable; urgency=medium
 
   * Hotfix: Fixed issue with search not working

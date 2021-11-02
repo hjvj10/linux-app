@@ -3,7 +3,7 @@ from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 from ...enums import GLibEventSourceEnum, DashboardFeaturesEnum
 from ...patterns.factory import WidgetFactory
-from ...view_model.dataclass.dashboard import BlackFridayEvent
+from ...view_model.dataclass.dashboard import GenericEvent
 
 
 class InitLoadView:
@@ -239,18 +239,18 @@ class EventNotification:
         self.load_events(dashboard_view, state)
 
     def load_events(self, dashboard_view, state):
-        if isinstance(state.event_dataclass, BlackFridayEvent):
-            self.__check_if_black_friday_event_should_be_displayed(
+        if isinstance(state.event_dataclass, GenericEvent):
+            self.__check_if_generic_event_should_be_displayed(
                 dashboard_view, state.event_dataclass.class_instance,
                 state.has_notification_been_opened, state.set_notification_as_read
             )
 
-    def __check_if_black_friday_event_should_be_displayed(self, *args):
-        dashboard_view, bf_notification, has_notification_been_opened, set_as_read = args
+    def __check_if_generic_event_should_be_displayed(self, *args):
+        dashboard_view, event_data, has_notification_been_opened, set_as_read = args
 
-        icon_path = list(filter(lambda x: "ic-gift.png" in x, bf_notification.icon_paths))
+        icon_path = list(filter(lambda x: "ic-gift.png" in x, event_data.icon_paths))
 
-        if not bf_notification.can_be_displayed or not bool(len(icon_path)):
+        if not event_data.can_be_displayed or not bool(len(icon_path)):
             child = dashboard_view.connected_label_grid.get_child_at(1, 0)
             if dashboard_view.event_notification or child:
                 try:
@@ -262,30 +262,30 @@ class EventNotification:
             return
 
         # Create "gift" widgets
-        bf_button = WidgetFactory.button("dashboard_event_button")
+        main_button = WidgetFactory.button("dashboard_event_button")
         event_icon = WidgetFactory.image("dashboard_event_icon", icon_path.pop())
-        event_icon.tooltip_text = bf_notification.pill
-        bf_button.custom_content(event_icon.widget)
+        event_icon.tooltip_text = event_data.pill
+        main_button.custom_content(event_icon.widget)
 
         # check if user has already opened event, if not display red dot
         if not has_notification_been_opened:
             event_icon.add_event_notitication()
 
         dashboard_view.connected_label_grid.attach(
-            bf_button.widget, 1, 0, 1, 1
+            main_button.widget, 1, 0, 1, 1
         )
-        dashboard_view.event_notification = bf_button
-        bf_button.connect(
-            "clicked", self.__open_black_friday_modal,
-            dashboard_view.application, bf_notification,
+        dashboard_view.event_notification = main_button
+        main_button.connect(
+            "clicked", self.__open_modal,
+            dashboard_view.application, event_data,
             set_as_read, event_icon
         )
 
-    def __open_black_friday_modal(self, gtk_button, *args):
-        from ..dialog import BlackFridayPromoDialog
-        application, bf_notification, set_as_read, event_icon = args
+    def __open_modal(self, gtk_button, *args):
+        from ..dialog import GenericEventDialog
+        application, event_data, set_as_read, event_icon = args
 
         event_icon.add_event_notitication(False)
         set_as_read()
 
-        BlackFridayPromoDialog(application, bf_notification)
+        GenericEventDialog(application, event_data)

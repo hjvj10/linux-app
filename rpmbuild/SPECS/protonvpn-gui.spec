@@ -1,7 +1,7 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.5.1
+%define version 1.5.2
 %define release 1
 
 Prefix: %{_prefix}
@@ -62,6 +62,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 02 2021 Proton Technologies AG <opensource@proton.me> 1.5.2-1
+- Hotfix: Update event dialog and fix typo
+
 * Tue Oct 26 2021 Proton Technologies AG <opensource@proton.me> 1.5.1-1
 - Hotfix: Fixed issue with search not working
 
