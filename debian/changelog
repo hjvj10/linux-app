@@ -2,7 +2,8 @@ protonvpn-gui (1.6.0-1) unstable; urgency=medium
 
   * Improve: Further improve memory management to avoid potential leaks
   
- -- Proton Technologies AG <opensource@proton.me>  Tue, 26 Oct 2021 10:00:00 +0100
+ -- Proton Technologies AG <opensource@proton.me>  Thu, 04 Nov 2021 10:00:00 +0000
+
 protonvpn-gui (1.5.2-1) unstable; urgency=medium
 
   * Hotfix: Update event dialog and fix typo
