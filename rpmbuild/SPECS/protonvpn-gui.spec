@@ -23,6 +23,7 @@ BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: desktop-file-utils
 Requires: python3-protonvpn-nm-lib >= 3.4.0
 Requires: python3-gobject
 Requires: python3-psutil
@@ -71,12 +72,12 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Oct 26 2021 Proton Technologies AG <opensource@proton.me> 1.5.1-1
 - Hotfix: Fixed issue with search not working
 
-* Thu Oct 15 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-7
+* Fri Oct 15 2021 Proton Technologies AG <opensource@proton.me> 1.5.0-7
 - Feature: Handle and display events
 - Fix: Memory leak
 - Improve: Exception handling
 
-* Wed Oct 14 2021 Proton Technologies AG <opensource@proton.me> 1.4.1-1
+* Thu Oct 14 2021 Proton Technologies AG <opensource@proton.me> 1.4.1-1
 - Hotfix: Add missing dependency for Webkit
 
 * Fri Sep 24 2021 Proton Technologies AG <opensource@proton.me> 1.4.0-1
@@ -86,7 +87,7 @@ rm -rf $RPM_BUILD_ROOT
 - Feature: Add troubleshooting dialog, including support for alternative routing
 - Imprving server list switching UX to/from Secure Core
 
-* Mon Jul 26 2021 Proton Technologies AG <opensource@proton.me> 1.2.0-1
+* Fri Jul 30 2021 Proton Technologies AG <opensource@proton.me> 1.2.0-1
 - Fix: Logs should be using UTC time
 - Fix: Display window icons (minimize, maximize and close)
 - Fix: Unable to update server list after 15min (crash report would appear on certain distros)
