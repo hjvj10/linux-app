@@ -1,4 +1,4 @@
-FROM IMAGE_URL_FED31
+FROM IMAGE_URL_FED35
 ARG git_repo_lib
 ENV git_repo_lib=${git_repo_lib:-GIT_REPO_LIB}
 ARG git_repo_client
@@ -46,7 +46,6 @@ RUN dnf install -y \
     python3-requests \
     python3-pyOpenSSL \
     python3-bcrypt \
-    python3-systemd \
     python3-gnupg \
     python3-systemd \
     && python3 -m pip install --upgrade sentry-sdk==0.10.2 \
