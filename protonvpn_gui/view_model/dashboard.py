@@ -194,13 +194,13 @@ class DashboardViewModel:
             return
 
         for event in all_notitications:
-            # Check if the notifications is of black friday type
-            # also check if it can be displayed and it can be displayed,
+            # Check if the notifications is of generic event type
+            # also check if it can be displayed,
             # If both are false then nothing will be displayed
-            if event.notification_type == NotificationEnum.BLACK_FRIDAY.value:
+            if event.notification_type == NotificationEnum.GENERIC.value:
                 self.state.on_next(
                     dt.DisplayEvent(
-                        dt.BlackFridayEvent(event),
+                        dt.GenericEvent(event),
                         (
                             True
                             if protonvpn.get_settings().event_notification == NotificationStatusEnum.OPENED # noqa
