@@ -22,13 +22,13 @@ protonvpn-gui (1.5.0-7) unstable; urgency=medium
   * Fix: Memory leak
   * Improve: Exception handling
   
- -- Proton Technologies AG <opensource@proton.me>  Thu, 15 Oct 2021 13:30:00 +0100
+ -- Proton Technologies AG <opensource@proton.me>  Fri, 15 Oct 2021 13:30:00 +0100
 
 protonvpn-gui (1.4.1-1) unstable; urgency=medium
 
   * Hotfix: Add missing dependency for Webkit
   
- -- Proton Technologies AG <opensource@proton.me>  Wed, 14 Oct 2021 16:30:00 +0100
+ -- Proton Technologies AG <opensource@proton.me>  Thu, 14 Oct 2021 16:30:00 +0100
  
 protonvpn-gui (1.4.0-1) unstable; urgency=medium
 
