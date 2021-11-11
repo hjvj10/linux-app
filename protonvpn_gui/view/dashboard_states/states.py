@@ -4,6 +4,7 @@ from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 from ...enums import GLibEventSourceEnum, DashboardFeaturesEnum
 from ...patterns.factory import WidgetFactory
 from ...view_model.dataclass.dashboard import GenericEvent
+import weakref
 
 
 class InitLoadView:
