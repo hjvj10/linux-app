@@ -8,7 +8,7 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     NotificationStatusEnum,
                                     SecureCoreStatusEnum,
                                     VPNConnectionReasonEnum,
-                                    VPNConnectionStateEnum)
+                                    VPNConnectionStateEnum, SecureCoreStatusEnum, )
 
 from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                      DashboardSecureCoreIconEnum)
@@ -431,10 +431,23 @@ class DashboardViewModel:
 
         try:
             connect_response = protonvpn.connect()
+        except exceptions.AccountIsDelinquentError as e:
+            logger.exception(e)
+            result = dt.DisplayDialog(
+                title="Deliquent Account",
+                text="The account is flagged as delinquent due to unpaid invoices. "
+                "You can continue to use ProtonVPN, but any paid features are now disabled."
+            )
+            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
+            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
+            self.state.on_next(result)
+            self.connect(connection_type_enum.FREE)
+            return
         except exceptions.ExceededAmountOfConcurrentSessionsError as e:
-            reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS" \
-                "\nto get up to 10 devices connected at the same time at https://account.protonvpn.com/dashboard"
             logger.info(e)
+            reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS" \
+                "to get up to 10 devices connected at the same time at https://account.protonvpn.com/dashboard"
+            logger.exception(e)
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.info(e)
             reason_message = str(e)
@@ -569,7 +582,6 @@ class DashboardViewModel:
             netshield=self.ns_quick_setting[settings.netshield],
             killswitch=self.ks_quick_setting[settings.killswitch],
         )
-
         return state
 
     def on_monitor_vpn_async(self):

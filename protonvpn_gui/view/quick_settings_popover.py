@@ -1,5 +1,4 @@
 import os
-
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -27,7 +26,6 @@ class QuickSettingsPopoverView(Gtk.Popover):
     def __init__(self, dashboard_view_model):
         super().__init__()
         self.dashboard_view_model = dashboard_view_model
-        self.protonvpn = protonvpn
 
         self.__create_widgets()
         self.__attach_widgets_to_grid()
@@ -59,8 +57,12 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.view_more_link.url = "https://protonvpn.com/support/secure-core-vpn/"
         self.footnote.content = "Secure Core may reduce VPN speed"
         self.footnote.show = True
-        if self.protonvpn.get_session().vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value: # noqa
+        user_session = protonvpn.get_session()
+        if not user_session.delinquent and user_session.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value: # noqa
             self.upgrade_button.show = False
+        else:
+            self.secure_core_button_on.set_unavailable()
+
         self.__display_content_which_is_context_specific(
             self.secure_core_buttons_grid.widget
         )
@@ -78,8 +80,13 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.footnote.content = "If websites don't load, try " \
             "disabling Netshield"
         self.footnote.show = True
-        if self.protonvpn.get_session().vpn_tier >= ServerTierEnum.BASIC.value: # noqa
+        user_session = protonvpn.get_session()
+        if not user_session.delinquent and user_session.vpn_tier >= ServerTierEnum.BASIC.value: # noqa
             self.upgrade_button.show = False
+        else:
+            self.netshield_button_malware.set_unavailable()
+            self.netshield_button_ads_malware.set_unavailable()
+
         self.__display_content_which_is_context_specific(
             self.netshield_buttons_grid.widget
         )
@@ -237,10 +244,7 @@ class QuickSettingButton:
     killswitch_button_collection = []
 
     def __init__(self, popover_widget, img_factory_name, text):
-        self.__vpn_tier = None
         self.__popover_widget = popover_widget
-        self.__session = self.__popover_widget.protonvpn.get_session()
-        self.__settings = self.__popover_widget.protonvpn.get_settings()
         self.__content = WidgetFactory.grid("buttons")
         self.__content.row_spacing = 10
         self.__content.column_spacing = 10
@@ -253,6 +257,10 @@ class QuickSettingButton:
         self.__button.custom_content(self.__content.widget)
         self.build()
 
+    @property
+    def can_user_access_feature(self):
+        raise NotImplementedError()
+
     def on_button_enter_notify(self, gtk_button, event_crossing):
         # TO-DO: Implement hand cursor when hovering
         # The line below shows how to create a new cursor object
@@ -264,7 +272,7 @@ class QuickSettingButton:
         pass
 
     def on_button_click(self):
-        pass
+        raise NotImplementedError()
 
     def set_char_width(self, char_width_in_int):
         self.__label.width_in_chars = char_width_in_int
@@ -279,21 +287,15 @@ class QuickSettingButton:
 
     @property
     def vpn_tier(self):
-        if self.__vpn_tier is None:
-            try:
-                self.__vpn_tier = protonvpn.get_session().vpn_tier
-            except: # noqa
-                self.__vpn_tier = ServerTierEnum.FREE.value
-
-        return self.__vpn_tier
+        return protonvpn.get_session().vpn_tier
 
     @property
-    def session(self):
-        return self.__session
+    def delinquent(self):
+        return protonvpn.get_session().delinquent
 
     @property
     def settings(self):
-        return self.__settings
+        return protonvpn.get_settings()
 
     @property
     def viewmodel(self):
@@ -362,16 +364,25 @@ class QuickSettingButton:
         )
 
     def set_selected(self):
+        if self.display_upgrade_label:
+            self.display_upgrade_label = False
+
         self.__selected(
             self.selected_path
         )
 
     def set_available(self):
+        if self.display_upgrade_label:
+            self.display_upgrade_label = False
+
         self.__available(
             self.available_path
         )
 
     def set_unavailable(self):
+        if not self.display_upgrade_label:
+            self.display_upgrade_label = True
+
         self.__unavailable(
             self.unavailable_path
         )
@@ -392,7 +403,6 @@ class SecureCoreOff(QuickSettingButton):
             "secure_core_off",
             "Secure Core Off"
         )
-        self.display_upgrade_label = False
         if self.settings.secure_core == SecureCoreStatusEnum.OFF:
             self.set_selected()
         else:
@@ -425,10 +435,8 @@ class SecureCoreOn(QuickSettingButton):
         self.available_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DEFAULT] # noqa
         self.unavailable_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DISABLE] # noqa
         self.set_unavailable()
-        self.display_upgrade_label = True
 
-        if self.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value:
-            self.display_upgrade_label = False
+        if self.can_user_access_feature:
             if self.settings.secure_core == SecureCoreStatusEnum.ON:
                 self.set_selected()
             else:
@@ -436,8 +444,12 @@ class SecureCoreOn(QuickSettingButton):
 
         self.secure_core_button_collection.append(self)
 
+    @property
+    def can_user_access_feature(self):
+        return not self.delinquent and self.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value
+
     def on_button_click(self, gtk_button):
-        if self.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value:
+        if self.can_user_access_feature:
             for button in self.secure_core_button_collection:
                 if button == self:
                     self.set_selected()
@@ -458,7 +470,6 @@ class NetshieldOff(QuickSettingButton):
             "netshield_off",
             "Don't block"
         )
-        self.display_upgrade_label = False
         if (
             self.vpn_tier < ServerTierEnum.BASIC.value
             and (
@@ -489,6 +500,10 @@ class NetshieldOff(QuickSettingButton):
             NetshieldTranslationEnum.DISABLED
         )
 
+    @property
+    def can_user_access_feature(self):
+        pass
+
 
 class NetshieldMalware(QuickSettingButton):
     def __init__(self, popover_widget):
@@ -502,18 +517,20 @@ class NetshieldMalware(QuickSettingButton):
         self.unavailable_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_DISABLE]  # noqa
 
         self.set_unavailable()
-        self.display_upgrade_label = True
 
-        if self.vpn_tier >= ServerTierEnum.BASIC.value:
-            self.display_upgrade_label = False
+        if self.can_user_access_feature:
             self.set_available()
             if self.settings.netshield == NetshieldTranslationEnum.MALWARE:
                 self.set_selected()
 
         self.netshield_button_collection.append(self)
 
+    @property
+    def can_user_access_feature(self):
+        return not self.delinquent and self.vpn_tier >= ServerTierEnum.BASIC.value
+
     def on_button_click(self, gtk_button):
-        if self.vpn_tier >= ServerTierEnum.BASIC.value:
+        if self.can_user_access_feature:
             for button in self.netshield_button_collection:
                 if button == self:
                     self.set_selected()
@@ -539,10 +556,8 @@ class NetshieldAdsMalware(QuickSettingButton):
         self.unavailable_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_ADS_DISABLE]  # noqa
 
         self.set_unavailable()
-        self.display_upgrade_label = True
         self.set_char_width(20)
-        if self.vpn_tier >= ServerTierEnum.BASIC.value:
-            self.display_upgrade_label = False
+        if self.can_user_access_feature:
             self.set_char_width(30)
             self.set_available()
             if self.settings.netshield == NetshieldTranslationEnum.ADS_MALWARE:
@@ -550,8 +565,12 @@ class NetshieldAdsMalware(QuickSettingButton):
 
         self.netshield_button_collection.append(self)
 
+    @property
+    def can_user_access_feature(self):
+        return not self.delinquent and self.vpn_tier >= ServerTierEnum.BASIC.value
+
     def on_button_click(self, gtk_button):
-        if self.vpn_tier >= ServerTierEnum.BASIC.value:
+        if self.can_user_access_feature:
             for button in self.netshield_button_collection:
                 if button == self:
                     self.set_selected()
@@ -572,7 +591,6 @@ class KillSwitchOff(QuickSettingButton):
             "killswitch_off",
             "Kill Switch Off"
         )
-        self.display_upgrade_label = False
         if self.settings.killswitch == KillswitchStatusEnum.DISABLED:
             self.set_selected()
         else:
@@ -602,7 +620,6 @@ class KillSwitchOn(QuickSettingButton):
             "killswitch_on",
             "Kill Switch On"
         )
-        self.display_upgrade_label = False
         self.selected_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ON_ACTIVE] # noqa
         self.available_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ON_DEFAULT] # noqa
         self.unavailable_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ON_DISABLE] # noqa
@@ -611,6 +628,9 @@ class KillSwitchOn(QuickSettingButton):
         else:
             self.set_available()
         self.killswitch_button_collection.append(self)
+
+    def set_unavailable(self):
+        pass
 
     def on_button_click(self, gtk_button):
         for button in self.killswitch_button_collection:
@@ -630,7 +650,6 @@ class KillSwitchAlwaysOn(QuickSettingButton):
             "killswitch_always_on",
             "Kill Switch Permanent"
         )
-        self.display_upgrade_label = False
         self.selected_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_ACTIVE] # noqa
         self.available_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_DEFAULT] # noqa
         self.unavailable_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_DISABLE] # noqa
@@ -640,6 +659,9 @@ class KillSwitchAlwaysOn(QuickSettingButton):
         else:
             self.set_available()
         self.killswitch_button_collection.append(self)
+
+    def set_unavailable(self):
+        pass
 
     def on_button_click(self, gtk_button):
         for button in self.killswitch_button_collection:
