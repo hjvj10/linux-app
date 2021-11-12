@@ -18,8 +18,13 @@ class QuickSettingsViewModel:
     def dashboard_view_model(self, newvalue):
         self.dashboard_vm = newvalue
 
-    def on_switch_secure_core_button(self, secure_core_enum):
-        """On reconnect Secure Core."""
+    def on_switch_secure_core_button(self, secure_core_enum, skip_reconnect=False):
+        """On reconnect Secure Core.
+
+        Args:
+            secure_core_enum (SecureCoreStatusEnum)
+            skip_reconnect (bool)
+        """
         logger.info("Setting secure core to \"{}\"".format(secure_core_enum))
         protonvpn.get_settings().secure_core = secure_core_enum
 
@@ -27,13 +32,13 @@ class QuickSettingsViewModel:
 
         self.dashboard_vm.state.on_next(self.dashboard_vm.get_quick_settings_state())
 
-        if protonvpn.get_active_protonvpn_connection():
+        if not skip_reconnect and protonvpn.get_active_protonvpn_connection():
             logger.info("Preparing reconnect with \"{}\"".format(
                 secure_core_enum
             ))
-            self.__prepare_secure_core_reconnect(secure_core_enum)
+            self.__prepare_secure_core_reconnect(secure_core_enum, skip_reconnect)
 
-    def __prepare_secure_core_reconnect(self, secure_core_enum):
+    def __prepare_secure_core_reconnect(self, secure_core_enum, skip_reconnect):
         """Prepares Secure Core reconnect.
 
         Args:
@@ -83,12 +88,18 @@ class QuickSettingsViewModel:
             server.name
         )
 
-    def on_switch_netshield_button(self, netshield_enum):
+    def on_switch_netshield_button(self, netshield_enum, skip_reconnect=False):
+        """On Netshield reconnect:
+
+        Args:
+            netshield_enum (NetshieldTranslationEnum)
+            skip_reconnect (bool)
+        """
         logger.info("Setting netshield to \"{}\"".format(netshield_enum))
         protonvpn.get_settings().netshield = netshield_enum
         self.dashboard_vm.state.on_next(self.dashboard_vm.get_quick_settings_state())
 
-        if protonvpn.get_active_protonvpn_connection():
+        if not skip_reconnect and protonvpn.get_active_protonvpn_connection():
             logger.info("Preparing reconnect with \"{}\"".format(
                 netshield_enum
             ))

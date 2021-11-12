@@ -1,6 +1,7 @@
-protonvpn-gui (1.7.0-1) unstable; urgency=medium
+protonvpn-gui (1.7.0-2) unstable; urgency=medium
 
   * Improve: Handle max concurrent devices
+  * Improve: Handle account delinquency
   
  -- Proton Technologies AG <opensource@proton.me>  Thu, 11 Nov 2021 11:30:00 +0000
 

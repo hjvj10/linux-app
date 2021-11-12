@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.7.0
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
@@ -63,8 +63,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Thu Nov 11 2021 Proton Technologies AG <opensource@proton.me> 1.7.0-1
+* Thu Nov 11 2021 Proton Technologies AG <opensource@proton.me> 1.7.0-2
 - Improve: Handle max concurrent devices
+- Improve: Handle account delinquency
 
 * Thu Nov 04 2021 Proton Technologies AG <opensource@proton.me> 1.6.0-1
 - Improve: Further improve memory management to avoid potential leaks

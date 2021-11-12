@@ -4,32 +4,32 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
+import weakref
+
 from gi.repository import Gdk, Gio, GLib, Gtk
 
 from ..constants import (CSS_DIR_PATH, KILLSWITCH_ICON_SET, NETSHIELD_ICON_SET,
                          SECURE_CORE_ICON_SET, UI_DIR_PATH, protonvpn_logo)
-from ..enums import (DashboardFeaturesEnum, DashboardKillSwitchIconEnum,
-                     DashboardNetshieldIconEnum, DashboardSecureCoreIconEnum,
-                     GLibEventSourceEnum, IndicatorActionEnum)
+from ..enums import (DashboardFeaturesEnum, GLibEventSourceEnum,
+                     IndicatorActionEnum)
 from ..logger import logger
 from ..module import Module
 from ..patterns.factory import WidgetFactory
 from ..view_model.dataclass.dashboard import (ConnectedToVPNInfo, ConnectError,
                                               ConnectInProgressInfo,
                                               ConnectPreparingInfo,
-                                              DisplayDialog, Loading,
-                                              NetworkSpeed,
+                                              DisplayDialog, DisplayEvent,
+                                              Loading, NetworkSpeed,
                                               NotConnectedToVPNInfo,
-                                              QuickSettingsStatus, DisplayEvent)
+                                              QuickSettingsStatus)
 from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
                                ConnectVPNInProgressView,
-                               ConnectVPNPreparingView, InitLoadView,
-                               NotConnectedVPNView, UpdateNetworkSpeedView,
-                               UpdateQuickSettings, EventNotification)
+                               ConnectVPNPreparingView, EventNotification,
+                               InitLoadView, NotConnectedVPNView,
+                               UpdateNetworkSpeedView, UpdateQuickSettings)
 from .dialog import DisplayMessageDialog
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
-import weakref
 
 
 @Gtk.Template(filename=os.path.join(UI_DIR_PATH, "dashboard.ui"))
@@ -407,31 +407,6 @@ class DashboardView(Gtk.ApplicationWindow):
             "info-circle-filled.svg",
             width=15, height=15
         )
-        feature_button_secure_core_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.SECURE_CORE
-                ][DashboardSecureCoreIconEnum.OFF],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-        feature_button_netshield_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.NETSHIELD
-                ][DashboardNetshieldIconEnum.OFF],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-        feature_button_killswitch_pixbuf = dummy_object \
-            .create_icon_pixbuf_from_name(
-                self.features_icon_set_dict[
-                    DashboardFeaturesEnum.KILLSWITCH
-                ][DashboardKillSwitchIconEnum.OFF],
-                width=self.feature_button_icon_width,
-                height=self.feature_button_icon_height
-            )
-
         # Set images and icons
         self.set_icon(window_icon)
 
@@ -440,15 +415,6 @@ class DashboardView(Gtk.ApplicationWindow):
         self.upload_speed_image.set_from_pixbuf(upload_pixbuff)
         self.download_speed_image.set_from_pixbuf(download_pixbuff)
         self.servers_info_icon.set_from_pixbuf(server_locations_pixbuff)
-        self.dashboard_secure_core_button_image.set_from_pixbuf(
-            feature_button_secure_core_pixbuf
-        )
-        self.dashboard_netshield_button_image.set_from_pixbuf(
-            feature_button_netshield_pixbuf
-        )
-        self.dashboard_killswitch_button_image.set_from_pixbuf(
-            feature_button_killswitch_pixbuf
-        )
 
     def setup_css(self):
         """Setup CSS styles."""
