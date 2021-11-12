@@ -455,6 +455,10 @@ class DashboardViewModel:
             self.state.on_next(result)
             self.connect(connection_type_enum.FREE)
             return
+        except exceptions.VPNUsernameOrPasswordHasBeenChangedError as e:
+            logger.exception(e)
+            self.connect(connection_type_enum, extra_arg, reconnect)
+            return
         except exceptions.ExceededAmountOfConcurrentSessionsError as e:
             logger.info(e)
             reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS" \
