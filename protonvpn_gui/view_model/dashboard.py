@@ -426,19 +426,36 @@ class DashboardViewModel:
 
         # step 2
         logger.info("Attempting to connect")
-        connect_response = protonvpn.connect()
-        logger.info("Dbus response: {}".format(connect_response))
-        state = connect_response[ConnectionStartStatusEnum.STATE]
+        reason_message = "Error -999"
+        state = None
+
+        try:
+            connect_response = protonvpn.connect()
+        except exceptions.ExceededAmountOfConcurrentSessionsError as e:
+            reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS" \
+                "\nto get up to 10 devices connected at the same time at https://account.protonvpn.com/dashboard"
+            logger.info(e)
+        except (exceptions.ProtonVPNException, Exception) as e:
+            logger.info(e)
+            reason_message = str(e)
+        else:
+            logger.info("Dbus response: {}".format(connect_response))
+            state = connect_response[ConnectionStartStatusEnum.STATE]
 
         # step 3
         try:
             if state == VPNConnectionStateEnum.IS_ACTIVE:
                 result = self._get_connected_state()
             else:
-                result = dt.ConnectError(
-                    self._conn_reason_msg[
+                try:
+                    reason_message = self._conn_reason_msg[
                         connect_response[ConnectionStartStatusEnum.REASON]
-                    ],
+                    ]
+                except: # noqa
+                    pass
+
+                result = dt.ConnectError(
+                    reason_message,
                     display_troubleshoot_dialog
                 )
         except (exceptions.ProtonVPNException, Exception) as e:
