@@ -172,7 +172,7 @@ class ConnectVPNErrorView:
         )
         dashboard_view.quick_connect_button.props.sensitive = True
         dashboard_view.main_disconnect_button.props.sensitive = False
-        dashboard_view.connecting_to_label.props.visible = False
+        dashboard_view.connecting_to_label.props.visible = True
         dashboard_view.cancel_connect_overlay_button.props.visible = True
         dashboard_view.cancel_connect_overlay_button.set_label("Close")
         dashboard_view.connecting_overlay_spinner.props.visible = False
