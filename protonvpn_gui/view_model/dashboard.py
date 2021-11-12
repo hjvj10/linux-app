@@ -459,13 +459,15 @@ class DashboardViewModel:
             logger.exception(e)
             self.connect(connection_type_enum, extra_arg, reconnect)
             return
+        except exceptions.AccountPasswordHasBeenCompromisedError as e:
+            logger.exception(e)
+            reason_message = str(e)
         except exceptions.ExceededAmountOfConcurrentSessionsError as e:
-            logger.info(e)
+            logger.exception(e)
             reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS" \
                 "to get up to 10 devices connected at the same time at https://account.protonvpn.com/dashboard"
-            logger.exception(e)
         except (exceptions.ProtonVPNException, Exception) as e:
-            logger.info(e)
+            logger.exception(e)
             reason_message = str(e)
         else:
             logger.info("Dbus response: {}".format(connect_response))
