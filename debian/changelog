@@ -1,4 +1,4 @@
-protonvpn-gui (1.6.0-1) unstable; urgency=medium
+protonvpn-gui (1.6.0-2) unstable; urgency=medium
 
   * Improve: Further improve memory management to avoid potential leaks
   
