@@ -453,7 +453,7 @@ class DashboardViewModel:
             self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
             self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             self.state.on_next(result)
-            self.connect(connection_type_enum.FREE)
+            self.connect(connection_type_enum.FASTEST)
             return
         except exceptions.VPNUsernameOrPasswordHasBeenChangedError as e:
             logger.exception(e)
@@ -464,7 +464,7 @@ class DashboardViewModel:
             reason_message = str(e)
         except exceptions.ExceededAmountOfConcurrentSessionsError as e:
             logger.exception(e)
-            reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS" \
+            reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS " \
                 "to get up to 10 devices connected at the same time at https://account.protonvpn.com/dashboard"
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
