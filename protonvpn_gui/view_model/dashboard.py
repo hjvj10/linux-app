@@ -441,7 +441,7 @@ class DashboardViewModel:
             self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
             self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             self.state.on_next(result)
-            self.connect(connection_type_enum.FREE)
+            self.connect(ConnectionTypeEnum.FREE)
             return
         except exceptions.AccountWasDowngradedError as e:
             logger.exception(e)
@@ -453,7 +453,7 @@ class DashboardViewModel:
             self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
             self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             self.state.on_next(result)
-            self.connect(connection_type_enum.FASTEST)
+            self.connect(ConnectionTypeEnum.FASTEST)
             return
         except exceptions.VPNUsernameOrPasswordHasBeenChangedError as e:
             logger.exception(e)
