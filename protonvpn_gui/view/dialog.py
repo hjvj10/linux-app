@@ -289,9 +289,12 @@ class DisplayMessageDialog:
         self.dialog_view.buttons_visible = False
 
         self.dialog_view.display_dialog()
+        self.dialog_view.connect("destroy", self.close_dialog, callback_func)
 
-    def close_dialog(self):
+    def close_dialog(self, dialog_view, callback_func):
         self.dialog_view.close_dialog()
+        if callback_func:
+            callback_func()
 
     def update_dialog_content(self, title=None, desc=None):
         if title:
