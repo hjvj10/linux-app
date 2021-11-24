@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.7.0
-%define release 8
+%define release 9
 
 Prefix: %{_prefix}
 
@@ -63,7 +63,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Thu Nov 11 2021 Proton Technologies AG <opensource@proton.me> 1.7.0-8
+* Thu Nov 11 2021 Proton Technologies AG <opensource@proton.me> 1.7.0-9
 - Improve: Handle accounting use cases
 
 * Thu Nov 04 2021 Proton Technologies AG <opensource@proton.me> 1.6.0-1
