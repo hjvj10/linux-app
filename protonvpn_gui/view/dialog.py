@@ -291,7 +291,7 @@ class DisplayMessageDialog:
         self.dialog_view.display_dialog()
         self.dialog_view.connect("destroy", self.close_dialog, callback_func)
 
-    def close_dialog(self, dialog_view, callback_func):
+    def close_dialog(self, dialog_view=None, callback_func=None):
         self.dialog_view.close_dialog()
         if callback_func:
             callback_func()
