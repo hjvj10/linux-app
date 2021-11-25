@@ -433,26 +433,26 @@ class DashboardViewModel:
             connect_response = protonvpn.connect()
         except exceptions.AccountIsDelinquentError as e:
             logger.exception(e)
+            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
+            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             result = dt.DisplayDialog(
                 title="Deliquent Account",
                 text="The account is flagged as delinquent due to unpaid invoices. "
                 "You can continue to use ProtonVPN, but any paid features are now disabled."
             )
-            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
-            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             self.state.on_next(result)
             self.connect(ConnectionTypeEnum.FREE)
             self.__server_list_vm.on_load_servers()
             return
         except exceptions.AccountWasDowngradedError as e:
             logger.exception(e)
+            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
+            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             result = dt.DisplayDialog(
                 title="Downgraded Account",
                 text="Your subscription has been downgraded, "
                 "so we are reconnecting to the fastest available server."
             )
-            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
-            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             self.state.on_next(result)
             self.connect(ConnectionTypeEnum.FASTEST)
             self.__server_list_vm.on_load_servers()
