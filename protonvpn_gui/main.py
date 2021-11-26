@@ -258,10 +258,19 @@ class ProtonVPNGUI(Gtk.Application):
             self.indicator = generate_protonvpn_indicator(self)
 
         if not win:
-            if not protonvpn.check_session_exists():
-                win = self.get_login_window()
-            else:
-                win = self.get_dashboard_window()
+            try:
+                if not protonvpn.check_session_exists():
+                    win = self.get_login_window()
+                else:
+                    win = self.get_dashboard_window()
+            except exceptions.ProtonVPNException as e:
+                DisplayMessageDialog(
+                    application=self,
+                    title="Error",
+                    description=str(e),
+                    callback_func=self.quit_
+                )
+                return
 
         logger.info("Window to display {}".format(win))
         win.display_view()

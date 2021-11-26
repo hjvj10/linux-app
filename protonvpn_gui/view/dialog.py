@@ -255,11 +255,15 @@ class AboutDialog:
         self.dialog_view.content_label.align_h = Gtk.Align.START
         self.dialog_view.content_label.ident_h = 0
         self.dialog_view.content_label.content = app_version
+        self.dialog_view.content_label.can_be_selected = True
+        self.dialog_view.content_label.can_focus = False
         self.dialog_view.buttons_visible = False
         additional_context = WidgetFactory.grid("default")
         copyright_label = WidgetFactory.label(
             "default", "Copyright Proton Technologies AG 2021"
         )
+        copyright_label.can_be_selected = True
+        copyright_label.can_focus = False
         copyright_label.add_class("dark-text-color")
         copyright_label.add_class("font-small")
         additional_context.attach(copyright_label.widget)
@@ -285,9 +289,12 @@ class DisplayMessageDialog:
         self.dialog_view.buttons_visible = False
 
         self.dialog_view.display_dialog()
+        self.dialog_view.connect("destroy", self.close_dialog, callback_func)
 
-    def close_dialog(self):
+    def close_dialog(self, dialog_view=None, callback_func=None):
         self.dialog_view.close_dialog()
+        if callback_func:
+            callback_func()
 
     def update_dialog_content(self, title=None, desc=None):
         if title:

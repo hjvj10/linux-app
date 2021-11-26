@@ -48,13 +48,48 @@ class LabelFactory(WidgetFactory):
 
     @property
     def show(self):
-        """Get widget visibility."""
-        return self.__widget.props.visible
+        """Get widget visibility.
+
+        Returns:
+            bool
+        """
+        return self.__widget.get_visible()
 
     @show.setter
     def show(self, newvalue):
         """Set widget visibiltiy."""
-        self.__widget.props.visible = newvalue
+        self.__widget.set_visible(newvalue)
+
+    @property
+    def can_be_selected(self):
+        """Gets the value set by set_selectable().
+
+        Returns:
+            bool
+        """
+        return self.__widget.get_selectable()
+
+    @can_be_selected.setter
+    def can_be_selected(self, newvalue):
+        """Set widget visibiltiy."""
+        self.__widget.set_selectable(newvalue)
+
+    @property
+    def can_focus(self):
+        """Determines whether widget can own the input focus.
+
+        Returns:
+            bool
+        """
+        return self.__widget.get_can_focus()
+
+    @can_focus.setter
+    def can_focus(self, newvalue):
+        """Set whether widget can own the input focus.
+
+        See Gtk.Widget:grab_focus() for actually setting the input focus on a widget.
+        """
+        self.__widget.set_can_focus(newvalue)
 
     @property
     def expand_h(self):

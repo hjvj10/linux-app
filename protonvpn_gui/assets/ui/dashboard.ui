@@ -688,6 +688,7 @@
                         <property name="label" translatable="yes">_connecting_to</property>
                         <property name="wrap">True</property>
                         <property name="wrap-mode">word-char</property>
+                        <property name="selectable">True</property>
                         <property name="width-chars">32</property>
                         <property name="max-width-chars">32</property>
                       </object>

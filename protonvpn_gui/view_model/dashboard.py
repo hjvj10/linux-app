@@ -399,7 +399,7 @@ class DashboardViewModel:
         except (
             exceptions.API8002Error, exceptions.API5002Error,
             exceptions.API5003Error, exceptions.API85031Error,
-            exceptions.API12087Error
+            exceptions.API12087Error, exceptions.API2011Error
         ) as e:
             logger.exception(e)
             setup_connection_error = str(e)
@@ -433,27 +433,29 @@ class DashboardViewModel:
             connect_response = protonvpn.connect()
         except exceptions.AccountIsDelinquentError as e:
             logger.exception(e)
+            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
+            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             result = dt.DisplayDialog(
                 title="Deliquent Account",
                 text="The account is flagged as delinquent due to unpaid invoices. "
                 "You can continue to use ProtonVPN, but any paid features are now disabled."
             )
-            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
-            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             self.state.on_next(result)
-            self.connect(connection_type_enum.FREE)
+            self.connect(ConnectionTypeEnum.FREE)
+            self.__server_list_vm.on_load_servers()
             return
         except exceptions.AccountWasDowngradedError as e:
             logger.exception(e)
+            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
+            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             result = dt.DisplayDialog(
                 title="Downgraded Account",
                 text="Your subscription has been downgraded, "
                 "so we are reconnecting to the fastest available server."
             )
-            self.__quick_settings_vm.on_switch_secure_core_button(SecureCoreStatusEnum.OFF, True)
-            self.__quick_settings_vm.on_switch_netshield_button(NetshieldTranslationEnum.DISABLED, True)
             self.state.on_next(result)
-            self.connect(connection_type_enum.FREE)
+            self.connect(ConnectionTypeEnum.FASTEST)
+            self.__server_list_vm.on_load_servers()
             return
         except exceptions.VPNUsernameOrPasswordHasBeenChangedError as e:
             logger.exception(e)
@@ -464,7 +466,7 @@ class DashboardViewModel:
             reason_message = str(e)
         except exceptions.ExceededAmountOfConcurrentSessionsError as e:
             logger.exception(e)
-            reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS" \
+            reason_message = "\nPlease disconnect another device to connect this one or upgrade to PLUS " \
                 "to get up to 10 devices connected at the same time at https://account.protonvpn.com/dashboard"
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
