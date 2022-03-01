@@ -123,7 +123,7 @@ class LoginView(Gtk.ApplicationWindow):
         second_entry_object = gtk_entry_objects.pop()
 
         self.login_button.set_property("sensitive", False)
-        self.set_css_class(self.login_button, "disabled", "enabled")
+        self.set_css_class(self.login_button, "disabled", "primary")
 
         (
             main_label_object, main_markup_text,
@@ -140,13 +140,13 @@ class LoginView(Gtk.ApplicationWindow):
 
         if len(second_entry_object.get_text().strip()) <= self.string_min_length: # noqa
             second_label_object.set_markup("")
-            self.set_css_class(self.login_button, "disabled", "enabled")
+            self.set_css_class(self.login_button, "disabled", "primary")
             self.login_button.set_property("sensitive", False)
             return
 
         second_label_object.set_markup(second_markup_text)
         self.login_button.set_property("sensitive", True)
-        self.set_css_class(self.login_button, "enabled", "disabled")
+        self.set_css_class(self.login_button, "primary", "disabled")
 
     def on_change_password_visibility(
         self, gtk_entry_object, gtk_icon_object, gtk_event
@@ -167,6 +167,7 @@ class LoginView(Gtk.ApplicationWindow):
         Sets the kill switch revealer status, based
         on users kill switch setting.
         """
+        self.set_css_class(self.killswitch_disable_button, "transparent-primary")
         if self.login_view_model.is_killswitch_enabled():
             self.application.indicator.set_error_state()
 
@@ -355,6 +356,7 @@ class LoginView(Gtk.ApplicationWindow):
             provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
+        self.set_css_class(self.login_button, "disabled")
 
     def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()
