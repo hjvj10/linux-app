@@ -42,7 +42,7 @@
     -gtk-icon-shadow: none;
 }
 #quick_settings_popover_container_grid button:not(.view-more){
-    border-radius: 2px;
+    border-radius: 8px;
     box-shadow: 2px 2px 3px -3px rgb(0, 0, 0);
 }
 

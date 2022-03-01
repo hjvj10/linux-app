@@ -1,0 +1,167 @@
+
+/* BUTTONS */
+button.enabled, button.disabled, button.transparent, button.transparent-white, button.no-default{
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
+    outline: none;
+    border: none;
+    background-image: none;
+    text-shadow: none;
+    background-color: transparent;
+}
+
+button.enabled, button.disabled, button.transparent, button.transparent-white{
+    text-shadow: none;
+    color: rgb(255,255,255);
+    padding: 10px 50px;
+    border-radius: 8px;
+    transition: all .115s ease-in-out;
+    border: 2px solid;
+    box-shadow: none;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+button.no-default {
+    box-shadow: none;
+}
+
+button.enabled{
+    background-color: @green-color;
+    border-color: @green-color;
+}
+
+button.transparent, button.transparent-white{
+    background-color: transparent;
+    border-color: rgb(255,255,255);
+}
+
+button.enabled label,
+button.transparent label, button.transparent-white label{
+    font-weight: bold;
+    font-size: 16px;
+}
+
+button.enabled:hover, button.transparent:hover,
+button.transparent-white:hover{
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
+    outline: none;
+    box-shadow: none;
+    background-image: none;
+    text-shadow: none;
+}
+
+button.enabled:hover{
+border-color: @dark-green-color;
+background-color: @dark-green-color;
+}
+
+button.transparent:hover{
+border-color: @green-color;
+background-color: @green-color;
+}
+
+
+button.transparent-white:hover{
+border-color: rgb(255,255,255);
+background-color: rgb(255,255,255);
+}
+
+button.transparent-white:hover label{
+color: rgb(0,0,0);
+}
+
+button.enabled:active, button.transparent:active {
+-gtk-icon-effect: none;
+-gtk-icon-source: none;
+outline: none;
+box-shadow: none;
+background-image: none;
+text-shadow: none;
+background-color: @dark-green-color;
+border-color: @dark-green-color;
+}
+
+/* ------------- NEW BUTTONS ------------------- */
+
+/* Remove default colours/styles applied by GTK */
+button.primary, button.transparent-danger, button.transparent-primary{
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
+    outline: none;
+    border: none;
+    background-image: none;
+    text-shadow: none;
+    background-color: transparent;
+}
+
+button.primary label, button.transparent-danger label, button.transparent-primary label{
+    font-weight: bold;
+    font-size: 16px;
+}
+
+button.primary:active, button.transparent-danger:active, button.transparent-primary:active{
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
+    outline: none;
+    box-shadow: none;
+    background-image: none;
+    text-shadow: none;
+}
+
+button.primary, button.transparent-danger, button.transparent-primary{
+    text-shadow: none;
+    padding: 10px 50px;
+    border-radius: 8px;
+    transition: all .115s ease-in-out;
+    box-shadow: none;
+    border: 2px solid;
+    color: @text-norm;
+}
+
+button.disabled, button.disabled label{
+    color: @text-disabled;
+    background-color: transparent;
+    border-color: @interaction-weak;
+}
+
+button.primary{
+    background-color: @interaction-norm;
+    border-color: @interaction-norm;
+}
+
+button.transparent-danger, button.transparent-primary{
+    border-color: @interaction-weak;
+    background-color: transparent;
+}
+
+button.primary:hover{
+    background-color: @interaction-norm-hover;
+    border-color: @interaction-norm-hover;
+}
+
+button.transparent-danger:hover{
+    border-color: @signal-danger;
+    background-color: @signal-danger;
+}
+
+button.transparent-primary:hover{
+    border-color: @interaction-norm;
+    background-color: @interaction-norm;
+}
+
+button.primary:active{
+    border-color: @interaction-norm-active;
+    background-color: @interaction-norm-active;
+}
+
+button.transparent-danger:active{
+    border-color: @signal-danger-active;
+    background-color: @signal-danger-active;
+}
+
+button.transparent-primary:active{
+    border-color: @interaction-norm-active;
+    background-color: @interaction-norm-active;
+}

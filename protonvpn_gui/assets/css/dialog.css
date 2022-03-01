@@ -18,7 +18,7 @@
 
 #dialog_container_grid button.transparent{
 	padding: 0px 8px;
-	border-radius: 15px;
+	border-radius: 8px;
 	margin: 0;
 	border-width: 1px;
 }
@@ -32,7 +32,7 @@
 label.generic-event-save-up-to{
     color: rgb(255, 255, 255);
     background-color: rgb(239, 74, 94);
-    border-radius: 15px;
+    border-radius: 8px;
     padding: 2px 10px;
     margin: 10px 0px 0px 0px
 }

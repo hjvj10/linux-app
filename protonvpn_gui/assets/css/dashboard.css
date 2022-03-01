@@ -146,8 +146,9 @@ grid.country-header{
 	-gtk-icon-source: none;
 	-gtk-icon-shadow: none;
 	box-shadow: 2px 2px 3px -1px black;
-	border-radius: 2px;
+	border-radius: 8px;
 	background-color: transparent;
+	padding: 10px 35px;
 }
 
 #dashboard-button-box-grid button img{
@@ -172,7 +173,7 @@ grid.country-header{
 
 #dashboard-search-entry-grid entry{
 	background-color: rgba(18, 22, 31, 0.3);
-	border-radius: 0px;
+	border-radius: 8px;
 	border: 1px solid rgba(150, 150, 150, 0.3);
     padding-top: 5px;
 }
@@ -264,7 +265,7 @@ grid.server-row{
 
 #server-list-grid button.transparent{
 	padding: 0px 8px;
-	border-radius: 15px;
+	border-radius: 8px;
 	margin: 0;
 	border-width: 1px;
 }

@@ -1,11 +1,31 @@
 @import "common.css";
 
 popover#popover_login_menu{
-  background: linear-gradient(180deg, #262A33 0%, #303540 100%);
+  background: @background-norm;
 }
 
-#popover_login_menu box button label {
-	color: @green-color;
+#popover_login_menu box button label{
+  color: @interaction-norm-accent;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+}
+
+#popover_login_menu box button:hover{
+  background-color: transparent;
+  background-image: none;
+  text-decoration: underline;
+}
+
+#popover_login_menu box button:hover label{
+  color: @interaction-norm-accent-hover;
+  background-color: transparent;
+  background-image: none;
+  text-decoration: underline;
+}
+
+#popover_login_menu box button:active label{
+  color: @interaction-norm-accent-active;
 }
 
 label.entry_label{
@@ -17,16 +37,16 @@ label.entry_label{
 }
 
 grid#bottom_grid{
-	margin-bottom: 10px
+	margin-top: 70px;
+	margin-bottom: 50px
 }
 
 grid#middle_grid label{
 	color: rgb(255,255,255)
 }
 
-
 box#box_login_label_links{
-	margin-top: 35px
+	margin-top: 50px
 }
 
 box#box_login_label_links > button{
@@ -38,25 +58,32 @@ box#box_login_label_links > button{
 box#box_login_label_links > button label{
   padding-top: 10px;
   padding-bottom: 10px;
-  color: @green-color;
+  color: @interaction-norm-accent;
   background-color: transparent;
   background-image: none;
   text-decoration: none;
 }
 
-box#box_login_label_links > button:hover{
+box#box_login_label_links > button:hover label{
+  color: @interaction-norm-accent-hover;
   background-color: transparent;
   background-image: none;
   text-decoration: underline;
 }
 
+box#box_login_label_links > button:active label{
+  color: @interaction-norm-accent-active;
+}
+
 box.login-main-box{
+  padding-left: 75px;
+	padding-right: 75px;
 	margin: 50px 25px 0px 25px;
 }
 
 #killswitch-warning-grid button.transparent{
 	padding: 0px 15px;
-	border-radius: 10px;
+	border-radius: 8px;
 }
 
 
