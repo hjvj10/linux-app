@@ -78,7 +78,7 @@ box#box_login_label_links > button:active label{
 box.login-main-box{
   padding-left: 75px;
 	padding-right: 75px;
-	margin: 50px 25px 0px 25px;
+	margin: 50px 0px 0px 0px;
 }
 
 #killswitch-warning-grid button.transparent{
