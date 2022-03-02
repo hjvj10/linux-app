@@ -3,6 +3,7 @@
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <template class="DashboardView" parent="GtkApplicationWindow">
+    <property name="name">dashboard-view</property>
     <property name="can-focus">False</property>
     <property name="can-default">True</property>
     <property name="window-position">center</property>
@@ -308,9 +309,6 @@
                             <property name="AtkObject::accessible-role" translatable="yes">push-button</property>
                           </object>
                         </child>
-                        <style>
-                          <class name="transparent"/>
-                        </style>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -337,18 +335,12 @@
                             <property name="AtkObject::accessible-role" translatable="yes">push-button</property>
                           </object>
                         </child>
-                        <style>
-                          <class name="transparent-white"/>
-                        </style>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
                         <property name="top-attach">4</property>
                       </packing>
                     </child>
-                    <style>
-                      <class name="connection_information_box"/>
-                    </style>
                   </object>
                   <packing>
                     <property name="index">1</property>
@@ -712,9 +704,6 @@
                     <property name="receives-default">True</property>
                     <property name="halign">center</property>
                     <property name="action-name">win.close_connect_overlay</property>
-                    <style>
-                      <class name="transparent"/>
-                    </style>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>

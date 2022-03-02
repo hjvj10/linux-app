@@ -1,6 +1,8 @@
 @import "common.css";
 
-@define-color quick-settings-button-pressed #262A33;
+window#dashboard-view{
+	background-color: @background-weak;
+}
 
 viewport{
 	background-color: transparent;
@@ -44,9 +46,13 @@ scrolledwindow, viewport{
 }
 
 grid.connected_label_grid, grid.ip_server_load_labels_grid,
-grid.connection_speed_label_grid, button.transparent,
-button.transparent-white{
+grid.connection_speed_label_grid{
     margin: 20px 30px 0px 30px
+}
+
+button.main-button{
+	margin: 25px 30px 0px 30px;
+	padding: 13px 0px;
 }
 
 grid.connected_label_grid{
@@ -81,9 +87,14 @@ grid#connecting_overlay_grid label{
     color: rgb(255,255,255);
 }
 
-grid.connection_information_box{
+grid.not-connected-background{
+    /* padding-bottom: 80px; */  
+    background-color: @background-norm;
+}
+
+grid.connected-background{
     /* padding-bottom: 80px; */
-    background-image: linear-gradient(rgba(38, 42, 51, 0.6), rgb(10, 10, 10));
+    background-image: linear-gradient(rgba(28, 27, 36, 0), rgba(28, 27, 36, 1));
 }
 
 grid.connecting_overlay_grid label{
@@ -145,9 +156,8 @@ grid.country-header{
 	-gtk-icon-effect: none;
 	-gtk-icon-source: none;
 	-gtk-icon-shadow: none;
-	box-shadow: 2px 2px 3px -1px black;
 	border-radius: 8px;
-	background-color: transparent;
+	background-color: @background-strong;
 	padding: 10px 35px;
 }
 
@@ -162,7 +172,7 @@ grid.country-header{
 }
 
 #dashboard-button-box-grid button.pressed{
-	background-color: @quick-settings-button-pressed;
+	background-color: @background-norm;
 	box-shadow: none;
 }
 
@@ -172,10 +182,10 @@ grid.country-header{
 }
 
 #dashboard-search-entry-grid entry{
-	background-color: rgba(18, 22, 31, 0.3);
+	background-color: @background-weak;
 	border-radius: 8px;
-	border: 1px solid rgba(150, 150, 150, 0.3);
-    padding-top: 5px;
+	border: 1px solid @interaction-weak;
+    padding: 10px 15px;
 }
 
 #server-list-grid{
@@ -263,13 +273,13 @@ grid.server-row{
 	margin-right: 8px
 }
 
-#server-list-grid button.transparent{
+#server-list-grid button.transparent-primary{
 	padding: 0px 8px;
 	border-radius: 8px;
 	margin: 0;
-	border-width: 1px;
+	border-width: 2px;
 }
-#server-list-grid button.transparent label{
+#server-list-grid button.transparent-primary label{
 	font-size: 10px;
 }
 #server-list-grid grid.country-row button.chevron-unfold, #server-list-grid grid.country-row button.chevron-fold{
@@ -279,6 +289,6 @@ grid.server-row{
 	-gtk-icon-shadow: none;
 }
 .server-names-grid{
-	background-color: rgb(37, 39, 44);
+	background-color: @background-norm;
 	padding-bottom:  5px;
 }

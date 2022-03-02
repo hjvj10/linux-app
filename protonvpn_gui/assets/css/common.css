@@ -4,10 +4,6 @@
 @import "colours.css";
 @import "buttons.css";
 
-window{
-  background-color: @background-norm;
-}
-
 window decoration{
 	border: none;
 	outline: none;
