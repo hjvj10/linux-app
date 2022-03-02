@@ -5,7 +5,7 @@
 @import "buttons.css";
 
 window{
-	background-color: @background-weak;
+	background-color: @background-norm;
 }
 
 window decoration{
@@ -33,8 +33,8 @@ entry{
   box-shadow: none;
   background-image: none;
   background-color: transparent;
-  color: rgb(255,255,255);
-  caret-color: white;
+  color: @text-norm;
+  caret-color: @text-hint;
   border-top: none;
   border-left: none;
   border-right: none;
@@ -44,7 +44,7 @@ entry{
   border-radius: 0px;
 }
 entry image:first-child{
-  color: rgba(255,255,255, 0.6)
+  color: @text-hint;
 }
 entry:focus{
   border-image:none;
@@ -65,27 +65,33 @@ textview.default-text-view text{
 label{
   text-shadow: none;
 }
-label.default-text-color{
+/* label.default-text-color{
   color: rgb(255,255,255)
-}
+} */
 label.overlay_bottom_label{
   font-size: 24px;
   margin-bottom: 80px;
   font-style: italic;
   color: rgb(255,255,255);
 }
-label.warning-color{
-  color: @signal-danger;
-  font-weight: bold;
-}
-label.dark-text-color{
+/* label.dark-text-color{
   color: rgb(156, 160, 170)
-}
+} */
 label.bold{
   font-weight: bold;
 }
-
-
+label.text-hint{
+  color: @text-hint
+}
+label.text-normal{
+  color: @text-norm
+}
+label.text-danger{
+  color: @signal-danger;
+}
+.view-more label{
+  color: @primary;
+}
 
 /* OTHERS */
 .banner-default, .banner-error{

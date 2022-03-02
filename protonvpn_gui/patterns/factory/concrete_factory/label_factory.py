@@ -245,6 +245,19 @@ class Default(LabelFactory):
         self.add_class("default-text-color")
 
 
+class ServerListHeader(LabelFactory):
+    """ServerListHeader class."""
+    label = "server_list_header"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.START
+        self.expand_h = True
+        self.align_v = Gtk.Align.CENTER
+        self.show = True
+        self.add_class("text-hint")
+
+
 class GenericEventIncentive(LabelFactory):
     """Default class."""
     label = "generic_event_incentive"

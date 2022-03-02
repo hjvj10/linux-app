@@ -1,9 +1,5 @@
 @import "common.css";
 
-window#login-view{
-  background-color: @background-norm;
-}
-
 popover#popover_login_menu{
   background: @background-norm;
 }

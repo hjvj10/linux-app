@@ -1,23 +1,23 @@
 @import "common.css";
 
+window#dashboard-view{
+	background-color: @background-weak;
+}
+  
 viewport{
 	background-color: transparent;
 }
 
-grid.dashboard_grid label:not(.warning-color):not(.dark-text-color){
-    color: rgb(255,255,255)
-}
-
-grid.dashboard_grid  button.transparent-white:hover label{
+/* grid.dashboard_grid  button.transparent-white:hover label{
     color: rgb(0,0,0);
-}
+} */
 
 image.event-notification{
     background-image: radial-gradient(3px circle at 22px 2px, rgb(220, 50, 81) 50%,transparent 100%);
 }
 
-label.ip{
-    font-weight: bold;
+grid.connection_speed_label_grid label, grid.ip_server_load_labels_grid label{
+	color: @text-norm;
 }
 
 #download-speed-label, #upload-speed-label{
@@ -79,9 +79,9 @@ grid#connecting_overlay_grid > grid label#connecting_to_country_servername_label
     font-weight: bold;
 }
 
-grid#connecting_overlay_grid label{
+/* grid#connecting_overlay_grid label{
     color: rgb(255,255,255);
-}
+} */
 
 grid.not-connected-background{
     /* padding-bottom: 80px; */  
@@ -93,9 +93,9 @@ grid.connected-background{
     background-image: linear-gradient(rgba(28, 27, 36, 0), rgba(28, 27, 36, 1));
 }
 
-grid.connecting_overlay_grid label{
+/* grid.connecting_overlay_grid label{
     color: rgb(255,255,255);
-}
+} */
 
 .connection_speed_label_grid image{
     margin: 0 5px;
@@ -105,10 +105,10 @@ grid.connecting_overlay_grid label{
 	padding: 5px 20px;
 
 }
-#top-sever-locations-grid label{
+/* #top-sever-locations-grid label{
 	color: rgba(255,255,255,0.4);
 
-}
+} */
 
 grid.country-header{
 	margin-top: 16px;
@@ -215,21 +215,6 @@ grid.server-row{
 	margin-right: 20px;
 }
 
-.test-class{
-	border: 1px solid pink;
-}
-.test-class2{
-	border: 1px solid red;
-}
-.test-class3{
-	border: 1px solid greenyellow;
-}
-.test-class4{
-	border: 1px solid blueviolet;
-}
-.test-class5{
-	border: 1px solid white;
-}
 
 #server-list-grid label.server-label{
 	margin-left: 5px;
@@ -244,12 +229,12 @@ grid.server-row{
 }
 #server-list-grid label.city-label{
 	font-size: small;
-	color:rgba(255, 255, 255, 0.5);
+	color:@text-hint;
 	/* This padding is specific so that button don't "jump" */
 }
 
 #server-list-grid label.disabled-label{
-	color:rgba(255, 255, 255, 0.5);
+	color:@text-disabled;
 }
 
 #server-list-grid grid.country-row{
@@ -262,7 +247,7 @@ grid.server-row{
 }
 
 #server-list-grid widget:not(:last-child) grid.country-row{
-	border-bottom: 0.2px solid rgba(255,255,255, 0.4)
+	border-bottom: 0.2px solid @border-norm;
 }
 
 #server-list-grid grid image.country-flag{

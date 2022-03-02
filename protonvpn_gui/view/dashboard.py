@@ -635,12 +635,16 @@ class DashboardView(Gtk.ApplicationWindow):
             ):
                 return
 
-            if remove_css_class and gtk_object_context.has_class(remove_css_class):
-                gtk_object_context.remove_class(remove_css_class)
+            if remove_css_class:
+                if isinstance(remove_css_class, str):
+                    if gtk_object_context.has_class(remove_css_class):
+                        gtk_object_context.remove_class(remove_css_class)
+                else:
+                    for css_class in remove_css_class:
+                        if gtk_object_context.has_class(css_class):
+                            gtk_object_context.remove_class(css_class)
 
             gtk_object_context.add_class(add_css_class)
-
-            return
 
         if isinstance(add_css_class, list):
             for css_class in add_css_class:

@@ -64,7 +64,8 @@ class NotConnectedVPNView:
 
         dashboard_view.set_css_class(
             dashboard_view.country_servername_label,
-            "warning-color"
+            ["text-danger", "bold"],
+            "text-normal"
         )
         dashboard_view.set_css_class(
             dashboard_view.connection_information_grid,
@@ -118,7 +119,8 @@ class ConnectedVPNView:
         dashboard_view.main_disconnect_button.props.sensitive = True
         dashboard_view.set_css_class(
             dashboard_view.country_servername_label,
-            remove_css_class="warning-color"
+            "text-normal",
+            ["text-danger", "bold"]
         )
         dashboard_view.set_css_class(
             dashboard_view.connection_information_grid,
