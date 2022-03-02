@@ -474,7 +474,8 @@ class QuickSettingsFootnote(LabelFactory):
         super().__init__(label_text)
         self.align_h = Gtk.Align.START
         self.expand_h = True
-        self.align_v = Gtk.Align.CENTER
+        self.align_v = Gtk.Align.END
+        self.expand_v = True
         self.show = True
         self.add_class("quick-settings-footnote")
 
@@ -502,6 +503,8 @@ class QuickSettingsButtonUpgrade(LabelFactory):
     label = "quick_settings_upgrade_in_button"
 
     def __init__(self, label_text):
+        if not label_text:
+            label_text = "Plus"
         super().__init__(label_text)
         self.expand_h = False
         self.align_h = Gtk.Align.END

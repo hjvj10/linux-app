@@ -116,7 +116,7 @@ class CountryHeader:
 
     def __setup_basic_and_plus_header(self, server_count):
         h = Header(self.app)
-        h.title = "BASIC&PLUS Locations ({})".format(server_count)
+        h.title = "PLUS Locations ({})".format(server_count)
         h.info_icon_visibility = True
         h.connect_button(self.on_display_premium_features)
         return h

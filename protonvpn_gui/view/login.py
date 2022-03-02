@@ -98,7 +98,7 @@ class LoginView(Gtk.ApplicationWindow):
         self.setup_css()
         self.setup_actions()
         self.set_killswitch_revealer_status()
-        self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()  # noqa
+        self.set_css_class(self.login_button, add_css_class="disabled")
 
     def display_view(self):
         self.present()
@@ -271,14 +271,13 @@ class LoginView(Gtk.ApplicationWindow):
     def render_view_state(self, state):
         if state == LoginState.IN_PROGRESS:
             self.overlay_spinner.start()
-            if self.top_banner_revealer_grid_context.has_class("banner-error"):
-                self.top_banner_revealer_grid_context.remove_class("banner-error")
+            self.set_css_class( self.top_banner_revealer_grid, remove_css_class="banner-error")
             self.top_banner_revealer.set_reveal_child(False)
             self.overlay_box.set_property("visible", True)
         elif isinstance(state, LoginError):
             self.overlay_spinner.stop()
             self.banner_error_label.set_text(state.message)
-            self.top_banner_revealer_grid_context.add_class("banner-error")
+            self.set_css_class(self.top_banner_revealer_grid, add_css_class="banner-error")
             self.top_banner_revealer.set_reveal_child(True)
             self.overlay_box.set_property("visible", False)
             if state.display_troubleshoot_dialog:
@@ -356,22 +355,41 @@ class LoginView(Gtk.ApplicationWindow):
             provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
-        self.set_css_class(self.login_button, "disabled")
 
-    def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
+    def set_css_class(self, gtk_object, add_css_class=None, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()
-        if (
-            gtk_object_context.has_class(add_css_class)
-            or (
+
+        if isinstance(add_css_class, str):
+            if (
                 gtk_object_context.has_class(add_css_class)
-                and remove_css_class
-                and not add_css_class == remove_css_class
-                and not gtk_object_context.has_class(remove_css_class)
-            )
-        ):
+                or (
+                    gtk_object_context.has_class(add_css_class)
+                    and remove_css_class
+                    and not add_css_class == remove_css_class
+                    and not gtk_object_context.has_class(remove_css_class)
+                )
+            ):
+                return
+
+            if remove_css_class and gtk_object_context.has_class(remove_css_class):
+                gtk_object_context.remove_class(remove_css_class)
+
+            gtk_object_context.add_class(add_css_class)
+
             return
 
-        if remove_css_class and gtk_object_context.has_class(remove_css_class):
-            gtk_object_context.remove_class(remove_css_class)
+        if isinstance(add_css_class, list):
+            for css_class in add_css_class:
+                self.set_css_class(gtk_object, css_class, remove_css_class)
 
-        gtk_object_context.add_class(add_css_class)
+            return
+
+        if isinstance(remove_css_class, str):
+            if gtk_object_context.has_class(remove_css_class):
+                gtk_object_context.remove_class(remove_css_class)
+
+            return
+
+        if isinstance(remove_css_class, list):
+            for css_class in remove_css_class:
+                self.set_css_class(gtk_object, add_css_class, remove_css_class)
