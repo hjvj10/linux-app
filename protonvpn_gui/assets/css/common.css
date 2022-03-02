@@ -4,6 +4,10 @@
 @import "colours.css";
 @import "buttons.css";
 
+window{
+	background-color: @background-weak;
+}
+
 window decoration{
 	border: none;
 	outline: none;

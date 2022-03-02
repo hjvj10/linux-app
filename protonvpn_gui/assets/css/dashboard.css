@@ -1,9 +1,5 @@
 @import "common.css";
 
-window#dashboard-view{
-	background-color: @background-weak;
-}
-
 viewport{
 	background-color: transparent;
 }
