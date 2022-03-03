@@ -29,7 +29,7 @@ popover#popover_login_menu{
 }
 
 label.entry_label{
-  color: rgb(127,127,127);
+  color: @text-hint;
   /* transition: all .115s ease-in-out; */
   transition: all 5s ease-in-out;
   margin-bottom: -10px;
@@ -42,7 +42,7 @@ grid#bottom_grid{
 }
 
 grid#middle_grid label{
-	color: rgb(255,255,255)
+	color: @text-norm
 }
 
 box#box_login_label_links{
@@ -95,9 +95,9 @@ box.login-main-box{
 
 #killswitch-warning-grid{
 	padding: 15px 20px;
-	border-top: 2px solid rgba(0, 0, 0, 0.2);
+	border-top: 2px solid @border-weak;
 }
 
 #killswitch-warning-grid label{
-	color: white;
+	color: @text-norm;
 }

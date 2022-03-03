@@ -242,7 +242,7 @@ class Default(LabelFactory):
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        self.add_class("default-text-color")
+        self.add_class("text-normal")
 
 
 class ServerListHeader(LabelFactory):
@@ -269,7 +269,7 @@ class GenericEventIncentive(LabelFactory):
         self.justify = Gtk.Justification.CENTER
         self.expand_h = True
         self.show = True
-        self.add_class("default-text-color")
+        self.add_class("text-normal")
         self.line_wrap = True
         _max_char_width = 45
         self.width_in_chars = _max_char_width
@@ -304,7 +304,7 @@ class GenericEventTitle(LabelFactory):
         self.expand_h = True
         self.show = True
         self.add_class("margin-bottom-10px")
-        self.add_class("default-text-color")
+        self.add_class("text-normal")
 
 
 class GenericEventFooter(LabelFactory):
@@ -317,7 +317,7 @@ class GenericEventFooter(LabelFactory):
         self.align_v = Gtk.Align.CENTER
         self.expand_h = True
         self.show = True
-        self.add_class("dark-text-color")
+        self.add_class("text-weak")
         self.add_class("margin-top-10px")
 
 
@@ -331,7 +331,7 @@ class TroubleshootDescription(LabelFactory):
         self.align_h = Gtk.Align.FILL
         self.expand_h = True
         self.show = True
-        self.add_class("dark-text-color")
+        self.add_class("text-weak")
         self.add_class("quick-settings-title")
         self.line_wrap = True
         self.ident_h = 0
@@ -354,7 +354,7 @@ class TroubleshootTitle(LabelFactory):
         self.show = True
         self.ident_h = 0
         self.add_class("bold")
-        self.add_class("default-text-color")
+        self.add_class("text-normal")
 
 
 class PremiumFeaturesPopoverTitle(LabelFactory):
@@ -367,7 +367,7 @@ class PremiumFeaturesPopoverTitle(LabelFactory):
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        self.add_class("default-text-color")
+        self.add_class("text-normal")
         self.add_class("quick-settings-title")
         self.add_class("margin-left-10px")
         self.add_class("bold")
@@ -383,7 +383,7 @@ class PremiumFeaturesPopoverDescription(LabelFactory):
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        self.add_class("dark-text-color")
+        self.add_class("text-weak")
         self.add_class("quick-settings-title")
         self.add_class("margin-left-10px")
         self.line_wrap = True
@@ -417,7 +417,7 @@ class StreamingDescription(LabelFactory):
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        self.add_class("dark-text-color")
+        self.add_class("text-weak")
         self.add_class("quick-settings-title")
         self.add_class("margin-left-10px")
         self.line_wrap = True
@@ -444,7 +444,7 @@ class StreamingTitle(LabelFactory):
         self.width_in_chars = 10
         self.max_width_in_chars = 10
         self.add_class("bold")
-        self.add_class("default-text-color")
+        self.add_class("text-normal")
 
 
 class QuickSettingsTitle(LabelFactory):
@@ -457,7 +457,7 @@ class QuickSettingsTitle(LabelFactory):
         self.expand_h = True
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        self.add_class("default-text-color")
+        self.add_class("text-normal")
         self.add_class("quick-settings-title")
 
 
@@ -475,8 +475,8 @@ class QuickSettingsDescription(LabelFactory):
         self.ident_h = 0
         self.line_wrap = True
         self.show = True
+        self.add_class("text-normal")
         self.add_class("quick-settings-description")
-        self.add_class("default-text-color")
 
 
 class QuickSettingsFootnote(LabelFactory):
@@ -537,7 +537,7 @@ class DialogUpgrade(LabelFactory):
         self.max_width_in_chars = 50
         self.line_wrap = True
         self.show = True
-        self.add_class("default-text-color")
+        self.add_class("text-normal")
         self.add_class("font-large")
 
 

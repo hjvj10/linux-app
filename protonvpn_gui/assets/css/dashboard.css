@@ -13,7 +13,7 @@ viewport{
 } */
 
 image.event-notification{
-    background-image: radial-gradient(3px circle at 22px 2px, rgb(220, 50, 81) 50%,transparent 100%);
+    background-image: radial-gradient(3px circle at 22px 2px, @signal-danger 50%,transparent 100%);
 }
 
 grid.connection_speed_label_grid label, grid.ip_server_load_labels_grid label{
@@ -79,10 +79,6 @@ grid#connecting_overlay_grid > grid label#connecting_to_country_servername_label
     font-weight: bold;
 }
 
-/* grid#connecting_overlay_grid label{
-    color: rgb(255,255,255);
-} */
-
 grid.not-connected-background{
     /* padding-bottom: 80px; */  
     background-color: @background-norm;
@@ -93,10 +89,6 @@ grid.connected-background{
     background-image: linear-gradient(rgba(28, 27, 36, 0), rgba(28, 27, 36, 1));
 }
 
-/* grid.connecting_overlay_grid label{
-    color: rgb(255,255,255);
-} */
-
 .connection_speed_label_grid image{
     margin: 0 5px;
 }
@@ -105,10 +97,6 @@ grid.connected-background{
 	padding: 5px 20px;
 
 }
-/* #top-sever-locations-grid label{
-	color: rgba(255,255,255,0.4);
-
-} */
 
 grid.country-header{
 	margin-top: 16px;
@@ -147,7 +135,7 @@ grid.country-header{
 }
 
 #dashboard-button-box-grid button{
-	border: 0.5px solid rgba(0, 0, 0, 0.2);
+	border: none;
 	outline: none;
 	-gtk-icon-effect: none;
 	-gtk-icon-source: none;

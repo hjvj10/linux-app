@@ -26,7 +26,7 @@
     font-size: small;
     margin: 0;
     font-style: italic;
-    color: rgba(255,255,255, 0.5)
+    color: @text-weak
 }
 
 
@@ -93,12 +93,6 @@
     background-color: @background-norm;
 }
 
-#quick_settings_popover_container_grid button.quick-settings label{
-	font-size: small;
-    font-weight: bold;
-    color: rgb(255,255,255)
-}
-
 #quick_settings_popover_container_grid label.upgrade-in-button{
     border: 3px solid @interaction-weak;
     padding: 5px 10px;
@@ -107,3 +101,12 @@
     font-weight: bold;
     color: @text-norm;
 }
+
+/* 
+Has been omitted in code
+
+#quick_settings_popover_container_grid button.quick-settings label{
+    font-size: small;
+    font-weight: bold;
+    color: rgb(255,255,255)
+} */

@@ -58,30 +58,27 @@ textview.default-text-view {
 }
 textview.default-text-view text{
 	background: transparent;
-  color: rgb(255, 255, 255)
+  color: @text-norm
 }
 
 /* LABELS */
 label{
   text-shadow: none;
 }
-/* label.default-text-color{
-  color: rgb(255,255,255)
-} */
 label.overlay_bottom_label{
   font-size: 24px;
   margin-bottom: 80px;
   font-style: italic;
-  color: rgb(255,255,255);
+  color: @text-norm;
 }
-/* label.dark-text-color{
-  color: rgb(156, 160, 170)
-} */
 label.bold{
   font-weight: bold;
 }
 label.text-hint{
   color: @text-hint
+}
+label.text-weak{
+  color: @text-weak
 }
 label.text-normal{
   color: @text-norm
@@ -97,7 +94,7 @@ label.text-danger{
 .banner-default, .banner-error{
   padding: 10px 0px 10px 0px;
   font-size: 14px;
-  color: rgb(255,255,255);
+  color: @text-norm;
 }
 
 .banner-default{
