@@ -66,8 +66,8 @@ distinct visible background.
 E.g. sidenavigation and toolbar.
 */
 @define-color interaction-default transparent;
-@define-color interaction-default-hover transparent;
-@define-color interaction-default-active transparent;
+@define-color interaction-default-hover rgba(91,87,107,0.2);
+@define-color interaction-default-active rgba(91,87,107,0.4);
 
 /* Signal
 

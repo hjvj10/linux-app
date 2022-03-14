@@ -44,7 +44,11 @@
 
 #quick_settings_popover_container_grid button.selected{
     background-color: @background-norm;	
-    border: 1px solid @primary;
+    border: 2px solid @primary;
+}
+
+#quick_settings_popover_container_grid button.selected:hover{
+    background-color:  @interaction-default-hover;	
 }
 
 #quick_settings_popover_container_grid label.selected{
@@ -53,7 +57,12 @@
 }
 
 #quick_settings_popover_container_grid button.available{
-    background-color: @background-weak;
+    background-color: @background-norm;
+    border: 2px solid @border-weak;
+}
+
+#quick_settings_popover_container_grid button.available:hover{
+    background-color: @interaction-default-hover;
 }
 
 #quick_settings_popover_container_grid label.available{

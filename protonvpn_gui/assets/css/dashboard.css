@@ -8,10 +8,6 @@ viewport{
 	background-color: transparent;
 }
 
-/* grid.dashboard_grid  button.transparent-white:hover label{
-    color: rgb(0,0,0);
-} */
-
 image.event-notification{
     background-image: radial-gradient(3px circle at 22px 2px, @signal-danger 50%,transparent 100%);
 }
@@ -141,8 +137,25 @@ grid.country-header{
 	-gtk-icon-source: none;
 	-gtk-icon-shadow: none;
 	border-radius: 8px;
-	background-color: @background-strong;
+	background-color: @background-norm;
 	padding: 10px 35px;
+}
+
+#dashboard-button-box-grid button:hover{
+	border: none;
+	outline: none;
+	-gtk-icon-effect: none;
+	-gtk-icon-source: none;
+	-gtk-icon-shadow: none;
+	background-color: @interaction-default-hover;
+}
+
+#dashboard-button-box-grid button:active{
+	border: none;
+	outline: none;
+	-gtk-icon-effect: none;
+	-gtk-icon-source: none;
+	-gtk-icon-shadow: none;
 }
 
 #dashboard-button-box-grid button img{
@@ -156,7 +169,7 @@ grid.country-header{
 }
 
 #dashboard-button-box-grid button.pressed{
-	background-color: @background-norm;
+	background-color: @interaction-default-active;
 	box-shadow: none;
 }
 
