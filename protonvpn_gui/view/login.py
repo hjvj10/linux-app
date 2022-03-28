@@ -305,7 +305,7 @@ class LoginView(Gtk.ApplicationWindow):
     def setup_images(self):
         dummy_object = WidgetFactory.image("dummy")
         protonvpn_headerbar_pixbuf = dummy_object.create_icon_pixbuf_from_name(
-            "protonvpn-sign-green.svg",
+            "protonvpn-sign.svg",
             width=50, height=50,
         )
         window_icon = dummy_object.create_icon_pixbuf_from_name(
@@ -314,21 +314,21 @@ class LoginView(Gtk.ApplicationWindow):
         self.password_show_entry_pixbuf = dummy_object.create_icon_pixbuf_from_name( # noqa
             os.path.join(
                 ICON_DIR_PATH,
-                "eye-show.imageset/eye-show@3x.png",
+                "eye.imageset/eye-show.svg",
             ), self.icon_width, self.icon_heigt
         )
         self.password_hide_entry_pixbuf = dummy_object.create_icon_pixbuf_from_name( # noqa
             os.path.join(
                 ICON_DIR_PATH,
-                "eye-hide.imageset/eye-hide@3x.png",
+                "eye.imageset/eye-hide.svg",
             ), width=self.icon_width, height=self.icon_heigt,
         )
 
         logo_pixbuf = dummy_object.create_image_pixbuf_from_name(
             os.path.join(
                 IMG_DIR_PATH,
-                "protonvpn-logo-white.svg"
-            ), width=325, height=250
+                "protonvpn-logo.svg"
+            ), width=275, height=100, preserve_aspect_ratio=False
         )
         self.set_icon(window_icon)
         self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)

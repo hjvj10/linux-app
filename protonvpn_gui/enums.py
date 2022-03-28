@@ -22,6 +22,7 @@ class DashboardFeaturesEnum(Enum):
 
 class DashboardKillSwitchIconEnum(Enum):
     OFF = auto()
+    OFF_ACTIVE = auto()
 
     ON_DEFAULT = auto()
     ALWAYS_ON_DEFAULT = auto()
@@ -35,6 +36,8 @@ class DashboardKillSwitchIconEnum(Enum):
 
 class DashboardNetshieldIconEnum(Enum):
     OFF = auto()
+    OFF_ACTIVE = auto()
+
     MALWARE_DEFAULT = auto()
     MALWARE_ADS_DEFAULT = auto()
 
@@ -47,6 +50,8 @@ class DashboardNetshieldIconEnum(Enum):
 
 class DashboardSecureCoreIconEnum(Enum):
     OFF = auto()
+    OFF_ACTIVE = auto()
+
     ON_DEFAULT = auto()
     ON_DISABLE = auto()
     ON_ACTIVE = auto()

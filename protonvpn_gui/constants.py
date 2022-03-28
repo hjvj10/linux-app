@@ -27,6 +27,11 @@ KILLSWITCH_ICON_SET = {
             ICON_DIR_PATH,
             "kill-switch.imageset/killswitch-off.svg"
         ),
+    DashboardKillSwitchIconEnum.OFF_ACTIVE:
+        os.path.join(
+            ICON_DIR_PATH,
+            "kill-switch.imageset/killswitch-off-active.svg"
+        ),
     DashboardKillSwitchIconEnum.ON_DEFAULT:
         os.path.join(
             ICON_DIR_PATH,
@@ -65,6 +70,11 @@ NETSHIELD_ICON_SET = {
             ICON_DIR_PATH,
             "netshield.imageset/netshield-off.svg"
         ),
+    DashboardNetshieldIconEnum.OFF_ACTIVE:
+        os.path.join(
+            ICON_DIR_PATH,
+            "netshield.imageset/netshield-off-active.svg"
+        ),
     DashboardNetshieldIconEnum.MALWARE_DEFAULT:
         os.path.join(
             ICON_DIR_PATH,
@@ -102,6 +112,11 @@ SECURE_CORE_ICON_SET = {
         os.path.join(
             ICON_DIR_PATH,
             "secure-core.imageset/secure-core-off.svg"
+        ),
+    DashboardSecureCoreIconEnum.OFF_ACTIVE:
+        os.path.join(
+            ICON_DIR_PATH,
+            "secure-core.imageset/secure-core-off-active.svg"
         ),
     DashboardSecureCoreIconEnum.ON_DEFAULT:
         os.path.join(

@@ -385,11 +385,11 @@ class DashboardView(Gtk.ApplicationWindow):
 
         # Get pixbuf objects
         protonvpn_headerbar_pixbuf = dummy_object.create_icon_pixbuf_from_name(
-            "protonvpn-sign-green.svg",
+            "protonvpn-sign.svg",
             width=50, height=50,
         )
         logo_pixbuf = dummy_object.create_image_pixbuf_from_name(
-            "protonvpn-logo-white.svg",
+            "protonvpn-logo.svg",
             width=325, height=250
         )
         window_icon = dummy_object.create_icon_pixbuf_from_name(

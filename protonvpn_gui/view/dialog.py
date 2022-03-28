@@ -42,7 +42,7 @@ class DialogView(Gtk.ApplicationWindow):
 
         protonvpn_headerbar_pixbuf = self.dummy_object\
             .create_icon_pixbuf_from_name(
-                "protonvpn-sign-green.svg",
+                "protonvpn-sign.svg",
                 width=50, height=50,
             )
         window_icon = self.dummy_object.create_icon_pixbuf_from_name(

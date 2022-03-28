@@ -400,7 +400,7 @@ class SecureCoreOff(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "secure_core_off",
+            "secure_core_off_active",
             "Secure Core Off"
         )
         if self.settings.secure_core == SecureCoreStatusEnum.OFF:
@@ -467,7 +467,7 @@ class NetshieldOff(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "netshield_off",
+            "netshield_off_active",
             "Don't block"
         )
         if (
@@ -588,7 +588,7 @@ class KillSwitchOff(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "killswitch_off",
+            "killswitch_off_active",
             "Kill Switch Off"
         )
         if self.settings.killswitch == KillswitchStatusEnum.DISABLED:
