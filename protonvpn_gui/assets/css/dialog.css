@@ -16,15 +16,6 @@
     background-color: rgba(18, 22, 31, 0.3);
 } */
 
-#dialog_container_grid button.primary{
-	padding: 0px 8px;
-	border-radius: 8px;
-	margin: 0;
-	border-width: 1px;
-}
-#dialog_container_grid button.primary label{
-	font-size: 10px;
-}
 #dialog_container_grid  button.transparent-danger{
     margin: 0px;
 }

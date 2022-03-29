@@ -403,6 +403,8 @@ class SecureCoreOff(QuickSettingButton):
             "secure_core_off_active",
             "Secure Core Off"
         )
+        self.selected_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_ACTIVE] # noqa
+        self.available_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DEFAULT] # noqa
         if self.settings.secure_core == SecureCoreStatusEnum.OFF:
             self.set_selected()
         else:
@@ -470,6 +472,8 @@ class NetshieldOff(QuickSettingButton):
             "netshield_off_active",
             "Don't block"
         )
+        self.selected_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.OFF_ACTIVE] # noqa
+        self.available_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.OFF] # noqa
         if (
             self.vpn_tier < ServerTierEnum.BASIC.value
             and (
@@ -591,6 +595,8 @@ class KillSwitchOff(QuickSettingButton):
             "killswitch_off_active",
             "Kill Switch Off"
         )
+        self.selected_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.OFF_ACTIVE] # noqa
+        self.available_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.OFF] # noqa
         if self.settings.killswitch == KillswitchStatusEnum.DISABLED:
             self.set_selected()
         else:
