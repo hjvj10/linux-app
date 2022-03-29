@@ -122,3 +122,13 @@ class LoginViewModel:
             self.user_settings.killswitch = KillswitchStatusEnum.DISABLED
         except Exception as e:
             logger.exception(e)
+
+    def can_url_be_reached(self, url):
+        import requests
+
+        try:
+            requests.get(url, timeout=(3.0, 3.0))
+        except: # noqa
+            return False
+        else:
+            return True

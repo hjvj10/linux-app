@@ -35,6 +35,9 @@ class LoginView(Gtk.ApplicationWindow):
     # Buttons
     login_button = Gtk.Template.Child()
     killswitch_disable_button = Gtk.Template.Child()
+    create_account_link_button = Gtk.Template.Child()
+    forgot_password_link_button = Gtk.Template.Child()
+    forgot_username_link_button = Gtk.Template.Child()
 
     # Labels
     username_label = Gtk.Template.Child()
@@ -183,6 +186,9 @@ class LoginView(Gtk.ApplicationWindow):
         disable_killswitch.connect(
             "activate", self.on_clicked_disable_killswitch
         )
+        self.create_account_link_button.connect("clicked", self._open_url, "https://account.protonvpn.com/signup", "signup")
+        self.forgot_password_link_button.set_uri("https://account.protonvpn.com/reset-password")
+        self.forgot_username_link_button.set_uri("https://account.protonvpn.com/forgot-username")
 
         # add action
         self.add_action(need_help_action)
@@ -190,6 +196,28 @@ class LoginView(Gtk.ApplicationWindow):
         self.add_action(disable_killswitch)
 
         self.connect("delete-event", self.on_close_window)
+
+    def _open_url(self, link_button, url, action):
+        if self.login_view_model.can_url_be_reached("https://account.protonvpn.com/api/tests/ping"):
+            Gtk.show_uri_on_window(
+                None,
+                url,
+                Gdk.CURRENT_TIME
+            )
+        else:
+            from .dialog import DisplayMessageDialog
+            action_suffix = "create a new Proton account."
+            if action == "reset-password":
+                action_suffix = "reset your password."
+            elif action == "forgot-username":
+                action_suffix = "have your username sent to the recovery email."
+
+            DisplayMessageDialog(
+                self.application,
+                title="Unable to reach Proton",
+                description="The ProtonVPN website might be temporarily unreachable due to "\
+                "network restrictions. Please use the mobile app to {}".format(action_suffix)
+            )
 
     def on_close_window(self, dashboard_view, gtk_event, _quit=False):
         if not _quit and self.application.indicator._type != "dummy":
