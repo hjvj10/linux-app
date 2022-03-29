@@ -254,13 +254,13 @@
                         <property name="orientation">vertical</property>
                         <property name="homogeneous">True</property>
                         <child>
-                          <object class="GtkLinkButton" id="create_account_link_label">
+                          <object class="GtkLinkButton" id="create_account_link_button">
                             <property name="label" translatable="yes">Create Account</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
                             <property name="relief">none</property>
-                            <property name="uri">https://account.protonvpn.com/signup</property>
+                            <property name="uri">#</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -497,13 +497,13 @@
         <property name="orientation">vertical</property>
         <property name="homogeneous">True</property>
         <child>
-          <object class="GtkLinkButton">
+          <object class="GtkLinkButton" id="forgot_password_link_button">
             <property name="label" translatable="yes">Forgot password</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="relief">none</property>
-            <property name="uri">https://account.protonvpn.com/reset-password</property>
+            <property name="uri">#</property>
             <style>
               <class name="padding-y-5px"/>
               <class name="margin-y-10px"/>
@@ -516,13 +516,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLinkButton">
+          <object class="GtkLinkButton" id="forgot_username_link_button">
             <property name="label" translatable="yes">Forgot username</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="relief">none</property>
-            <property name="uri">https://account.protonvpn.com/forgot-username</property>
+            <property name="uri">#</property>
             <style>
               <class name="padding-y-5px"/>
               <class name="margin-y-10px"/>
