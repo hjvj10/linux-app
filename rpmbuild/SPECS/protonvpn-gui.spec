@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.7.0
-%define release 11
+%define version 1.8.0
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -63,6 +63,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Mar 29 2022 Proton Technologies AG <opensource@proton.me> 1.8.0-1
+- Improve: Display error message if link buttons at login can not be reahced
+
 * Thu Nov 11 2021 Proton Technologies AG <opensource@proton.me> 1.7.0-11
 - Improve: Handle accounting use cases
 
