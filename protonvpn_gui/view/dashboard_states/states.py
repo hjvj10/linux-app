@@ -59,12 +59,19 @@ class NotConnectedVPNView:
         dashboard_view.country_servername_label.props.label = \
             label
         dashboard_view.ip_label.props.label = ip
-        label_ctx = dashboard_view.country_servername_label.get_style_context()
         dashboard_view.quick_connect_button.props.visible = True
         dashboard_view.main_disconnect_button.props.visible = False
 
-        if not label_ctx.has_class("warning-color"):
-            label_ctx.add_class("warning-color")
+        dashboard_view.set_css_class(
+            dashboard_view.country_servername_label,
+            ["text-danger", "bold"],
+            "text-normal"
+        )
+        dashboard_view.set_css_class(
+            dashboard_view.connection_information_grid,
+            "not-connected-background",
+            "connected-background",
+        )
 
         dashboard_view.add_background_glib(GLibEventSourceEnum.ON_MONITOR_VPN)
         dashboard_view.add_background_glib(GLibEventSourceEnum.ON_SERVER_LOAD)
@@ -110,10 +117,16 @@ class ConnectedVPNView:
         dashboard_view.quick_connect_button.props.visible = False
         dashboard_view.main_disconnect_button.props.visible = True
         dashboard_view.main_disconnect_button.props.sensitive = True
-        label_ctx = dashboard_view.country_servername_label.get_style_context()
-
-        if label_ctx.has_class("warning-color"):
-            label_ctx.remove_class("warning-color")
+        dashboard_view.set_css_class(
+            dashboard_view.country_servername_label,
+            "text-normal",
+            ["text-danger", "bold"]
+        )
+        dashboard_view.set_css_class(
+            dashboard_view.connection_information_grid,
+            "connected-background",
+            "not-connected-background",
+        )
 
         dashboard_view.application.indicator.set_connected_state()
 

@@ -21,10 +21,15 @@ class ServerLoad(Gtk.Frame):
     percentages of rgb values have to be used instead.
     """
 
-    _green = (0.302, 0.6392, 0.3451)
-    _yellow = (0.9176, 0.7843, 0.098)
-    _red = (0.9255, 0.3451, 0.3451)
-    _inactive = (0.5961, 0.6157, 0.6627)
+    # _green = (0.302, 0.6392, 0.3451)
+    # _yellow = (0.9176, 0.7843, 0.098)
+    # _red = (0.9255, 0.3451, 0.3451)
+    # _inactive = (0.5961, 0.6157, 0.6627)
+
+    _green = (0.1176, 0.6588, 0.5215)
+    _yellow = (0.9176, 0.6, 0.0)
+    _red = (1, 0.2196, 0.3529)
+    _inactive = (0.3568, 0.3411, 0.4196)
 
     __BASE_ARC__POSITION = (4, 6)
     __BASE_ICON_POSITION = (2, 0)

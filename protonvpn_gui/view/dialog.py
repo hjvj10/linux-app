@@ -42,7 +42,7 @@ class DialogView(Gtk.ApplicationWindow):
 
         protonvpn_headerbar_pixbuf = self.dummy_object\
             .create_icon_pixbuf_from_name(
-                "protonvpn-sign-green.svg",
+                "protonvpn-sign.svg",
                 width=50, height=50,
             )
         window_icon = self.dummy_object.create_icon_pixbuf_from_name(
@@ -262,9 +262,7 @@ class AboutDialog:
         copyright_label = WidgetFactory.label(
             "default", "Copyright Proton Technologies AG 2021"
         )
-        copyright_label.can_be_selected = True
-        copyright_label.can_focus = False
-        copyright_label.add_class("dark-text-color")
+        copyright_label.add_class("text-weak")
         copyright_label.add_class("font-small")
         additional_context.attach(copyright_label.widget)
         additional_context.ident_h = 0

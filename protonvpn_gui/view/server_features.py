@@ -144,7 +144,7 @@ class PremiumCountries():
         self.peer2peer = WidgetFactory.grid("default")
         feature_logo = WidgetFactory.image("premium_popover_p2p")
         title = WidgetFactory.label("premium_features_popover_title")
-        tier_chip = WidgetFactory.label("premium_features_popover_chip", "BASIC & PLUS")
+        tier_chip = WidgetFactory.label("premium_features_popover_chip", "PLUS")
         description = WidgetFactory.label("premium_features_popover_description")
         view_more_link = WidgetFactory.button("learn_more")
 

@@ -598,6 +598,21 @@ class SecureCoreChevron(ImageFactory):
         self.show = True
 
 
+class SecureCoreOffActive(ImageFactory):
+    """SecureCoreOffActive icon class."""
+    image = "secure_core_off_active"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.OFF_ACTIVE],
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
 class SecureCoreOff(ImageFactory):
     """SecureCoreOff icon class."""
     image = "secure_core_off"
@@ -622,6 +637,21 @@ class SecureCoreOn(ImageFactory):
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
                 SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DEFAULT],
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class NetshiledOffActive(ImageFactory):
+    """NetshieldOffActive icon class."""
+    image = "netshield_off_active"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.OFF_ACTIVE],
                 width=25, height=25
             )
         )
@@ -667,6 +697,21 @@ class NetshiledAdsMalware(ImageFactory):
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
                 NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.MALWARE_ADS_DEFAULT], # noqa
+                width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class KillSwitchOffActive(ImageFactory):
+    """KillSwitchOffActive icon class."""
+    image = "killswitch_off_active"
+
+    def __init__(self, _):
+        super().__init__()
+        self.set_from_pixbuf(
+            self.create_icon_pixbuf_from_name(
+                KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.OFF_ACTIVE],
                 width=25, height=25
             )
         )

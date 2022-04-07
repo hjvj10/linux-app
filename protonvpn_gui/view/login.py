@@ -98,7 +98,7 @@ class LoginView(Gtk.ApplicationWindow):
         self.setup_css()
         self.setup_actions()
         self.set_killswitch_revealer_status()
-        self.top_banner_revealer_grid_context = self.top_banner_revealer_grid.get_style_context()  # noqa
+        self.set_css_class(self.login_button, add_css_class="disabled")
 
     def display_view(self):
         self.present()
@@ -123,7 +123,7 @@ class LoginView(Gtk.ApplicationWindow):
         second_entry_object = gtk_entry_objects.pop()
 
         self.login_button.set_property("sensitive", False)
-        self.set_css_class(self.login_button, "disabled", "enabled")
+        self.set_css_class(self.login_button, "disabled", "primary")
 
         (
             main_label_object, main_markup_text,
@@ -140,13 +140,13 @@ class LoginView(Gtk.ApplicationWindow):
 
         if len(second_entry_object.get_text().strip()) <= self.string_min_length: # noqa
             second_label_object.set_markup("")
-            self.set_css_class(self.login_button, "disabled", "enabled")
+            self.set_css_class(self.login_button, "disabled", "primary")
             self.login_button.set_property("sensitive", False)
             return
 
         second_label_object.set_markup(second_markup_text)
         self.login_button.set_property("sensitive", True)
-        self.set_css_class(self.login_button, "enabled", "disabled")
+        self.set_css_class(self.login_button, "primary", "disabled")
 
     def on_change_password_visibility(
         self, gtk_entry_object, gtk_icon_object, gtk_event
@@ -167,6 +167,7 @@ class LoginView(Gtk.ApplicationWindow):
         Sets the kill switch revealer status, based
         on users kill switch setting.
         """
+        self.set_css_class(self.killswitch_disable_button, "transparent-primary")
         if self.login_view_model.is_killswitch_enabled():
             self.application.indicator.set_error_state()
 
@@ -270,14 +271,13 @@ class LoginView(Gtk.ApplicationWindow):
     def render_view_state(self, state):
         if state == LoginState.IN_PROGRESS:
             self.overlay_spinner.start()
-            if self.top_banner_revealer_grid_context.has_class("banner-error"):
-                self.top_banner_revealer_grid_context.remove_class("banner-error")
+            self.set_css_class( self.top_banner_revealer_grid, remove_css_class="banner-error")
             self.top_banner_revealer.set_reveal_child(False)
             self.overlay_box.set_property("visible", True)
         elif isinstance(state, LoginError):
             self.overlay_spinner.stop()
             self.banner_error_label.set_text(state.message)
-            self.top_banner_revealer_grid_context.add_class("banner-error")
+            self.set_css_class(self.top_banner_revealer_grid, add_css_class="banner-error")
             self.top_banner_revealer.set_reveal_child(True)
             self.overlay_box.set_property("visible", False)
             if state.display_troubleshoot_dialog:
@@ -305,7 +305,7 @@ class LoginView(Gtk.ApplicationWindow):
     def setup_images(self):
         dummy_object = WidgetFactory.image("dummy")
         protonvpn_headerbar_pixbuf = dummy_object.create_icon_pixbuf_from_name(
-            "protonvpn-sign-green.svg",
+            "protonvpn-sign.svg",
             width=50, height=50,
         )
         window_icon = dummy_object.create_icon_pixbuf_from_name(
@@ -314,21 +314,21 @@ class LoginView(Gtk.ApplicationWindow):
         self.password_show_entry_pixbuf = dummy_object.create_icon_pixbuf_from_name( # noqa
             os.path.join(
                 ICON_DIR_PATH,
-                "eye-show.imageset/eye-show@3x.png",
+                "eye.imageset/eye-show.svg",
             ), self.icon_width, self.icon_heigt
         )
         self.password_hide_entry_pixbuf = dummy_object.create_icon_pixbuf_from_name( # noqa
             os.path.join(
                 ICON_DIR_PATH,
-                "eye-hide.imageset/eye-hide@3x.png",
+                "eye.imageset/eye-hide.svg",
             ), width=self.icon_width, height=self.icon_heigt,
         )
 
         logo_pixbuf = dummy_object.create_image_pixbuf_from_name(
             os.path.join(
                 IMG_DIR_PATH,
-                "protonvpn-logo-white.svg"
-            ), width=325, height=250
+                "protonvpn-logo.svg"
+            ), width=275, height=100, preserve_aspect_ratio=False
         )
         self.set_icon(window_icon)
         self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)
@@ -356,20 +356,40 @@ class LoginView(Gtk.ApplicationWindow):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def set_css_class(self, gtk_object, add_css_class, remove_css_class=None):
+    def set_css_class(self, gtk_object, add_css_class=None, remove_css_class=None):
         gtk_object_context = gtk_object.get_style_context()
-        if (
-            gtk_object_context.has_class(add_css_class)
-            or (
+
+        if isinstance(add_css_class, str):
+            if (
                 gtk_object_context.has_class(add_css_class)
-                and remove_css_class
-                and not add_css_class == remove_css_class
-                and not gtk_object_context.has_class(remove_css_class)
-            )
-        ):
+                or (
+                    gtk_object_context.has_class(add_css_class)
+                    and remove_css_class
+                    and not add_css_class == remove_css_class
+                    and not gtk_object_context.has_class(remove_css_class)
+                )
+            ):
+                return
+
+            if remove_css_class and gtk_object_context.has_class(remove_css_class):
+                gtk_object_context.remove_class(remove_css_class)
+
+            gtk_object_context.add_class(add_css_class)
+
             return
 
-        if remove_css_class and gtk_object_context.has_class(remove_css_class):
-            gtk_object_context.remove_class(remove_css_class)
+        if isinstance(add_css_class, list):
+            for css_class in add_css_class:
+                self.set_css_class(gtk_object, css_class, remove_css_class)
 
-        gtk_object_context.add_class(add_css_class)
+            return
+
+        if isinstance(remove_css_class, str):
+            if gtk_object_context.has_class(remove_css_class):
+                gtk_object_context.remove_class(remove_css_class)
+
+            return
+
+        if isinstance(remove_css_class, list):
+            for css_class in remove_css_class:
+                self.set_css_class(gtk_object, add_css_class, remove_css_class)

@@ -49,18 +49,16 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.__remove_pressed_style(self.get_relative_to())
 
     def display_secure_core_settings(self, gio_action, _, button):
-        self.upgrade_button.show = True
+        self.upgrade_button.show = False
         self.title_label.content = "Secure Core"
         self.description_label.content = "Route your most sensitive data " \
             "through our safest servers in privacy-friendly countries. "
         self.view_more_link.label = "Learn more."
         self.view_more_link.url = "https://protonvpn.com/support/secure-core-vpn/"
-        self.footnote.content = "Secure Core may reduce VPN speed"
+        self.footnote.content = "Secure Core may reduce VPN speed."
         self.footnote.show = True
         user_session = protonvpn.get_session()
-        if not user_session.delinquent and user_session.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value: # noqa
-            self.upgrade_button.show = False
-        else:
+        if user_session.delinquent and user_session.vpn_tier >= ServerTierEnum.PLUS_VISIONARY.value: # noqa
             self.secure_core_button_on.set_unavailable()
 
         self.__display_content_which_is_context_specific(
@@ -71,21 +69,20 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.popup()
 
     def display_netshield_settings(self, gio_action, _, button):
-        self.upgrade_button.show = True
+        self.upgrade_button.show = False
         self.title_label.content = "Netshield"
         self.description_label.content = "Browse the Internet without ads " \
             "and malware."
         self.view_more_link.label = "Learn more."
         self.view_more_link.url = "https://protonvpn.com/support/netshield/"
         self.footnote.content = "If websites don't load, try " \
-            "disabling Netshield"
+            "disabling Netshield."
         self.footnote.show = True
         user_session = protonvpn.get_session()
-        if not user_session.delinquent and user_session.vpn_tier >= ServerTierEnum.BASIC.value: # noqa
-            self.upgrade_button.show = False
-        else:
+        if user_session.delinquent and user_session.vpn_tier >= ServerTierEnum.BASIC.value: # noqa
             self.netshield_button_malware.set_unavailable()
             self.netshield_button_ads_malware.set_unavailable()
+            self.upgrade_button.show = False
 
         self.__display_content_which_is_context_specific(
             self.netshield_buttons_grid.widget
@@ -99,7 +96,9 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.title_label.content = "Kill Switch"
         self.description_label.content = "Disables Internet if the VPN " \
             "connection drops to prevent accidental IP leak. "
-        self.footnote.show = False
+        self.footnote.content = "If you can't devices on your local\nnetwork, " \
+            "try disabling Kill Switch."
+        self.footnote.show = True
         self.view_more_link.label = "Learn more."
         self.view_more_link.url = "https://protonvpn.com/support/what-is-kill-switch/"
         self.__display_content_which_is_context_specific(
@@ -150,6 +149,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
             "clicked",
             lambda x: self.route_user_to_webpage()
         )
+        self.upgrade_button.show = False
 
     def __attach_widgets_to_grid(self):
         self.content_grid.attach(self.title_label.widget)
@@ -252,7 +252,7 @@ class QuickSettingButton:
         self.__img = WidgetFactory.image(img_factory_name)
         self.__label = WidgetFactory.label("quick_settings_button", text)
         self.__upgrade_label = WidgetFactory.label(
-            "quick_settings_upgrade_in_button", "UPGRADE"
+            "quick_settings_upgrade_in_button"
         )
         self.__button.custom_content(self.__content.widget)
         self.build()
@@ -400,9 +400,11 @@ class SecureCoreOff(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "secure_core_off",
+            "secure_core_off_active",
             "Secure Core Off"
         )
+        self.selected_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_ACTIVE] # noqa
+        self.available_path = SECURE_CORE_ICON_SET[DashboardSecureCoreIconEnum.ON_DEFAULT] # noqa
         if self.settings.secure_core == SecureCoreStatusEnum.OFF:
             self.set_selected()
         else:
@@ -467,9 +469,11 @@ class NetshieldOff(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "netshield_off",
+            "netshield_off_active",
             "Don't block"
         )
+        self.selected_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.OFF_ACTIVE] # noqa
+        self.available_path = NETSHIELD_ICON_SET[DashboardNetshieldIconEnum.OFF] # noqa
         if (
             self.vpn_tier < ServerTierEnum.BASIC.value
             and (
@@ -588,9 +592,11 @@ class KillSwitchOff(QuickSettingButton):
     def __init__(self, popover_widget):
         super().__init__(
             popover_widget,
-            "killswitch_off",
+            "killswitch_off_active",
             "Kill Switch Off"
         )
+        self.selected_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.OFF_ACTIVE] # noqa
+        self.available_path = KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.OFF] # noqa
         if self.settings.killswitch == KillswitchStatusEnum.DISABLED:
             self.set_selected()
         else:

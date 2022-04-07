@@ -241,22 +241,16 @@ class ConnectToCountry(ButtonFactory):
         self.expand_h = True
         self.align_h = Gtk.Align.END
         self.align_v = Gtk.Align.CENTER
-        self.add_class("transparent")
+        self.add_class("transparent-primary")
         self.label = "CONNECT"
         self.show = False
 
 
-class ConnectToServer(ButtonFactory):
+class ConnectToServer(ConnectToCountry):
     button = "connect_server"
 
     def __init__(self):
         super().__init__()
-        self.expand_h = True
-        self.align_h = Gtk.Align.END
-        self.align_v = Gtk.Align.CENTER
-        self.add_class("transparent")
-        self.label = "CONNECT"
-        self.show = False
 
 
 class DisconnectFromServer(ButtonFactory):
@@ -300,7 +294,7 @@ class DialogMain(ButtonFactory):
         self.align_h = Gtk.Align.END
         self.align_v = Gtk.Align.CENTER
         self.show = True
-        self.add_class("enabled")
+        self.add_class("primary")
 
 
 class DialogClose(ButtonFactory):
@@ -310,4 +304,4 @@ class DialogClose(ButtonFactory):
         super().__init__()
         self.label = "Close"
         self.show = True
-        self.add_class("transparent-white")
+        self.add_class("transparent-danger")

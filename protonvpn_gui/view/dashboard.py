@@ -385,11 +385,11 @@ class DashboardView(Gtk.ApplicationWindow):
 
         # Get pixbuf objects
         protonvpn_headerbar_pixbuf = dummy_object.create_icon_pixbuf_from_name(
-            "protonvpn-sign-green.svg",
+            "protonvpn-sign.svg",
             width=50, height=50,
         )
         logo_pixbuf = dummy_object.create_image_pixbuf_from_name(
-            "protonvpn-logo-white.svg",
+            "protonvpn-logo.svg",
             width=325, height=250
         )
         window_icon = dummy_object.create_icon_pixbuf_from_name(
@@ -429,6 +429,8 @@ class DashboardView(Gtk.ApplicationWindow):
             self.provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
+        self.set_css_class(self.quick_connect_button, ["primary", "main-button"])
+        self.set_css_class(self.main_disconnect_button, ["transparent-danger", "main-button"])
 
     def setup_actions(self):
         """Setup actions.
@@ -617,3 +619,41 @@ class DashboardView(Gtk.ApplicationWindow):
         self.remove_background_glib(
             GLibEventSourceEnum.ON_MONITOR_NETWORK_SPEED
         )
+
+    def set_css_class(self, gtk_object, add_css_class=None, remove_css_class=None):
+        gtk_object_context = gtk_object.get_style_context()
+
+        if isinstance(add_css_class, str):
+            if (
+                gtk_object_context.has_class(add_css_class)
+                or (
+                    gtk_object_context.has_class(add_css_class)
+                    and remove_css_class
+                    and not add_css_class == remove_css_class
+                    and not gtk_object_context.has_class(remove_css_class)
+                )
+            ):
+                return
+
+            if remove_css_class:
+                if isinstance(remove_css_class, str):
+                    if gtk_object_context.has_class(remove_css_class):
+                        gtk_object_context.remove_class(remove_css_class)
+                else:
+                    for css_class in remove_css_class:
+                        if gtk_object_context.has_class(css_class):
+                            gtk_object_context.remove_class(css_class)
+
+            gtk_object_context.add_class(add_css_class)
+
+        if isinstance(add_css_class, list):
+            for css_class in add_css_class:
+                self.set_css_class(gtk_object, css_class, remove_css_class)
+
+        if isinstance(remove_css_class, str):
+            if gtk_object_context.has_class(remove_css_class):
+                gtk_object_context.remove_class(remove_css_class)
+
+        if isinstance(remove_css_class, list):
+            for css_class in remove_css_class:
+                self.set_css_class(gtk_object, add_css_class, remove_css_class)

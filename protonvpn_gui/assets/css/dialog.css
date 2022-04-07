@@ -11,28 +11,19 @@
 #dialog_container_grid.no-margin > grid.grid-spacing{
     margin: 0px;
 }
-
+/* 
 #dialog_container_grid grid.grid-button-bg-color{
     background-color: rgba(18, 22, 31, 0.3);
-}
+} */
 
-#dialog_container_grid button.transparent{
-	padding: 0px 8px;
-	border-radius: 15px;
-	margin: 0;
-	border-width: 1px;
-}
-#dialog_container_grid button.transparent label{
-	font-size: 10px;
-}
-#dialog_container_grid  button.transparent-white{
+#dialog_container_grid  button.transparent-danger{
     margin: 0px;
 }
 
 label.generic-event-save-up-to{
-    color: rgb(255, 255, 255);
-    background-color: rgb(239, 74, 94);
-    border-radius: 15px;
+    color: @text-norm;
+    background-color: @signal-danger;
+    border-radius: 8px;
     padding: 2px 10px;
     margin: 10px 0px 0px 0px
 }
