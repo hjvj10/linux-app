@@ -1,4 +1,4 @@
-protonvpn-gui (1.8.0-1) unstable; urgency=medium
+protonvpn-gui (1.8.0-2) unstable; urgency=medium
 
   * Improve: Display error message if link buttons at login can not be reahced
   

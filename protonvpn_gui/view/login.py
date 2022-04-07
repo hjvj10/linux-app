@@ -187,8 +187,8 @@ class LoginView(Gtk.ApplicationWindow):
             "activate", self.on_clicked_disable_killswitch
         )
         self.create_account_link_button.connect("clicked", self._open_url, "https://account.protonvpn.com/signup", "signup")
-        self.forgot_password_link_button.connect("clicked", self._open_url, "https://account.protonvpn.com/reset-password", "reset-password")
-        self.forgot_username_link_button.connect("clicked", self._open_url, "https://account.protonvpn.com/forgot-username", "forgot-username")
+        self.forgot_password_link_button.set_uri("https://account.protonvpn.com/reset-password")
+        self.forgot_username_link_button.set_uri("https://account.protonvpn.com/forgot-username")
 
         # add action
         self.add_action(need_help_action)

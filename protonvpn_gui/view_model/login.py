@@ -127,7 +127,7 @@ class LoginViewModel:
         import requests
 
         try:
-            requests.get(url, timeout=(3.0, 6.0))
+            requests.get(url, timeout=(3.0, 3.0))
         except: # noqa
             return False
         else:
