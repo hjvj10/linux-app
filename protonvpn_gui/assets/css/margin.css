@@ -1,3 +1,18 @@
+.margin-all-0px{
+  padding: 0px;
+}
+
+.margin-x-0px{
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.margin-y-0px{
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+
 /*___margin 5px___*/
 .margin-all-5px{
   margin: 5px;

@@ -112,3 +112,74 @@ spinner {
 box.overlay, box.connecting_overlay{
   background: @background-norm
 }
+
+switch.custom-switch{
+	background-image: none;
+	color: transparent;
+	border-radius: 50px;
+	transition-duration: 0.2s;
+	outline-width: 0;
+	outline-offset: 0;
+	min-width: 10px;
+}
+
+switch.custom-switch.enabled{
+  border: 1.5px solid @text-weak;
+}
+
+switch.custom-switch.disabled, switch.custom-switch.disabled:hover{
+  border: 1.5px solid @text-disabled;
+}
+
+switch.custom-switch.disabled:checked, switch.custom-switch.disabled:checked:hover{
+  background-color: @text-disabled;
+  border: 1.5px solid @text-disabled;
+}
+
+switch.custom-switch.enabled:hover{
+	background-color: @interaction-default-hover;
+	border-color: @text-norm;
+}
+
+switch.custom-switch.enabled:active{
+	background-color: @interaction-default-active;
+	border-color: @text-norm;
+}
+
+switch.custom-switch.enabled:checked{
+	background-color: @interaction-norm;
+	border-color: @interaction-norm;
+}
+
+switch.custom-switch.enabled:checked:hover{
+  background-color: @interaction-norm-hover;
+  border-color: @interaction-norm-hover;
+}
+
+switch.custom-switch.enabled:checked:active{
+	background-color: rgba(152, 128, 255, 1);
+	border-color: rgba(152, 128, 255, 1);
+}
+
+switch.custom-switch slider{
+	background-image: none;
+	margin: 5px 5px;
+	border-radius: 100px;
+	outline-width: 0;
+	outline-offset: 0;
+	-gtk-outline-radius: 0;
+	min-width: 15px;
+	min-height: 15px;
+}
+
+switch.custom-switch.enabled slider{
+  background-color: @text-norm;
+}
+
+switch.custom-switch.disabled slider{
+	background-color: @text-disabled;
+}
+
+switch.custom-switch.disabled:checked slider{
+	background-color: @text-norm;
+}

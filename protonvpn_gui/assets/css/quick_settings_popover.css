@@ -1,4 +1,7 @@
 #QuickSettingsPopoverView{
+    background-image: none;
+    -gtk-secondary-caret-color: @background-norm;
+    caret-color: @background-norm;
     background-color: @background-norm;
     border-radius: 8px;
     box-shadow: 0px 8px 10px -5px @background-norm;
@@ -26,7 +29,7 @@
     font-size: small;
     margin: 0;
     font-style: italic;
-    color: @text-weak
+    color: @text-weak;
 }
 
 

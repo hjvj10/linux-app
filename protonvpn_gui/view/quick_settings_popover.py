@@ -96,7 +96,7 @@ class QuickSettingsPopoverView(Gtk.Popover):
         self.title_label.content = "Kill Switch"
         self.description_label.content = "Disables Internet if the VPN " \
             "connection drops to prevent accidental IP leak. "
-        self.footnote.content = "If you can't devices on your local\nnetwork, " \
+        self.footnote.content = "If you can't connect to devices on your local\nnetwork, " \
             "try disabling Kill Switch."
         self.footnote.show = True
         self.view_more_link.label = "Learn more."

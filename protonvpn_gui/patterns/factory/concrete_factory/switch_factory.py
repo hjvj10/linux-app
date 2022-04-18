@@ -70,12 +70,20 @@ class SwitchFactory(AbstractButtonFactory):
         self.__widget.props.visible = newvalue
 
     @property
-    def disable(self):
-        return self.__widget.props.sensitive
+    def is_active(self):
+        self.__widget.get_active()
 
-    @disable.setter
-    def disable(self, newvalue):
-        self.__widget.props.sensitive = newvalue
+    @is_active.setter
+    def is_active(self, newvalue):
+        self.__widget.set_active(newvalue)
+
+    @property
+    def disabled(self):
+        return self.__widget.get_property("sensitive")
+
+    @disabled.setter
+    def disabled(self, newvalue):
+        self.__widget.set_property("sensitive", not newvalue)
 
     @property
     def expand_h(self):
@@ -142,12 +150,16 @@ class SwitchFactory(AbstractButtonFactory):
             old_classes (str|list)
             new_classes (str|list)
         """
-        def worker(css_class):
+        def worker(css_class, add=False):
+            default_method = self.remove_class
+            if add:
+                default_method = self.add_class
+
             if isinstance(css_class, list):
                 for class_ in css_class:
-                    self.remove_class(class_)
+                    default_method(class_)
             elif isinstance(css_class, str):
-                self.remove_class(css_class)
+                default_method(css_class)
             else:
                 raise TypeError(
                     "Unexpected type (list or str expected, but got {})".format( # noqa
@@ -155,7 +167,7 @@ class SwitchFactory(AbstractButtonFactory):
                     )
                 )
         worker(old_classes)
-        worker(new_classes)
+        worker(new_classes, True)
 
     def has_class(self, css_class):
         """Check if has CSS class."""
@@ -182,3 +194,18 @@ class TroubleshootDialog(SwitchFactory):
         super().__init__()
         self.show = True
         self.align_v = Gtk.Align.CENTER
+        self.add_class("custom-switch")
+        self.add_class("enabled")
+
+    @property
+    def disabled(self):
+        return self.widget.get_property("sensitive")
+
+    @disabled.setter
+    def disabled(self, newvalue):
+        if newvalue:
+            self.replace_old_class_with_new_class("enabled", "disabled")
+        else:
+            self.replace_old_class_with_new_class("disabled", "enabled")
+
+        return self.widget.set_property("sensitive", not newvalue)

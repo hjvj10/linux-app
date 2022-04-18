@@ -188,8 +188,7 @@ class DashboardEventButton(ButtonFactory):
         self.expand_v = False
         self.align_h = Gtk.Align.END
         self.add_class("no-default")
-        self.add_class("margin-y-0px")
-        self.add_class("margin-x-0px")
+        self.add_class("margin-all-0px")
         self.show = True
 
 
@@ -201,6 +200,7 @@ class ServerRowStreamingFeature(ButtonFactory):
         self.expand_h = False
         self.show = True
         self.add_class("no-default")
+        self.add_class("margin-x-0px")
 
 
 class HeaderInfo(ButtonFactory):
