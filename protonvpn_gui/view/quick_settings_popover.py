@@ -22,9 +22,14 @@ class QuickSettingsPopoverView(Gtk.Popover):
     __gtype_name__ = 'QuickSettingsPopoverView'
 
     quick_settings_popover_container_grid = Gtk.Template.Child()
+    quick_settings_scrolledwindow = Gtk.Template.Child()
+    quick_settings_viewport = Gtk.Template.Child()
 
     def __init__(self, dashboard_view_model):
         super().__init__()
+        self.set_valign(Gtk.Align.FILL)
+        self.quick_settings_popover_container_grid.set_valign(Gtk.Align.START)
+        self.quick_settings_viewport.set_valign(Gtk.Align.START)
         self.dashboard_view_model = dashboard_view_model
 
         self.__create_widgets()
