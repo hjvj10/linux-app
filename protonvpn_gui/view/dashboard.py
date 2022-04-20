@@ -27,7 +27,7 @@ from .dashboard_states import (ConnectedVPNView, ConnectVPNErrorView,
                                ConnectVPNPreparingView, EventNotification,
                                InitLoadView, NotConnectedVPNView,
                                UpdateNetworkSpeedView, UpdateQuickSettings)
-from .dialog import DisplayMessageDialog
+from .dialog import DisplayMessageDialog, TroubleshootDialog
 from .quick_settings_popover import QuickSettingsPopoverView
 from .server_list import ServerListView
 
@@ -201,6 +201,8 @@ class DashboardView(Gtk.ApplicationWindow):
             ConnectedVPNView(self, state)
         elif isinstance(state, ConnectError):
             ConnectVPNErrorView(self, state)
+            if state.display_troubleshoot_dialog:
+                TroubleshootDialog(self.application)
         elif isinstance(state, NetworkSpeed):
             UpdateNetworkSpeedView(self, state)
         elif isinstance(state, QuickSettingsStatus):
@@ -431,6 +433,7 @@ class DashboardView(Gtk.ApplicationWindow):
         )
         self.set_css_class(self.quick_connect_button, ["primary", "main-button"])
         self.set_css_class(self.main_disconnect_button, ["transparent-danger", "main-button"])
+        self.set_css_class(self.cancel_connect_overlay_button, ["transparent-danger", "main-button"])
 
     def setup_actions(self):
         """Setup actions.

@@ -402,7 +402,7 @@ class PremiumPopoverPeer2Peer(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "p2p-arrows.png",
+                "p2p.svg",
                 width=25, height=25
             )
         )
@@ -417,7 +417,7 @@ class PremiumPopoverTor(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "tor-onion.png",
+                "tor.svg",
                 width=25, height=25
             )
         )
@@ -479,7 +479,7 @@ class FeatureP2P(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "p2p-arrows.png",
+                "p2p.svg",
                 width=20, height=20
             )
         )
@@ -495,7 +495,7 @@ class FeatureTOR(ImageFactory):
         super().__init__()
         self.set_from_pixbuf(
             self.create_icon_pixbuf_from_name(
-                "tor-onion.png",
+                "tor.svg",
                 width=20, height=20
             )
         )

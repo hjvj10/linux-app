@@ -497,9 +497,9 @@ class TroubleshootDialog:
             _grid.column_spacing = 40
             alt_routing_switch = WidgetFactory.switch("troubleshoot_dialog")
             if protonvpn.get_settings().alternative_routing == UserSettingStatusEnum.ENABLED:
-                alt_routing_switch.widget.set_active(True)
+                alt_routing_switch.is_active = True
             else:
-                alt_routing_switch.widget.set_active(False)
+                alt_routing_switch.is_active = False
 
             alt_routing_switch.widget.connect("notify::active", self.__update_alternative_routing)
             _grid.attach_right_next_to(alt_routing_switch.widget, title.widget, height=2)

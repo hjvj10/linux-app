@@ -26,9 +26,22 @@ class TextViewFactory(WidgetFactory):
         return subclasses_dict[widget_name](text)
 
     def __create_hyperlink_tag(self):
+        # What can be applied to tags:
+        # Background colour (“background” property)
+        # Foreground colour (“foreground” property)
+        # Underline (“underline” property)
+        # Bold (“weight” property)
+        # Italics (“style” property)
+        # Strikethrough (“strikethrough” property)
+        # Justification (“justification” property)
+        # Size (“size” and “size-points” properties)
+        # Text wrapping (“wrap-mode” property)
+        #
+        # To ensure the list is correct, check the following link::
+        # https://python-gtk-3-tutorial.readthedocs.io/en/latest/textview.html#tags
         return self.__textbuffer.create_tag(
             underline=Pango.Underline.SINGLE,
-            foreground="#4DA358"
+            foreground="#9880FF"
         )
 
     @property

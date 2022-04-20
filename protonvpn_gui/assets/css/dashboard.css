@@ -63,15 +63,18 @@ grid#connecting_overlay_grid > *{
     margin: 20px 0px
 }
 
-grid#connecting_overlay_grid > button{
-    margin-top: 20px;
+grid#connecting_overlay_grid button#cancel_connect_overlay_button{
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 grid#connecting_overlay_grid > grid label{
     font-size: 18px;
+	color: @text-norm;
 }
 
-grid#connecting_overlay_grid > grid label#connecting_to_country_servername_label{
+grid#connecting_overlay_grid > grid label#connecting_to_label{
+	color: @text-norm;
     font-weight: bold;
 }
 
@@ -223,15 +226,18 @@ grid.server-row{
 	font-weight: bold;
 	font-size: 105%;
 	padding: 4px 0px;
+	color:@text-norm;
 }
+
 #server-list-grid label.country-label{
 	font-weight: bold;
 	padding: 4px 0px;
+	color:@text-norm;
 }
+
 #server-list-grid label.city-label{
 	font-size: small;
 	color:@text-hint;
-	/* This padding is specific so that button don't "jump" */
 }
 
 #server-list-grid label.disabled-label{

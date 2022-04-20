@@ -8,7 +8,7 @@ from protonvpn_nm_lib.enums import (ConnectionMetadataEnum,
                                     NotificationStatusEnum,
                                     SecureCoreStatusEnum,
                                     VPNConnectionReasonEnum,
-                                    VPNConnectionStateEnum, SecureCoreStatusEnum, )
+                                    VPNConnectionStateEnum)
 
 from ..enums import (DashboardKillSwitchIconEnum, DashboardNetshieldIconEnum,
                      DashboardSecureCoreIconEnum)

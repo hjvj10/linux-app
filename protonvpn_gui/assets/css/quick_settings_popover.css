@@ -1,10 +1,13 @@
 #QuickSettingsPopoverView{
+    background-image: none;
+    -gtk-secondary-caret-color: @background-norm;
+    caret-color: @background-norm;
     background-color: @background-norm;
     border-radius: 8px;
     box-shadow: 0px 8px 10px -5px @background-norm;
 }
 
-#QuickSettingsPopoverView > grid{
+#QuickSettingsPopoverView grid#quick_settings_popover_container_grid{
     margin: 15px;
 }
 
@@ -26,7 +29,7 @@
     font-size: small;
     margin: 0;
     font-style: italic;
-    color: @text-weak
+    color: @text-weak;
 }
 
 
@@ -35,6 +38,9 @@
     border: none;
     background-image: none;
     outline: none;
+    text-shadow: none;
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
     -gtk-icon-shadow: none;
 }
 #quick_settings_popover_container_grid button:not(.view-more){
