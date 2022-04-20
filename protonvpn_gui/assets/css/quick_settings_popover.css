@@ -38,6 +38,9 @@
     border: none;
     background-image: none;
     outline: none;
+    text-shadow: none;
+    -gtk-icon-effect: none;
+    -gtk-icon-source: none;
     -gtk-icon-shadow: none;
 }
 #quick_settings_popover_container_grid button:not(.view-more){
