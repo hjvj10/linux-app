@@ -91,3 +91,8 @@ class DisplayEvent:
 @dataclass
 class GenericEvent:
     class_instance: auto()
+
+
+@dataclass
+class WelomeToNewBrandEvent:
+    class_instance: auto()

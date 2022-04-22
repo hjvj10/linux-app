@@ -1,3 +1,9 @@
+protonvpn-gui (1.9.0-1) unstable; urgency=medium
+
+  * Feature: Introduce new brand
+  
+ -- Proton Technologies AG <opensource@proton.me>  Fri, 22 Apr 2022 14:30:00 +0000
+ 
 protonvpn-gui (1.8.0-2) unstable; urgency=medium
 
   * Improve: Display error message if link buttons at login can not be reahced

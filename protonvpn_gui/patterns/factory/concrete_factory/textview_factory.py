@@ -322,3 +322,21 @@ class QuickSettingDescription(TextViewFactory):
         self.max_width = 320
         self.justify = "fill"
         self.add_class("default-text-view")
+
+
+class NewBrandDescription(TextViewFactory):
+    textview = "new-brand"
+
+    def __init__(self, text):
+        super().__init__(text)
+        self.align_h = Gtk.Align.CENTER
+        self.align_v = Gtk.Align.START
+        self.editable = False
+        self.cursor = False
+        self.overwrite = False
+        self.accept_tabs = False
+        self.show = True
+        self.wrap_mode = "word"
+        self.max_width = 430
+        self.justify = "center"
+        self.add_class("default-text-view")

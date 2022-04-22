@@ -189,6 +189,13 @@ class DashboardViewModel:
 
     def check_if_events_should_be_displayed(self, *_):
         """Sync check if events should be displayed."""
+        if protonvpn.get_settings().new_brand == NotificationStatusEnum.NOT_OPENED:
+            self.state.on_next(
+                dt.DisplayEvent(
+                    dt.WelomeToNewBrandEvent(None), False, self.set_new_brand_dialog_opened
+                )
+            )
+
         all_notitications = protonvpn.get_session().get_all_notifications()
         if not isinstance(all_notitications, list):
             return
@@ -210,9 +217,11 @@ class DashboardViewModel:
                     )
                 )
 
-    def set_notification_as_read(self):
-        from protonvpn_nm_lib.enums import NotificationStatusEnum
+    def set_notification_as_read(self, setting):
         protonvpn.get_settings().event_notification = NotificationStatusEnum.OPENED
+
+    def set_new_brand_dialog_opened(self):
+        protonvpn.get_settings().new_brand = NotificationStatusEnum.OPENED
 
     def on_startup_load_dashboard_resources_async(self, *_):
         """Async load dashboard resources."""

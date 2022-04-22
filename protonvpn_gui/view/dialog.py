@@ -247,6 +247,7 @@ class AboutDialog:
     Is displayed when the users clicks on logout button.
     """
     def __init__(self, application, callback_func=None):
+        import datetime
         self.dialog_view = DialogView(application)
         self.dialog_view.headerbar_label.set_text("About")
         app_version = "ProtonVPN: \tv{} (library: v{} / api-client: v{})".format(
@@ -260,7 +261,7 @@ class AboutDialog:
         self.dialog_view.buttons_visible = False
         additional_context = WidgetFactory.grid("default")
         copyright_label = WidgetFactory.label(
-            "default", "Copyright Proton Technologies AG 2021"
+            "default", "Copyright Proton AG {}".format(datetime.datetime.now().date().strftime("%Y"))
         )
         copyright_label.add_class("text-weak")
         copyright_label.add_class("font-small")
@@ -657,3 +658,89 @@ class GenericEventDialog:
 
     def _open_url(self, gtk_button, url):
         _ = Gio.AppInfo.launch_default_for_uri(url)
+
+
+class WelomeToNewBrandDialog:
+    """This dialog is only showed once due to rebranding"""
+    def __init__(self, application, callback_func=None):
+        dialog_view = DialogView(application)
+        dialog_view.content_label.show = False
+        dialog_view.buttons_visible = False
+
+        additional_context = WidgetFactory.grid("dashboard_event_main_grid")
+        top_grid = self.__generate_top_content()
+        mid_grid = self.__generate_mid_content()
+        bottom_grid = self.__generate_bottom_content(callback_func, dialog_view)
+
+        additional_context.attach(top_grid.widget)
+        additional_context.attach_bottom_next_to(mid_grid.widget, top_grid.widget)
+        additional_context.attach_bottom_next_to(bottom_grid.widget, mid_grid.widget)
+
+        dialog_view.add_extra_content(additional_context.widget)
+
+        dialog_view.display_dialog()
+
+    def __generate_top_content(self):
+        grid = WidgetFactory.grid("default")
+        grid.align_h = Gtk.Align.CENTER
+
+        new_branch_bg = WidgetFactory.image("new-brand-bg")
+        grid.attach(new_branch_bg.widget)
+
+        return grid
+
+    def __generate_mid_content(self):
+        grid = WidgetFactory.grid("default")
+        grid.align_h = Gtk.Align.CENTER
+        grid.add_class("margin-y-30px")
+
+        text1 = WidgetFactory.label("new-brand-title", "Updated Proton, Unified protection")
+        text2 = WidgetFactory.textview(
+            "new-brand",
+            "Introducing Proton's refreshed look. Many services, one "\
+            "mission. Welcome to an Internet where privacy is the default."
+        )
+        button = WidgetFactory.button("learn-more-aligned-center")
+        button.url = "https://proton.me/news/updated-proton"
+        button.label = "Learn more"
+
+        text1.add_class("default-text-view")
+        text2.add_class("default-text-view")
+        text2.add_class("margin-top-10px")
+        text1.show = True
+        text2.show = True
+        button.show = True
+
+        grid.attach(text1.widget)
+        grid.attach_bottom_next_to(text2.widget, text1.widget)
+        grid.attach_bottom_next_to(button.widget, text2.widget)
+
+        return grid
+
+    def __generate_bottom_content(self, callback_func, dialog_view):
+        grid = WidgetFactory.grid("default")
+        grid.align_h = Gtk.Align.CENTER
+        grid.row_spacing = 35
+        grid.column_spacing = 20
+
+        button = WidgetFactory.button("dialog_main")
+        button.label = "Got it"
+        button.align_h = Gtk.Align.CENTER
+        button.connect("clicked", self.__on_click, callback_func, dialog_view.close_dialog)
+
+        mail_icon = WidgetFactory.image("small-mail-logo")
+        calendar_icon = WidgetFactory.image("small-calendar-logo")
+        drive_icon = WidgetFactory.image("small-drive-logo")
+        vpn_icon = WidgetFactory.image("small-vpn-logo")
+
+        grid.attach(button.widget, width=4)
+        grid.attach_bottom_next_to(mail_icon.widget, button.widget)
+        grid.attach_right_next_to(calendar_icon.widget, mail_icon.widget)
+        grid.attach_right_next_to(drive_icon.widget, calendar_icon.widget)
+        grid.attach_right_next_to(vpn_icon.widget, drive_icon.widget)
+
+        return grid
+
+    def __on_click(self, button, callback_func, close_dialog):
+        callback_func()
+        close_dialog()

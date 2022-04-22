@@ -197,6 +197,7 @@ class LoginView(Gtk.ApplicationWindow):
         self.add_action(disable_killswitch)
 
         self.connect("delete-event", self.on_close_window)
+        self.login_button.set_property("sensitive", False)
 
     def _open_url(self, link_button, url, action):
         if self.login_view_model.can_url_be_reached("https://account.protonvpn.com/api/tests/ping"):
@@ -271,7 +272,7 @@ class LoginView(Gtk.ApplicationWindow):
     def render_view_state(self, state):
         if state == LoginState.IN_PROGRESS:
             self.overlay_spinner.start()
-            self.set_css_class( self.top_banner_revealer_grid, remove_css_class="banner-error")
+            self.set_css_class(self.top_banner_revealer_grid, remove_css_class="banner-error")
             self.top_banner_revealer.set_reveal_child(False)
             self.overlay_box.set_property("visible", True)
         elif isinstance(state, LoginError):

@@ -573,3 +573,17 @@ class City(LabelFactory):
         self.expand_v = True
         self.show = True
         self.add_class("city-label")
+
+
+class NewBrandTitle(LabelFactory):
+    label = "new-brand-title"
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+        self.align_h = Gtk.Align.CENTER
+        self.line_wrap = True
+        self.show = True
+        self.add_class("text-normal")
+        self.add_class("font-xx-large")
+        self.add_class("font-bold")
+        self.add_class("margin-bottom-10px")
