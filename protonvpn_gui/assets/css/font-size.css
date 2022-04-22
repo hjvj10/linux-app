@@ -26,3 +26,16 @@ label.font-smaller{
 label.font-larger{
     font-size: larger;
 }
+
+label.font-bold{
+    font-weight: bold;
+}
+label.font-bolder{
+    font-weight: bolder;
+}
+label.font-normal{
+    font-weight: normal;
+}
+label.font-lighter{
+    font-weight: lighter;
+}

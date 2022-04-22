@@ -103,6 +103,8 @@ class LoginViewModel:
 
         self.__captcha = None
 
+        self.__username = None
+        self.__password = None
         self.state.on_next(result)
 
     def is_killswitch_enabled(self):

@@ -12,6 +12,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GdkPixbuf, Gtk
 
 from ..abstract_widget_factory import WidgetFactory
+SMALL_LOGO_SIZE = 50
 
 
 class ImageFactory(WidgetFactory):
@@ -758,6 +759,86 @@ class KillSwitchAlwaysOn(ImageFactory):
             self.create_icon_pixbuf_from_name(
                 KILLSWITCH_ICON_SET[DashboardKillSwitchIconEnum.ALWAYS_ON_DEFAULT], # noqa
                 width=25, height=25
+            )
+        )
+        self.show = True
+
+
+class VPNLogo(ImageFactory):
+    image = "small-vpn-logo"
+
+    def __init__(self, tooltip_text):
+        super().__init__()
+        self.tooltip = True
+        self.tooltip_text = tooltip_text
+        self.set_from_pixbuf(
+            self.create_image_pixbuf_from_name(
+                "vpn-logo.svg",
+                width=SMALL_LOGO_SIZE, height=SMALL_LOGO_SIZE
+            )
+        )
+        self.show = True
+
+
+class CalendarLogo(ImageFactory):
+    image = "small-calendar-logo"
+
+    def __init__(self, tooltip_text):
+        super().__init__()
+        self.tooltip = True
+        self.tooltip_text = tooltip_text
+        self.set_from_pixbuf(
+            self.create_image_pixbuf_from_name(
+                "calendar-logo.svg",
+                width=SMALL_LOGO_SIZE, height=SMALL_LOGO_SIZE
+            )
+        )
+        self.show = True
+
+
+class MailLogo(ImageFactory):
+    image = "small-mail-logo"
+
+    def __init__(self, tooltip_text):
+        super().__init__()
+        self.tooltip = True
+        self.tooltip_text = tooltip_text
+        self.set_from_pixbuf(
+            self.create_image_pixbuf_from_name(
+                "mail-logo.svg",
+                width=SMALL_LOGO_SIZE, height=SMALL_LOGO_SIZE
+            )
+        )
+        self.show = True
+
+
+class DriveLogo(ImageFactory):
+    image = "small-drive-logo"
+
+    def __init__(self, tooltip_text):
+        super().__init__()
+        self.tooltip = True
+        self.tooltip_text = tooltip_text
+        self.set_from_pixbuf(
+            self.create_image_pixbuf_from_name(
+                "drive-logo.svg",
+                width=SMALL_LOGO_SIZE, height=SMALL_LOGO_SIZE
+            )
+        )
+        self.show = True
+
+
+class NewBranchBackgroundLogo(ImageFactory):
+    image = "new-brand-bg"
+
+    def __init__(self, tooltip_text):
+        super().__init__()
+        self.tooltip = True
+        self.tooltip_text = tooltip_text
+        self.set_from_pixbuf(
+            self.create_image_pixbuf_from_name(
+                "rebranding-welcome-vpn.png",
+                width=500, height=500
             )
         )
         self.show = True

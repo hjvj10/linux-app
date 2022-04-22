@@ -196,3 +196,15 @@ class LearnMore(LinkButtonFactory):
         self.show = True
         self.align_h = Gtk.Align.START
         self.ident_h = 0
+
+
+class LearnMoreAlignedCenter(LinkButtonFactory):
+    link = "learn-more-aligned-center"
+
+    def __init__(self):
+        super().__init__()
+        self.add_class("view-more")
+        self.show = True
+        self.align_h = Gtk.Align.CENTER
+        self.ident_h = 0
+        self.show = True
