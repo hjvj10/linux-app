@@ -694,7 +694,7 @@ class WelomeToNewBrandDialog:
         grid.align_h = Gtk.Align.CENTER
         grid.add_class("margin-y-30px")
 
-        text1 = WidgetFactory.label("new-brand-title", "Updated Proton, Unified protection")
+        text1 = WidgetFactory.label("new-brand-title", "Updated Proton, unified protection")
         text2 = WidgetFactory.textview(
             "new-brand",
             "Introducing Proton's refreshed look. Many services, one "\
