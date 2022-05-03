@@ -329,7 +329,7 @@ class LoginView(Gtk.ApplicationWindow):
             os.path.join(
                 IMG_DIR_PATH,
                 "protonvpn-logo.svg"
-            ), width=275, height=100, preserve_aspect_ratio=False
+            ), width=275, height=100
         )
         self.set_icon(window_icon)
         self.headerbar_sign_icon.set_from_pixbuf(protonvpn_headerbar_pixbuf)
