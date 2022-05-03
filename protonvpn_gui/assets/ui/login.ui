@@ -241,7 +241,7 @@
                     <property name="name">bottom_grid</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
+                    <property name="valign">start</property>
                     <property name="hexpand">True</property>
                     <child>
                       <object class="GtkBox" id="box_login_label_link">
