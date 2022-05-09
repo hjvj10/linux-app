@@ -217,7 +217,7 @@ class DashboardViewModel:
                     )
                 )
 
-    def set_notification_as_read(self, setting):
+    def set_notification_as_read(self):
         protonvpn.get_settings().event_notification = NotificationStatusEnum.OPENED
 
     def set_new_brand_dialog_opened(self):
