@@ -64,7 +64,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Fri Apr 22 2022 Proton Technologies AG <opensource@proton.me> 1.9.0-1
-- New: Introduce new brand
+- Introducing Proton's refreshed look. As we continue to make privacy accessible to everyone, we've updated our apps to provide you with an even better experience with our services. Proton - Privacy by default
 
 * Tue Mar 29 2022 Proton Technologies AG <opensource@proton.me> 1.8.0-2
 - Improve: Display error message if link buttons at login can not be reahced
