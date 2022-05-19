@@ -217,7 +217,7 @@ class LoginView(Gtk.ApplicationWindow):
             DisplayMessageDialog(
                 self.application,
                 title="Unable to reach Proton",
-                description="The ProtonVPN website might be temporarily unreachable due to "\
+                description="The Proton VPN website might be temporarily unreachable due to "\
                 "network restrictions. Please use the mobile app to {}".format(action_suffix)
             )
 

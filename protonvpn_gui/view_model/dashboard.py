@@ -260,7 +260,7 @@ class DashboardViewModel:
         self.state.on_next(result)
 
     def on_quick_connect(self):
-        """Quick connect to ProtonVPN.
+        """Quick connect to Proton VPN.
 
         This method sets the state of the UIsync_async
         to preparing and calls the method
@@ -447,7 +447,7 @@ class DashboardViewModel:
             result = dt.DisplayDialog(
                 title="Deliquent Account",
                 text="The account is flagged as delinquent due to unpaid invoices. "
-                "You can continue to use ProtonVPN, but any paid features are now disabled."
+                "You can continue to use Proton VPN, but any paid features are now disabled."
             )
             self.state.on_next(result)
             self.connect(ConnectionTypeEnum.FREE)

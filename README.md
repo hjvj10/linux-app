@@ -1,13 +1,13 @@
-# ProtonVPN Linux App
+# Proton VPN Linux App
 
 Copyright (c) 2021 Proton Technologies AG
 
-This repository holds the ProtonVPN Linux App.
+This repository holds the Proton VPN Linux App.
 For licensing information see [COPYING](COPYING.md).
 For contribution policy see [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Description
-The [ProtonVPN](https://protonvpn.com) Linux App Library is intended for every ProtonVPN service user.
+The [Proton VPN](https://protonvpn.com) Linux App Library is intended for every Proton VPN service user.
 
 You can download the latest stable release, either from our official repositories or directly on the [official GitHub repository](https://github.com/ProtonVPN/linux-app/releases/latest).
 
@@ -26,7 +26,7 @@ You can download the latest stable release, either from our official repositorie
 |Arch Linux/Manjaro                       | `libappindicator-gtk3` |
 
 ### Additional dependency:
-[ProtonVPN NM Library](https://github.com/ProtonVPN/protonvpn-nm-lib)
+[Proton VPN NM Library](https://github.com/ProtonVPN/protonvpn-nm-lib)
 
 ## Installation
-Follow our [knowledge base article](https://protonvpn.com/support/official-linux-client/) on how to install the ProtonVPN Linux App on your system.
+Follow our [knowledge base article](https://protonvpn.com/support/official-linux-client/) on how to install the Proton VPN Linux App on your system.

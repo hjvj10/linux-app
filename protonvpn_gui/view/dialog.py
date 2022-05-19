@@ -172,7 +172,7 @@ class ConnectUpgradeDialog:
         self.dialog_view.headerbar_label.set_text("Upgrade required")
         self.dialog_view.content_label.content = "You're trying to connect " \
             "to a server which requires " \
-            "a ProtonVPN Plus Subscription or higher." \
+            "a Proton VPN Plus Subscription or higher." \
             "\n\nTo access more servers in all countries, please " \
             "upgrade your subscription."
 
@@ -250,7 +250,7 @@ class AboutDialog:
         import datetime
         self.dialog_view = DialogView(application)
         self.dialog_view.headerbar_label.set_text("About")
-        app_version = "ProtonVPN: \tv{} (library: v{} / api-client: v{})".format(
+        app_version = "Proton VPN: \tv{} (library: v{} / api-client: v{})".format(
             APP_VERSION, lib_version, api_version
         )
         self.dialog_view.content_label.align_h = Gtk.Align.START
@@ -311,7 +311,7 @@ class WebView:
     def __init__(self, application, callback_func=None, title=None, description=None):
         self.__callback = callback_func
         self.__dialog_view = DialogView(application)
-        self.__dialog_view.headerbar_label.set_text(title if title else "ProtonVPN Captcha")
+        self.__dialog_view.headerbar_label.set_text(title if title else "Proton VPN Captcha")
         self.__dialog_view.content_label.show = False
         self.__dialog_view.buttons_visible = False
         self.__dialog_view.add_class("no-margin")
