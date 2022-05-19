@@ -28,7 +28,7 @@ from .view.login import LoginView
 
 
 class ProtonVPNGUI(Gtk.Application):
-    """ProtonVPN GTK Applcation.
+    """Proton VPN GTK Applcation.
 
     Windows are composite objects. Follows
     MVVM pattern.
@@ -85,7 +85,7 @@ class ProtonVPNGUI(Gtk.Application):
             + "------------"
         )
         logger.info(
-            "ProtonVPN v{} "
+            "Proton VPN v{} "
             "(protonvpn-nm-lib v{}; proton-client v{})".format(
                 APP_VERSION, lib_version, proton_version
             )
@@ -93,7 +93,7 @@ class ProtonVPNGUI(Gtk.Application):
         if "SUDO_UID" in os.environ:
             logger.info("Initialized app with sudo")
             print(
-                "\nRunning ProtonVPN as root is not supported and "
+                "\nRunning Proton VPN as root is not supported and "
                 "is highly discouraged, as it might introduce "
                 "undesirable side-effects."
             )

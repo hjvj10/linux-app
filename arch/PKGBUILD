@@ -3,7 +3,7 @@ pkgname=protonvpn-gui
 
 pkgver=1.9.0
 pkgrel=1
-pkgdesc="Official ProtonVPN GUI."
+pkgdesc="Official Proton VPN GUI."
 arch=("any")
 url="https://github.com/ProtonVPN/"
 license=("GPL3")

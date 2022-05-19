@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 from protonvpn_gui.constants import APP_VERSION
 
 long_description = """
-Official ProtonVPN App for Linux based systems.
+Official Proton VPN App for Linux based systems.
 """
 
 setup(
@@ -16,7 +16,7 @@ setup(
             "protonvpn = protonvpn_gui.main:main"
         ]
     },
-    description="Official ProtonVPN App for Linux",
+    description="Official Proton VPN App for Linux",
     author="Proton Technologies AG",
     author_email="contact@protonvpn.com",
     long_description=long_description,

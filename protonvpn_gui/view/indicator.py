@@ -109,7 +109,7 @@ class ProtonVPNIndicator(MetaIndicator):
         self.__application = application
         self.__generate_menu()
         self.__indicator = appindicator.Indicator.new(
-            "ProtonVPN Tray",
+            "Proton VPN Tray",
             "protonvpn-tray",
             appindicator.IndicatorCategory.APPLICATION_STATUS)
         self.__indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
@@ -154,7 +154,7 @@ class ProtonVPNIndicator(MetaIndicator):
         self.__menu.append(self.__separator_1)
         self.__separator_1.show()
 
-        self.__show_gui_item = Gtk.MenuItem(label="Show ProtonVPN")
+        self.__show_gui_item = Gtk.MenuItem(label="Show Proton VPN")
         self.__show_gui_item.connect("activate", self.__show_gui)
         self.__menu.append(self.__show_gui_item)
         self.__show_gui_item.show()

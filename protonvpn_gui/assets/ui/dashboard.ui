@@ -299,8 +299,8 @@
                         <property name="valign">center</property>
                         <property name="action-name">win.quick_connect</property>
                         <accessibility>
-                          <action action_name="click" description="Quick Connect to ProtonVPN"/>
-                          <action action_name="press" description="Quick Connect to ProtonVPN"/>
+                          <action action_name="click" description="Quick Connect to Proton VPN"/>
+                          <action action_name="press" description="Quick Connect to Proton VPN"/>
                         </accessibility>
                         <child internal-child="accessible">
                           <object class="AtkObject" id="quick_connect_button-atkobject">
@@ -325,13 +325,13 @@
                         <property name="valign">center</property>
                         <property name="action-name">win.disconnect</property>
                         <accessibility>
-                          <action action_name="click" description="Disconnect from ProtonVPN"/>
-                          <action action_name="press" description="Disconnect from ProtonVPN"/>
+                          <action action_name="click" description="Disconnect from Proton VPN"/>
+                          <action action_name="press" description="Disconnect from Proton VPN"/>
                         </accessibility>
                         <child internal-child="accessible">
                           <object class="AtkObject" id="main_disconnect_button-atkobject">
                             <property name="AtkObject::accessible-name" translatable="yes">Disconnect Button</property>
-                            <property name="AtkObject::accessible-description" translatable="yes">Disconnect from ProtonVPN server.</property>
+                            <property name="AtkObject::accessible-description" translatable="yes">Disconnect from Proton VPN server.</property>
                             <property name="AtkObject::accessible-role" translatable="yes">push-button</property>
                           </object>
                         </child>
@@ -743,7 +743,7 @@
       <object class="GtkHeaderBar" id="headerbar">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="title" translatable="yes">ProtonVPN</property>
+        <property name="title" translatable="yes">Proton VPN</property>
         <property name="has-subtitle">False</property>
         <property name="show-close-button">True</property>
         <child>
@@ -900,13 +900,13 @@
             <property name="text" translatable="yes">Get Logs</property>
             <accessibility>
               <relation type="node-child-of" target="box1"/>
-              <action action_name="click" description="Quit ProtonVPN application."/>
-              <action action_name="press" description="Quit ProtonVPN application."/>
+              <action action_name="click" description="Quit Proton VPN application."/>
+              <action action_name="press" description="Quit Proton VPN application."/>
             </accessibility>
             <child internal-child="accessible">
               <object class="AtkObject">
                 <property name="AtkObject::accessible-name" translatable="yes">get-protonvpn-logs</property>
-                <property name="AtkObject::accessible-description" translatable="yes">Get ProtonVPN logs.</property>
+                <property name="AtkObject::accessible-description" translatable="yes">Get Proton VPN logs.</property>
                 <property name="AtkObject::accessible-role" translatable="yes">menu-item</property>
               </object>
             </child>
@@ -941,13 +941,13 @@
             <property name="text" translatable="yes">Quit</property>
             <accessibility>
               <relation type="node-child-of" target="box1"/>
-              <action action_name="click" description="Quit ProtonVPN application."/>
-              <action action_name="press" description="Quit ProtonVPN application."/>
+              <action action_name="click" description="Quit Proton VPN application."/>
+              <action action_name="press" description="Quit Proton VPN application."/>
             </accessibility>
             <child internal-child="accessible">
               <object class="AtkObject">
                 <property name="AtkObject::accessible-name" translatable="yes">quit-protonvpn-appliacation</property>
-                <property name="AtkObject::accessible-description" translatable="yes">Quit ProtonVPN application.</property>
+                <property name="AtkObject::accessible-description" translatable="yes">Quit Proton VPN application.</property>
                 <property name="AtkObject::accessible-role" translatable="yes">menu-item</property>
               </object>
             </child>

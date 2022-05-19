@@ -8,7 +8,7 @@ def display_dialog():
     window = Gtk.Window()
     grid = WidgetFactory.grid("default")
     label = WidgetFactory.label("default")
-    label.content = "Current Gtk version is incompatible with ProtonVPN." \
+    label.content = "Current Gtk version is incompatible with Proton VPN." \
         "\nPlease upgrade to (or any other derivative from) Ubuntu 20.04\n" \
         "or any other distribution based off Gtk 3.24 or higher."
 

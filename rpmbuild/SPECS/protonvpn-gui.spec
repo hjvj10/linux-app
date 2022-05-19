@@ -9,7 +9,7 @@ Prefix: %{_prefix}
 Name: %{unmangled_name}
 Version: %{version}
 Release: %{release}
-Summary: Official ProtonVPN GUI
+Summary: Official Proton VPN GUI
 
 Group: ProtonVPN
 License: GPLv3
@@ -36,7 +36,7 @@ Suggests: gnome-shell-extension-appindicator
 %{?python_disable_dependency_generator}
 
 %description
-Official ProtonVPN Graphical User Interface.
+Official Proton VPN Graphical User Interface.
 
 
 %prep

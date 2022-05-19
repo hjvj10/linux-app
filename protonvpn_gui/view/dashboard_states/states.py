@@ -147,7 +147,7 @@ class ConnectVPNPreparingView:
         dashboard_view.connecting_overlay_spinner.props.visible = True
         dashboard_view.connecting_progress_bar.props.visible = True
         dashboard_view.connecting_progress_bar.set_fraction(0.2)
-        dashboard_view.connecting_to_label.props.label = "Preparing ProtonVPN Connection"
+        dashboard_view.connecting_to_label.props.label = "Preparing Proton VPN Connection"
         dashboard_view.cancel_connect_overlay_button.props.visible = False
         dashboard_view.connecting_overlay_box.props.visible = True
 
