@@ -49,10 +49,11 @@ class ServerListViewModel:
             ServerTierEnum(protonvpn.get_session().vpn_tier)
         )
 
-    def __finish_on_update_server_load(self, self_thread, task, data):
-        var = bool(task.propagate_int())
-        if var:
-            self.__update_server_load = False
+    def __finish_on_update_server_load(self, self_thread=None, task=None, data=None):
+        if self_thread and task:
+            var = bool(task.propagate_int())
+            if var:
+                self.__update_server_load = False
 
     def on_update_server_load_async(self):
         """Update server Load.
@@ -75,7 +76,7 @@ class ServerListViewModel:
         )
         process.start()
 
-    def __on_update_server_load(self, task, self_thread, data, cancellable):
+    def __on_update_server_load(self, task=None, self_thread=None, data=None, cancellable=None):
         """Update server load.
 
         This method refreshes server cache. The library
@@ -93,7 +94,8 @@ class ServerListViewModel:
         except Exception as e:
             # Display dialog with message
             logger.exception(e)
-            task.return_int(0)
+            if task:
+                task.return_int(0)
             return
 
         try:
@@ -101,6 +103,8 @@ class ServerListViewModel:
         except Exception as e:
             # Display dialog with message
             logger.exception(e)
-            task.return_int(0)
+            if task:
+                task.return_int(0)
         else:
-            task.return_int(1)
+            if task:
+                task.return_int(1)
