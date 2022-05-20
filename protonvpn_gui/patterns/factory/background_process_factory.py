@@ -22,7 +22,10 @@ class BackgroundProcess(SubclassesMixin):
 
         _version = str(_version).strip("\n")
         subclasses_dict = cls._get_subclasses_dict("threading_backend")
-        if threading_backend is None or _version < "2.63.2":
+
+        # run_in_thread is supported since 2.36 (https://docs.gtk.org/gio/callback.TaskThreadFunc.html),
+        # but the method was only added later in 2.63.2, thus up to this version we should default to python threads
+        if (threading_backend is None) or (_version < "2.63.2" and (threading_backend is None or threading_backend != "python")):
             return subclasses_dict["python"]()
 
         return subclasses_dict[threading_backend]()

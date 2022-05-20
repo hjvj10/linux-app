@@ -701,7 +701,7 @@ class WelomeToNewBrandDialog:
             "mission. Welcome to an Internet where privacy is the default."
         )
         button = WidgetFactory.button("learn-more-aligned-center")
-        button.url = "https://proton.me/news/updated-proton"
+        button.url = "https://protonvpn.com/blog/updated-proton-vpn"
         button.label = "Learn more"
 
         text1.add_class("default-text-view")
