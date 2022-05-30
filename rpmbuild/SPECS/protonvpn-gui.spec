@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.9.0
-%define release 1
+%define release 2
 
 Prefix: %{_prefix}
 
@@ -63,6 +63,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon May 30 2022 Proton Technologies AG <opensource@proton.me> 1.9.0-2
+- Fix: Update taskbar icon
+
 * Fri Apr 22 2022 Proton Technologies AG <opensource@proton.me> 1.9.0-1
 - Introducing Proton's refreshed look. As we continue to make privacy accessible to everyone, we've updated our apps to provide you with an even better experience with our services. Proton - Privacy by default
 
