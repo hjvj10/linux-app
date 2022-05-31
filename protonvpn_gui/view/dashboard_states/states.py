@@ -1,10 +1,13 @@
+import weakref
+
 from protonvpn_nm_lib.api import protonvpn
 from protonvpn_nm_lib.constants import SUPPORTED_PROTOCOLS
 from protonvpn_nm_lib.enums import ProtocolImplementationEnum
-from ...enums import GLibEventSourceEnum, DashboardFeaturesEnum
+
+from ...enums import DashboardFeaturesEnum, GLibEventSourceEnum
 from ...patterns.factory import WidgetFactory
-from ...view_model.dataclass.dashboard import GenericEvent, WelomeToNewBrandEvent
-import weakref
+from ...view_model.dataclass.dashboard import (GenericEvent,
+                                               WelcomeToNewBrandEvent)
 
 
 class InitLoadView:
@@ -260,7 +263,7 @@ class EventNotification:
                 dashboard_view, state.event_dataclass.class_instance,
                 state.has_notification_been_opened, state.set_notification_as_read
             )
-        elif isinstance(state.event_dataclass, WelomeToNewBrandEvent):
+        elif isinstance(state.event_dataclass, WelcomeToNewBrandEvent):
             from ..dialog import WelomeToNewBrandDialog
             WelomeToNewBrandDialog(dashboard_view.application, callback_func=state.set_notification_as_read)
 

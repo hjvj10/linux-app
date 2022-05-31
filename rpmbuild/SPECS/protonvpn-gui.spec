@@ -1,7 +1,7 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.9.0
+%define version 1.10.0
 %define release 2
 
 Prefix: %{_prefix}
@@ -63,6 +63,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* tue May 31 2022 Proton Technologies AG <opensource@proton.me> 1.10.0-2
+- Fix: New brand dialog will now only appear once after the dashboard has been loaded
+
 * Mon May 30 2022 Proton Technologies AG <opensource@proton.me> 1.9.0-2
 - Fix: Update taskbar icon
 
