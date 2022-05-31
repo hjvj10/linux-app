@@ -208,6 +208,7 @@ class DashboardView(Gtk.ApplicationWindow):
         elif isinstance(state, QuickSettingsStatus):
             UpdateQuickSettings(self, state)
         elif isinstance(state, DisplayEvent):
+            print("New event: ", state)
             EventNotification(self, state)
         elif isinstance(state, DisplayDialog):
             DisplayMessageDialog(

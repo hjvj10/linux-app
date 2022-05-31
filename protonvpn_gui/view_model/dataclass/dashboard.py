@@ -94,5 +94,5 @@ class GenericEvent:
 
 
 @dataclass
-class WelomeToNewBrandEvent:
+class WelcomeToNewBrandEvent:
     class_instance: auto()
