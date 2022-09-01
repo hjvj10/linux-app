@@ -1,3 +1,9 @@
+protonvpn-gui (1.11.0-1) unstable; urgency=medium
+
+  * Fix: If session is invalid, logout and inform the user about it.
+  
+ -- Proton Technologies AG <opensource@proton.me>  Thu, 01 Sep 2022 17:00:00 +0000
+
 protonvpn-gui (1.10.0-2) unstable; urgency=medium
 
   * Fix: New brand dialog will now only appear once after the dashboard has been loaded

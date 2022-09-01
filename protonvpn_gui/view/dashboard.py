@@ -298,6 +298,7 @@ class DashboardView(Gtk.ApplicationWindow):
     def setup_properties(self):
         # ViewModel
         self.dashboard_view_model = Module().dashboard_view_model
+        self.dashboard_view_model.gtk_app = self.application
         self.dashboard_view_model.state.subscribe(
             lambda state: GLib.idle_add(self.render_view_state, state)
         )
