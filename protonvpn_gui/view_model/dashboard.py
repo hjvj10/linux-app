@@ -116,8 +116,17 @@ class DashboardViewModel:
 
         self.__quick_settings_vm.dashboard_view_model = self
         self.__server_list_vm.dashboard_view_model = self
+        self._gtk_app = None
 
         self.__state = ReplaySubject(buffer_size=1)
+
+    @property
+    def gtk_app(self):
+        return self._gtk_app
+
+    @gtk_app.setter
+    def gtk_app(self, newvalue):
+        self._gtk_app = newvalue
 
     @property
     def state(self):
@@ -167,11 +176,41 @@ class DashboardViewModel:
 
         This needs to be pre-loaded before displaying the dashboard."""
         self.__display_new_brand_dialog_if_not_opened()
-        self.check_if_events_should_be_displayed()
+
+        try:
+            self.check_if_events_should_be_displayed()
+        except exceptions.APISessionIsNotValidError as e:
+            logger.exception(e)
+            result = dt.DisplayDialog(
+                title="Invalid Session",
+                text="Your session is invalid. Please login to re-authenticate."
+            )
+            self.on_disconnect()
+            self._gtk_app.on_logout()
+            self.state.on_next(result)
+            return
+        except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
+            result = dt.DisplayDialog(
+                title="Error Loading Servers",
+                text=str(e)
+            )
+            self.state.on_next(result)
+            return
+
         self.state.on_next(self.get_quick_settings_state())
 
         try:
             self.__server_list_vm.on_load_servers()
+        except exceptions.APISessionIsNotValidError as e:
+            logger.exception(e)
+            result = dt.DisplayDialog(
+                title="Invalid Session",
+                text="Your session is invalid. Please login to re-authenticate."
+            )
+            self.on_disconnect()
+            self._gtk_app.on_logout()
+            self.state.on_next(result)
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
             result = dt.DisplayDialog(
@@ -189,8 +228,6 @@ class DashboardViewModel:
         return True
 
     def __display_new_brand_dialog_if_not_opened(self):
-        print("Running display enw brand dilaog")
-        print("protonvpn.get_settings().new_brand", protonvpn.get_settings().new_brand)
         if protonvpn.get_settings().new_brand == NotificationStatusEnum.NOT_OPENED:
             self.state.on_next(
                 dt.DisplayEvent(
@@ -540,14 +577,14 @@ class DashboardViewModel:
         the reasons specified in class docstring.
         """
         self.state.on_next(dt.Loading())
-        result = self._get_not_connected_state()
+        not_connected_state = self._get_not_connected_state()
 
         try:
             protonvpn.disconnect()
         except (exceptions.ConnectionNotFound, AttributeError):
             pass
 
-        self.state.on_next(result)
+        self.state.on_next(not_connected_state)
         return False
 
     def _get_connected_state(self):
