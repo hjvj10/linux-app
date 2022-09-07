@@ -186,7 +186,12 @@ class DashboardViewModel:
                 text="Your session is invalid. Please login to re-authenticate."
             )
             self.on_disconnect()
-            self._gtk_app.on_logout()
+            p = BackgroundProcess.factory("gtask")
+            p.setup(
+                target=self._gtk_app._logout,
+                callback=self._gtk_app.display_login_window,
+            )
+            p.start()
             self.state.on_next(result)
             return
         except (exceptions.ProtonVPNException, Exception) as e:
