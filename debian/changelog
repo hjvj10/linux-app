@@ -1,4 +1,4 @@
-protonvpn-gui (1.11.0-2) unstable; urgency=medium
+protonvpn-gui (1.11.0-3) unstable; urgency=medium
 
   * Fix: If session is invalid, logout and inform the user about it.
   

@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.11.0
-%define release 2
+%define release 3
 
 Prefix: %{_prefix}
 
@@ -63,7 +63,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
-* Thu Sep 01 2022 Proton Technologies AG <opensource@proton.me> 1.11.0-2
+* Thu Sep 01 2022 Proton Technologies AG <opensource@proton.me> 1.11.0-3
 - Fix: If session is invalid, logout and inform the user about it.
 
 * Tue May 31 2022 Proton Technologies AG <opensource@proton.me> 1.10.0-2

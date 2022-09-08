@@ -179,28 +179,7 @@ class DashboardViewModel:
 
         try:
             self.check_if_events_should_be_displayed()
-        except exceptions.APISessionIsNotValidError as e:
-            logger.exception(e)
-            result = dt.DisplayDialog(
-                title="Invalid Session",
-                text="Your session is invalid. Please login to re-authenticate."
-            )
-            self.on_disconnect()
-            p = BackgroundProcess.factory("gtask")
-            p.setup(
-                target=self._gtk_app._logout,
-                callback=self._gtk_app.display_login_window,
-            )
-            p.start()
-            self.state.on_next(result)
-            return
-        except (exceptions.ProtonVPNException, Exception) as e:
-            logger.exception(e)
-            result = dt.DisplayDialog(
-                title="Error Loading Servers",
-                text=str(e)
-            )
-            self.state.on_next(result)
+        except: # noqa
             return
 
         self.state.on_next(self.get_quick_settings_state())
@@ -242,7 +221,34 @@ class DashboardViewModel:
 
     def check_if_events_should_be_displayed(self, *_):
         """Sync check if events should be displayed."""
-        all_notitications = protonvpn.get_session().get_all_notifications()
+        try:
+            all_notitications = protonvpn.get_session().get_all_notifications()
+        except exceptions.APISessionIsNotValidError as e:
+            logger.exception(e)
+            result = dt.DisplayDialog(
+                title="Invalid Session",
+                text="Your session is invalid. Please login to re-authenticate."
+            )
+            self.on_disconnect()
+            p = BackgroundProcess.factory("gtask")
+            p.setup(
+                target=self._gtk_app._logout,
+                callback=self._gtk_app.display_login_window,
+            )
+            p.start()
+            self.state.on_next(result)
+            raise
+        except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
+            result = dt.DisplayDialog(
+                title="Error Loading Servers",
+                text=str(e)
+            )
+            self.state.on_next(result)
+            raise
+
+        print("Got all nots: ", all_notitications)
+
         if not isinstance(all_notitications, list):
             return
 
