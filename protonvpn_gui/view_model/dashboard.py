@@ -247,8 +247,6 @@ class DashboardViewModel:
             self.state.on_next(result)
             raise
 
-        print("Got all nots: ", all_notitications)
-
         if not isinstance(all_notitications, list):
             return
 
