@@ -175,8 +175,6 @@ class DashboardViewModel:
         server list.
 
         This needs to be pre-loaded before displaying the dashboard."""
-        self.__display_new_brand_dialog_if_not_opened()
-
         try:
             self.check_if_events_should_be_displayed()
         except: # noqa
@@ -210,14 +208,6 @@ class DashboardViewModel:
         process.start()
 
         return True
-
-    def __display_new_brand_dialog_if_not_opened(self):
-        if protonvpn.get_settings().new_brand == NotificationStatusEnum.NOT_OPENED:
-            self.state.on_next(
-                dt.DisplayEvent(
-                    dt.WelcomeToNewBrandEvent(None), False, self.set_new_brand_dialog_opened
-                )
-            )
 
     def check_if_events_should_be_displayed(self, *_):
         """Sync check if events should be displayed."""

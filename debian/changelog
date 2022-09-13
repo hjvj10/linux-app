@@ -1,6 +1,7 @@
-protonvpn-gui (1.11.0-4) unstable; urgency=medium
+protonvpn-gui (1.11.0-5) unstable; urgency=medium
 
   * Fix: If session is invalid, logout and inform the user about it.
+  * Fix: Stop displaying new brand dialog on new login.
   
  -- Proton Technologies AG <opensource@proton.me>  Thu, 01 Sep 2022 17:00:00 +0000
 
