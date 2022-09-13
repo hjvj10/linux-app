@@ -6,8 +6,7 @@ from protonvpn_nm_lib.enums import ProtocolImplementationEnum
 
 from ...enums import DashboardFeaturesEnum, GLibEventSourceEnum
 from ...patterns.factory import WidgetFactory
-from ...view_model.dataclass.dashboard import (GenericEvent,
-                                               WelcomeToNewBrandEvent)
+from ...view_model.dataclass.dashboard import GenericEvent
 
 
 class InitLoadView:
@@ -263,12 +262,6 @@ class EventNotification:
                 dashboard_view, state.event_dataclass.class_instance,
                 state.has_notification_been_opened, state.set_notification_as_read
             )
-        elif isinstance(state.event_dataclass, WelcomeToNewBrandEvent):
-            from ..dialog import WelomeToNewBrandDialog
-            WelomeToNewBrandDialog(dashboard_view.application, callback_func=state.set_notification_as_read)
-
-    def test_callback(self):
-        print("Callback worked")
 
     def __check_if_generic_event_should_be_displayed(self, *args):
         dashboard_view, event_data, has_notification_been_opened, set_as_read = args

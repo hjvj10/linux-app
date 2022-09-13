@@ -175,27 +175,9 @@ class DashboardViewModel:
         server list.
 
         This needs to be pre-loaded before displaying the dashboard."""
-        self.__display_new_brand_dialog_if_not_opened()
-
         try:
             self.check_if_events_should_be_displayed()
-        except exceptions.APISessionIsNotValidError as e:
-            logger.exception(e)
-            result = dt.DisplayDialog(
-                title="Invalid Session",
-                text="Your session is invalid. Please login to re-authenticate."
-            )
-            self.on_disconnect()
-            self._gtk_app.on_logout()
-            self.state.on_next(result)
-            return
-        except (exceptions.ProtonVPNException, Exception) as e:
-            logger.exception(e)
-            result = dt.DisplayDialog(
-                title="Error Loading Servers",
-                text=str(e)
-            )
-            self.state.on_next(result)
+        except: # noqa
             return
 
         self.state.on_next(self.get_quick_settings_state())
@@ -227,17 +209,34 @@ class DashboardViewModel:
 
         return True
 
-    def __display_new_brand_dialog_if_not_opened(self):
-        if protonvpn.get_settings().new_brand == NotificationStatusEnum.NOT_OPENED:
-            self.state.on_next(
-                dt.DisplayEvent(
-                    dt.WelcomeToNewBrandEvent(None), False, self.set_new_brand_dialog_opened
-                )
-            )
-
     def check_if_events_should_be_displayed(self, *_):
         """Sync check if events should be displayed."""
-        all_notitications = protonvpn.get_session().get_all_notifications()
+        try:
+            all_notitications = protonvpn.get_session().get_all_notifications()
+        except exceptions.APISessionIsNotValidError as e:
+            logger.exception(e)
+            result = dt.DisplayDialog(
+                title="Invalid Session",
+                text="Your session is invalid. Please login to re-authenticate."
+            )
+            self.on_disconnect()
+            p = BackgroundProcess.factory("gtask")
+            p.setup(
+                target=self._gtk_app._logout,
+                callback=self._gtk_app.display_login_window,
+            )
+            p.start()
+            self.state.on_next(result)
+            raise
+        except (exceptions.ProtonVPNException, Exception) as e:
+            logger.exception(e)
+            result = dt.DisplayDialog(
+                title="Error Loading Servers",
+                text=str(e)
+            )
+            self.state.on_next(result)
+            raise
+
         if not isinstance(all_notitications, list):
             return
 

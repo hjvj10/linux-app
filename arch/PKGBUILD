@@ -2,7 +2,7 @@
 pkgname=protonvpn-gui
 
 pkgver=1.11.0
-pkgrel=1
+pkgrel=5
 pkgdesc="Official Proton VPN GUI."
 arch=("any")
 url="https://github.com/ProtonVPN/"
