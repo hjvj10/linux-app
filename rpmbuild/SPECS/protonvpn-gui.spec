@@ -2,7 +2,7 @@
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
 %define version 1.11.0
-%define release 5
+%define release 6
 
 Prefix: %{_prefix}
 
@@ -63,6 +63,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Thu Sep 22 2022 Proton Technologies AG <opensource@proton.me> 1.11.0-6
+- Drop F34-35 and add F37
+
 * Thu Sep 01 2022 Proton Technologies AG <opensource@proton.me> 1.11.0-5
 - Fix: If session is invalid, logout and inform the user about it.
 - Fix: Stop displaying new brand dialog on new login.
