@@ -1,5 +1,6 @@
 from ..patterns.factory import BackgroundProcess
 from protonvpn_nm_lib.api import protonvpn
+from protonvpn_nm_lib import exceptions as lib_exceptions
 from protonvpn_nm_lib.enums import ServerTierEnum, SecureCoreStatusEnum
 from .dataclass.dashboard import ServerListData, SwitchServerList
 from ..logger import logger
@@ -51,9 +52,11 @@ class ServerListViewModel:
 
     def __finish_on_update_server_load(self, self_thread=None, task=None, data=None):
         if self_thread and task:
-            var = bool(task.propagate_int())
-            if var:
+            var = task.propagate_int()
+            if var == 1:
                 self.__update_server_load = False
+            elif var == 2:
+                self.dashboard_view_model.force_logout()
 
     def on_update_server_load_async(self):
         """Update server Load.
@@ -84,27 +87,32 @@ class ServerListViewModel:
         method can be safely used at anytime.
 
         This method is and should be executed within a python thread.
+
+        The numbers below were defined arbitrarly, meaning that we could easily change then
+        to any other values here and inside `__finish_on_update_server_load`, as the meaning
+        is only for us, as the Gio.Task doesn't care about the value, as long as it's `int`.
         """
         session = protonvpn.get_session()
 
-        # By requests the servers, it will automatically trigger a request
+        # By requesting the servers, it will automatically trigger a request
         # to the API, to updated the serverlist if needed.
         try:
-            session.servers
-        except Exception as e:
-            # Display dialog with message
+            _ = session.servers
+        except lib_exceptions.APISessionIsNotValidError as e:
             logger.exception(e)
             if task:
-                task.return_int(0)
-            return
-
-        try:
-            self.on_load_servers_async(False)
+                task.return_int(2)
         except Exception as e:
-            # Display dialog with message
             logger.exception(e)
             if task:
                 task.return_int(0)
         else:
-            if task:
-                task.return_int(1)
+            try:
+                self.on_load_servers_async(False)
+            except Exception as e:
+                logger.exception(e)
+                if task:
+                    task.return_int(0)
+            else:
+                if task:
+                    task.return_int(1)
