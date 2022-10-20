@@ -215,18 +215,7 @@ class DashboardViewModel:
             all_notitications = protonvpn.get_session().get_all_notifications()
         except exceptions.APISessionIsNotValidError as e:
             logger.exception(e)
-            result = dt.DisplayDialog(
-                title="Invalid Session",
-                text="Your session is invalid. Please login to re-authenticate."
-            )
-            self.on_disconnect()
-            p = BackgroundProcess.factory("gtask")
-            p.setup(
-                target=self._gtk_app._logout,
-                callback=self._gtk_app.display_login_window,
-            )
-            p.start()
-            self.state.on_next(result)
+            self.force_logout()
             raise
         except (exceptions.ProtonVPNException, Exception) as e:
             logger.exception(e)
@@ -256,6 +245,20 @@ class DashboardViewModel:
                         self.set_notification_as_read
                     )
                 )
+
+    def force_logout(self):
+        result = dt.DisplayDialog(
+            title="Invalid Session",
+            text="Your session is invalid. Please login to re-authenticate."
+        )
+        self.on_disconnect()
+        p = BackgroundProcess.factory("gtask")
+        p.setup(
+            target=self._gtk_app._logout,
+            callback=self._gtk_app.display_login_window,
+        )
+        p.start()
+        self.state.on_next(result)
 
     def set_notification_as_read(self):
         protonvpn.get_settings().event_notification = NotificationStatusEnum.OPENED

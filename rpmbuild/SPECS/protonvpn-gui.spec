@@ -1,8 +1,8 @@
 %define unmangled_name protonvpn-gui
 %define logo_name protonvpn-logo.png
 %define desktop_name protonvpn.desktop
-%define version 1.11.0
-%define release 6
+%define version 1.12.0
+%define release 1
 
 Prefix: %{_prefix}
 
@@ -63,6 +63,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Oct 18 2022 Proton Technologies AG <opensource@proton.me> 1.12.0-1
+- Fix: Ensure that whenever session is invalid, user is logged out.
+
 * Thu Sep 22 2022 Proton Technologies AG <opensource@proton.me> 1.11.0-6
 - Drop F34-35 and add F37
 

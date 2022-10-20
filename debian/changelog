@@ -1,3 +1,9 @@
+protonvpn-gui (1.12.0-1) unstable; urgency=medium
+
+  * Fix: Ensure that whenever session is invalid, user is logged out.
+  
+ -- Proton Technologies AG <opensource@proton.me>  Tue, 18 Oct 2022 16:00:00 +0000
+
 protonvpn-gui (1.11.0-5) unstable; urgency=medium
 
   * Fix: If session is invalid, logout and inform the user about it.
